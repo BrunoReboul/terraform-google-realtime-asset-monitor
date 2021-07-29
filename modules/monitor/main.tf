@@ -29,7 +29,7 @@ resource "google_pubsub_topic" "compliance_status" {
   }
 }
 
-resource "google_pubsub_topic_iam_member" "compliance_status_sa" {
+resource "google_pubsub_topic_iam_member" "compliance_status_publisher" {
   project = google_pubsub_topic.compliance_status.project
   topic   = google_pubsub_topic.compliance_status.name
   role    = "roles/pubsub.publisher"
@@ -44,7 +44,7 @@ resource "google_pubsub_topic" "violation" {
   }
 }
 
-resource "google_pubsub_topic_iam_member" "violation_sa" {
+resource "google_pubsub_topic_iam_member" "violation_publisher" {
   project = google_pubsub_topic.violation.project
   topic   = google_pubsub_topic.violation.name
   role    = "roles/pubsub.publisher"
