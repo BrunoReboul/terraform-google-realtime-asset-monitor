@@ -25,7 +25,7 @@ resource "google_pubsub_topic" "compliance_status" {
   project = var.project_id
   name    = var.compliance_status_topic_name
   message_storage_policy {
-    allowed_persistence_regions = pubsub_allowed_regions
+    allowed_persistence_regions = var.pubsub_allowed_regions
   }
 }
 
@@ -40,7 +40,7 @@ resource "google_pubsub_topic" "violation" {
   project = var.project_id
   name    = var.violation_topic_name
   message_storage_policy {
-    allowed_persistence_regions = pubsub_allowed_regions
+    allowed_persistence_regions = var.pubsub_allowed_regions
   }
 }
 
