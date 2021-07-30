@@ -36,6 +36,13 @@ resource "google_pubsub_topic_iam_member" "compliance_status_publisher" {
   member  = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
 
+resource "google_pubsub_topic_iam_member" "compliance_status_viewer" {
+  project = google_pubsub_topic.compliance_status.project
+  topic   = google_pubsub_topic.compliance_status.name
+  role    = "roles/pubsub.viewer"
+  member  = "serviceAccount:${google_service_account.microservice_sa.email}"
+}
+
 resource "google_pubsub_topic" "violation" {
   project = var.project_id
   name    = var.violation_topic_name
@@ -48,5 +55,12 @@ resource "google_pubsub_topic_iam_member" "violation_publisher" {
   project = google_pubsub_topic.violation.project
   topic   = google_pubsub_topic.violation.name
   role    = "roles/pubsub.publisher"
+  member  = "serviceAccount:${google_service_account.microservice_sa.email}"
+}
+
+resource "google_pubsub_topic_iam_member" "violation_viewer" {
+  project = google_pubsub_topic.compliance_status.project
+  topic   = google_pubsub_topic.violation.name
+  role    = "roles/pubsub.viewer"
   member  = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
