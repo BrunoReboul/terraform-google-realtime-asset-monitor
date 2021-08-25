@@ -19,5 +19,6 @@ To use theses terraform modules, you will need a GCP project with:
 
 - IAM roles for the service account used to run Terraform:
   - On the project or folder hosting RAM
+    - Project IAM Admin `roles/resourcemanager.projectIamAdmin`
     - Pub/sub Admin `roles/pubsub.admin`
     - Service Account Admin `roles/iam.serviceAccountAdmin`
