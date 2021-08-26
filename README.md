@@ -3,11 +3,11 @@
 To use theses terraform modules, you will need a GCP project with:  
 
 - APIs enabled
-  - Artifact registry API `artifactregistry.googleapis.com`
+  - Artifact Registry API `artifactregistry.googleapis.com`
   - BigQuery API `bigquery.googleapis.com`
   - Cloud Asset API `cloudasset.googleapis.com`
   - Cloud Firestore API `firestore.googleapis.com`
-  - Cloud Logging API `ogging.googleapis.com`
+  - Cloud Logging API `logging.googleapis.com`
   - Cloud Monitoring API `monitoring.googleapis.com`
   - Cloud Pub/Sub API `pubsub.googleapis.com`
   - Cloud Run Admin API `run.googleapis.com`
@@ -22,3 +22,5 @@ To use theses terraform modules, you will need a GCP project with:
     - Project IAM Admin `roles/resourcemanager.projectIamAdmin`
     - Pub/sub Admin `roles/pubsub.admin`
     - Service Account Admin `roles/iam.serviceAccountAdmin`
+
+- FireStore: [select native mode](https://cloud.google.com/datastore/docs/firestore-or-datastore)
