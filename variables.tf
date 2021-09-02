@@ -15,5 +15,5 @@
  */
 
 variable "project_id" {
-  description = "RAM GCP project id for a given environment, like dev or production"
+  description = "GCP project id where to deploy RAM for a given environment, like test or production"
 }

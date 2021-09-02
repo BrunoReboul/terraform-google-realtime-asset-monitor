@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-module "deploy" {
-  source     = "./modules/deploy"
-  project_id = var.project_id
-}
-
-module "monitor" {
-  source     = "./modules/monitor"
-  project_id = var.project_id
+variable "project_id" {
+  description = "GCP project id where to deploy RAM for a given environment like test or production"
 }

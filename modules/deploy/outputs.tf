@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-module "deploy" {
-  source     = "./modules/deploy"
-  project_id = var.project_id
+output "project_id" {
+  value       = var.project_id
+  description = "Project id"
 }
 
-module "monitor" {
-  source     = "./modules/monitor"
-  project_id = var.project_id
+output "service_account_email" {
+  description = "Service account email used to deploy RAM"
+  value       = google_service_account.deploy_sa.email
 }

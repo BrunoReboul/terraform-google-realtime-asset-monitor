@@ -19,6 +19,11 @@ output "project_id" {
   description = "Project id"
 }
 
+output "deploy_service_account_email" {
+  description = "Service account email used to deploy RAM"
+  value       = module.deploy.service_account_email
+}
+
 output "monitor_service_account_email" {
   description = "Service account email used to run this microservice"
   value       = module.monitor.service_account_email
