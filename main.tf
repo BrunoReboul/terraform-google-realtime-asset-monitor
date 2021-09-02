@@ -20,6 +20,9 @@ module "deploy" {
 }
 
 module "monitor" {
-  source     = "./modules/monitor"
-  project_id = var.project_id
+  source                       = "./modules/monitor"
+  project_id                   = var.project_id
+  compliance_status_topic_name = var.compliance_status_topic_name
+  violation_topic_name         = var.violation_topic_name
+  pubsub_allowed_regions       = var.pubsub_allowed_regions
 }
