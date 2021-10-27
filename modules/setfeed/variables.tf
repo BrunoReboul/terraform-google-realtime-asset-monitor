@@ -31,35 +31,35 @@ variable "pubsub_allowed_regions" {
 variable "feed_iam_policy_orgs" {
   description = "For feed type IAM_POLICY, the map of monitored organizations and the targeted list assets for each. Can be empty"
   type        = map(list(string))
-  default     = null
+  default     = {}
 }
 
 variable "feed_resource_orgs" {
   description = "For feed type RESOURCE, the map of monitored organizations and the targeted list assets for each. Can be empty"
   type        = map(list(string))
-  default     = null
+  default     = {}
 }
 
 variable "feed_iam_policy_folders" {
   description = "For feed type IAM_POLICY, the map of monitored folders and the targeted list assets for each. Can be empty"
   type        = map(list(string))
-  default     = null
+  default     = {}
 }
 
 variable "feed_resource_folders" {
   description = "For feed type RESOURCE, the map of monitored folders and the targeted list assets for each. Can be empty"
   type        = map(list(string))
-  default     = null
+  default     = {}
 }
 
 variable "feed_iam_policy_projects" {
   description = "For feed type IAM_POLICY, the map of monitored projects and the targeted list assets for each. Can be empty"
   type        = map(list(string))
-  default     = null
+  default     = {}
 }
 
 variable "feed_resource_projects" {
   description = "For feed type RESOURCE, the map of monitored projects and the targeted list assets for each. Can be empty"
   type        = map(list(string))
-  default     = null
+  default     = {}
 }
