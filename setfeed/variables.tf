@@ -15,22 +15,12 @@
  */
 
 variable "project_id" {
-  description = "GCP project id where to deploy RAM for a given environment, like test or production"
+  description = "RAM GCP project id for a given environment, like dev or production"
 }
 
-variable "compliance_status_topic_name" {
-  description = "compliance status may be true for compliant or false for not compliant for a given asset version and configuration rule version"
-  default     = "ram-complianceStatus"
-}
-
-variable "violation_topic_name" {
-  description = "violations detail why an asset is not compliant to a configuration rule"
-  default     = "ram-violation"
-}
-
-variable "asset_rule_topic_name" {
-  description = "each message combines the data of one asset and the code of one complicance rule's"
-  default     = "assetRule"
+variable "cai_feed_topic_name" {
+  description = "google cloud asset inventory feed messages"
+  default     = "caiFeed"
 }
 
 variable "pubsub_allowed_regions" {

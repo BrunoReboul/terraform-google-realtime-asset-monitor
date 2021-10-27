@@ -22,5 +22,7 @@ To use theses terraform modules, you will need a GCP project with:
     - Project IAM Admin `roles/resourcemanager.projectIamAdmin`
     - Pub/sub Admin `roles/pubsub.admin`
     - Service Account Admin `roles/iam.serviceAccountAdmin`
+  - On the monitored assets parent orgs / folders /projects
+    - Cloud Asset Owner `roles/cloudasset.owner`
 
 - FireStore: [select native mode](https://cloud.google.com/datastore/docs/firestore-or-datastore)

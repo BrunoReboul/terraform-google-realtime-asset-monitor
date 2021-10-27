@@ -28,8 +28,21 @@ module "monitor" {
 }
 
 module "fetchrules" {
-  source                  = "./modules/fetchrules"
-  project_id              = var.project_id
-  asset_rule_topic_name   = var.asset_rule_topic_name
-  pubsub_allowed_regions  = var.pubsub_allowed_regions
+  source                 = "./modules/fetchrules"
+  project_id             = var.project_id
+  asset_rule_topic_name  = var.asset_rule_topic_name
+  pubsub_allowed_regions = var.pubsub_allowed_regions
+}
+
+module "setfeed" {
+  source                   = "./modules/setfeed"
+  project_id               = var.project_id
+  cai_feed_topic_name      = var.cai_feed_topic_name
+  pubsub_allowed_regions   = var.pubsub_allowed_regions
+  feed_iam_policy_folders  = var.feed_iam_policy_folders
+  feed_iam_policy_orgs     = var.feed_iam_policy_orgs
+  feed_iam_policy_projects = var.feed_iam_policy_projects
+  feed_resource_folders    = var.feed_resource_folders
+  feed_resource_orgs       = var.feed_resource_orgs
+  feed_resource_projects   = var.feed_resource_projects
 }
