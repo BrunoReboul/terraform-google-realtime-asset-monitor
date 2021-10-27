@@ -46,7 +46,7 @@ output "asset_rule_topic_id" {
 
 output "cai_feed_topic_id" {
   description = "cai feed topic id"
-  value       = module.setfeed.cai_feed.id
+  value       = module.setfeed.cai_feed_topic_id
 }
 
 output "feed_iam_policy_org" {
