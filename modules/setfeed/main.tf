@@ -71,7 +71,7 @@ resource "google_cloud_asset_organization_feed" "feed_resource_org" {
 }
 
 resource "google_cloud_asset_folder_feed" "feed_iam_policy_folder" {
-  for_each        = var.feed_iam_policy_orgs
+  for_each        = var.feed_iam_policy_folders
   billing_project = var.project_id
   folder          = each.key
   feed_id         = "ram-iam-policy"
@@ -89,7 +89,7 @@ resource "google_cloud_asset_folder_feed" "feed_iam_policy_folder" {
 }
 
 resource "google_cloud_asset_folder_feed" "feed_resource_folder" {
-  for_each        = var.feed_resource_orgs
+  for_each        = var.feed_resource_folders
   billing_project = var.project_id
   folder          = each.key
   feed_id         = "ram-resource"
@@ -107,7 +107,7 @@ resource "google_cloud_asset_folder_feed" "feed_resource_folder" {
 }
 
 resource "google_cloud_asset_project_feed" "feed_iam_policy_project" {
-  for_each     = var.feed_iam_policy_orgs
+  for_each     = var.feed_iam_policy_projects
   project      = each.key
   feed_id      = "ram-iam-policy"
   content_type = "IAM_POLICY"
@@ -124,7 +124,7 @@ resource "google_cloud_asset_project_feed" "feed_iam_policy_project" {
 }
 
 resource "google_cloud_asset_project_feed" "feed_resource_project" {
-  for_each     = var.feed_resource_orgs
+  for_each     = var.feed_resource_projects
   project      = each.key
   feed_id      = "ram-resource"
   content_type = "RESOURCE"
