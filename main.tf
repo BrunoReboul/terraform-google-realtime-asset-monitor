@@ -26,3 +26,10 @@ module "monitor" {
   violation_topic_name         = var.violation_topic_name
   pubsub_allowed_regions       = var.pubsub_allowed_regions
 }
+
+module "fetchrules" {
+  source                  = "./modules/fetchrules"
+  project_id              = var.project_id
+  asset_rule_topic_name   = var.asset_rule_topic_name
+  pubsub_allowed_regions  = var.pubsub_allowed_regions
+}

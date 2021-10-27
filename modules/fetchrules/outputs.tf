@@ -19,27 +19,12 @@ output "project_id" {
   description = "Project id"
 }
 
-output "deploy_service_account_email" {
-  description = "Service account email used to deploy RAM"
-  value       = module.deploy.service_account_email
-}
-
-output "monitor_service_account_email" {
+output "service_account_email" {
   description = "Service account email used to run this microservice"
-  value       = module.monitor.service_account_email
-}
-
-output "compliance_status_topic_id" {
-  description = "compliance status topic id"
-  value       = module.monitor.compliance_status_topic_id
-}
-
-output "violation_topic_id" {
-  description = "violation topic id"
-  value       = module.monitor.violation_topic_id
+  value       = google_service_account.microservice_sa.email
 }
 
 output "asset_rule_topic_id" {
   description = "asset rule topic id"
-  value       = module.fetchrules.asset_rule_topic_id
+  value       = google_pubsub_topic.asset_rule.id
 }
