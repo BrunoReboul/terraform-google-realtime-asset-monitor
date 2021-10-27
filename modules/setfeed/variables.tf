@@ -62,4 +62,3 @@ variable "feed_resource_projects" {
   description = "For feed type RESOURCE, the map of monitored projects and the targeted list assets for each. Can be empty"
   type        = map(list(string))
 }
-
