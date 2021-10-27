@@ -33,6 +33,11 @@ variable "asset_rule_topic_name" {
   default     = "assetRule"
 }
 
+variable "cai_feed_topic_name" {
+  description = "google cloud asset inventory feed messages"
+  default     = "caiFeed"
+}
+
 variable "pubsub_allowed_regions" {
   type    = list(string)
   default = ["europe-west1", "europe-west3", "europe-west4", "europe-north1", "europe-central2"]
