@@ -48,7 +48,7 @@ resource "google_cloud_asset_organization_feed" "feed_iam_policy_org" {
   }
   # Wait for the permission to be ready on the destination topic.
   depends_on = [
-    google_pubsub_topic_iam_member.cloud_asset_writer,
+    google_pubsub_topic_iam_member.cai_feed_publisher,
   ]
 }
 
@@ -66,7 +66,7 @@ resource "google_cloud_asset_organization_feed" "feed_resource_org" {
   }
   # Wait for the permission to be ready on the destination topic.
   depends_on = [
-    google_pubsub_topic_iam_member.cloud_asset_writer,
+    google_pubsub_topic_iam_member.cai_feed_publisher,
   ]
 }
 
@@ -84,7 +84,7 @@ resource "google_cloud_asset_folder_feed" "feed_iam_policy_folder" {
   }
   # Wait for the permission to be ready on the destination topic.
   depends_on = [
-    google_pubsub_topic_iam_member.cloud_asset_writer,
+    google_pubsub_topic_iam_member.cai_feed_publisher,
   ]
 }
 
@@ -102,7 +102,7 @@ resource "google_cloud_asset_folder_feed" "feed_resource_folder" {
   }
   # Wait for the permission to be ready on the destination topic.
   depends_on = [
-    google_pubsub_topic_iam_member.cloud_asset_writer,
+    google_pubsub_topic_iam_member.cai_feed_publisher,
   ]
 }
 
@@ -119,7 +119,7 @@ resource "google_cloud_asset_project_feed" "feed_iam_policy_project" {
   }
   # Wait for the permission to be ready on the destination topic.
   depends_on = [
-    google_pubsub_topic_iam_member.cloud_asset_writer,
+    google_pubsub_topic_iam_member.cai_feed_publisher,
   ]
 }
 
@@ -136,6 +136,6 @@ resource "google_cloud_asset_project_feed" "feed_resource_project" {
   }
   # Wait for the permission to be ready on the destination topic.
   depends_on = [
-    google_pubsub_topic_iam_member.cloud_asset_writer,
+    google_pubsub_topic_iam_member.cai_feed_publisher,
   ]
 }
