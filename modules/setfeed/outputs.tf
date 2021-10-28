@@ -44,8 +44,4 @@ output "feed_resource_folder" {
   value       = google_cloud_asset_folder_feed.feed_resource_folder
 }
 
-output "feed_iam_policy_project" {
-  description = "cai feed for iam policies at projects level"
-  value       = google_cloud_asset_project_feed.feed_iam_policy_project
-}
 

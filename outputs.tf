@@ -68,13 +68,3 @@ output "feed_resource_folder" {
   description = "cai feed for resource at folders level"
   value       = module.setfeed.feed_resource_folder
 }
-
-output "feed_iam_policy_project" {
-  description = "cai feed for iam policies at projects level"
-  value       = module.setfeed.feed_iam_policy_project
-}
-
-output "feed_resource_project" {
-  description = "cai feed for resource at projects level"
-  value       = module.setfeed.feed_resource_project
-}
