@@ -1,5 +1,7 @@
 # terraform-google-realtime-asset-monitor
 
+## Prerequisites
+
 To use theses terraform modules, you will need a GCP project with:  
 
 - APIs enabled
@@ -29,3 +31,7 @@ To use theses terraform modules, you will need a GCP project with:
     - Service Usage Consumer `roles/serviceusage.serviceUsageConsumer`
 
 - FireStore: [select native mode](https://cloud.google.com/datastore/docs/firestore-or-datastore)
+
+## Example
+
+See the [examples folder](./examples/README.md)
