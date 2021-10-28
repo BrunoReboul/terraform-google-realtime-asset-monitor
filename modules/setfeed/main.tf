@@ -15,9 +15,9 @@
  */
 
 # # Retreive project setting form the projectId to get the project number
-# data "google_project" "project" {
-#   project_id = var.project_id
-# }
+data "google_project" "project" {
+  project_id = var.project_id
+}
 
 resource "google_pubsub_topic" "cai_feed" {
   project = var.project_id
@@ -28,7 +28,6 @@ resource "google_pubsub_topic" "cai_feed" {
 }
 
 # https://cloud.google.com/asset-inventory/docs/monitoring-asset-changes#before_you_begin
-
 resource "google_pubsub_topic_iam_member" "cai_feed_publisher" {
   project = google_pubsub_topic.cai_feed.project
   topic   = google_pubsub_topic.cai_feed.name
