@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-# # Retreive project setting form the projectId to get the project number
-data "google_project" "project" {
-  project_id = var.project_id
-}
 
 resource "google_pubsub_topic" "cai_feed" {
   project = var.project_id
@@ -25,18 +21,6 @@ resource "google_pubsub_topic" "cai_feed" {
   message_storage_policy {
     allowed_persistence_regions = var.pubsub_allowed_regions
   }
-}
-
-# https://cloud.google.com/asset-inventory/docs/monitoring-asset-changes#before_you_begin
-resource "google_pubsub_topic_iam_member" "cai_feed_publisher" {
-  project = google_pubsub_topic.cai_feed.project
-  topic   = google_pubsub_topic.cai_feed.name
-  role    = "roles/pubsub.publisher"
-  member  = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudasset.iam.gserviceaccount.com"
-  # Wait for the fist org or folder feed to be created so the targeted Google service account is created
-  depends_on = [
-    google_cloud_asset_organization_feed.feed_iam_policy_org,
-  ]
 }
 
 resource "google_cloud_asset_organization_feed" "feed_iam_policy_org" {
@@ -93,36 +77,4 @@ resource "google_cloud_asset_folder_feed" "feed_resource_folder" {
       topic = google_pubsub_topic.cai_feed.id
     }
   }
-}
-
-resource "google_cloud_asset_project_feed" "feed_iam_policy_project" {
-  for_each     = var.feed_iam_policy_projects
-  project      = each.key
-  feed_id      = "ram-iam-policy"
-  content_type = "IAM_POLICY"
-  asset_types  = each.value
-  feed_output_config {
-    pubsub_destination {
-      topic = google_pubsub_topic.cai_feed.id
-    }
-  }
-  depends_on = [
-    google_pubsub_topic_iam_member.cai_feed_publisher,
-  ]
-}
-
-resource "google_cloud_asset_project_feed" "feed_resource_project" {
-  for_each     = var.feed_resource_projects
-  project      = each.key
-  feed_id      = "ram-resource"
-  content_type = "RESOURCE"
-  asset_types  = each.value
-  feed_output_config {
-    pubsub_destination {
-      topic = google_pubsub_topic.cai_feed.id
-    }
-  }
-  depends_on = [
-    google_pubsub_topic_iam_member.cai_feed_publisher,
-  ]
 }

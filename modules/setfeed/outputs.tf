@@ -49,7 +49,3 @@ output "feed_iam_policy_project" {
   value       = google_cloud_asset_project_feed.feed_iam_policy_project
 }
 
-output "feed_resource_project" {
-  description = "cai feed for resource at projects level"
-  value       = google_cloud_asset_project_feed.feed_resource_project
-}
