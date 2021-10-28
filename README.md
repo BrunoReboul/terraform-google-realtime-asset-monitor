@@ -22,8 +22,10 @@ To use theses terraform modules, you will need a GCP project with:
     - Project IAM Admin `roles/resourcemanager.projectIamAdmin`
     - Pub/sub Admin `roles/pubsub.admin`
     - Service Account Admin `roles/iam.serviceAccountAdmin`
-    - Service Usage Consumer `roles/serviceusage.serviceUsageConsumer`
+    - Service Usage Consumer `roles/serviceusage.serviceUsageConsumer` when creating CAI feeds on org or folder level attached to the RAM project
   - On the monitored assets parent orgs / folders /projects
     - Cloud Asset Owner `roles/cloudasset.owner`
+  - On the monitored assets projects (aka when creating CAI feeds at project level)
+    - Service Usage Consumer `roles/serviceusage.serviceUsageConsumer`
 
 - FireStore: [select native mode](https://cloud.google.com/datastore/docs/firestore-or-datastore)

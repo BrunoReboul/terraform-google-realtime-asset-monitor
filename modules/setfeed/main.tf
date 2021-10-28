@@ -27,16 +27,18 @@ resource "google_pubsub_topic" "cai_feed" {
   }
 }
 
-# This is not needed as the topic is in the project from where the feeds are created
 # https://cloud.google.com/asset-inventory/docs/monitoring-asset-changes#before_you_begin
-# this may lead to errors are the targeted Google service account "will be created by calling the API once"
 
-# resource "google_pubsub_topic_iam_member" "cai_feed_publisher" {
-#   project = google_pubsub_topic.cai_feed.project
-#   topic   = google_pubsub_topic.cai_feed.name
-#   role    = "roles/pubsub.publisher"
-#   member  = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudasset.iam.gserviceaccount.com"
-# }
+resource "google_pubsub_topic_iam_member" "cai_feed_publisher" {
+  project = google_pubsub_topic.cai_feed.project
+  topic   = google_pubsub_topic.cai_feed.name
+  role    = "roles/pubsub.publisher"
+  member  = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudasset.iam.gserviceaccount.com"
+  # Wait for the fist org or folder feed to be created so the targeted Google service account is created
+  depends_on = [
+    google_cloud_asset_organization_feed.feed_iam_policy_org,
+  ]
+}
 
 resource "google_cloud_asset_organization_feed" "feed_iam_policy_org" {
   for_each        = var.feed_iam_policy_orgs
@@ -50,9 +52,6 @@ resource "google_cloud_asset_organization_feed" "feed_iam_policy_org" {
       topic = google_pubsub_topic.cai_feed.id
     }
   }
-  # depends_on = [
-  #   google_pubsub_topic_iam_member.cai_feed_publisher,
-  # ]
 }
 
 resource "google_cloud_asset_organization_feed" "feed_resource_org" {
@@ -67,9 +66,6 @@ resource "google_cloud_asset_organization_feed" "feed_resource_org" {
       topic = google_pubsub_topic.cai_feed.id
     }
   }
-  # depends_on = [
-  #   google_pubsub_topic_iam_member.cai_feed_publisher,
-  # ]
 }
 
 resource "google_cloud_asset_folder_feed" "feed_iam_policy_folder" {
@@ -84,9 +80,6 @@ resource "google_cloud_asset_folder_feed" "feed_iam_policy_folder" {
       topic = google_pubsub_topic.cai_feed.id
     }
   }
-  # depends_on = [
-  #   google_pubsub_topic_iam_member.cai_feed_publisher,
-  # ]
 }
 
 resource "google_cloud_asset_folder_feed" "feed_resource_folder" {
@@ -101,9 +94,6 @@ resource "google_cloud_asset_folder_feed" "feed_resource_folder" {
       topic = google_pubsub_topic.cai_feed.id
     }
   }
-  # depends_on = [
-  #   google_pubsub_topic_iam_member.cai_feed_publisher,
-  # ]
 }
 
 resource "google_cloud_asset_project_feed" "feed_iam_policy_project" {
@@ -117,9 +107,9 @@ resource "google_cloud_asset_project_feed" "feed_iam_policy_project" {
       topic = google_pubsub_topic.cai_feed.id
     }
   }
-  # depends_on = [
-  #   google_pubsub_topic_iam_member.cai_feed_publisher,
-  # ]
+  depends_on = [
+    google_pubsub_topic_iam_member.cai_feed_publisher,
+  ]
 }
 
 resource "google_cloud_asset_project_feed" "feed_resource_project" {
@@ -133,7 +123,7 @@ resource "google_cloud_asset_project_feed" "feed_resource_project" {
       topic = google_pubsub_topic.cai_feed.id
     }
   }
-  # depends_on = [
-  #   google_pubsub_topic_iam_member.cai_feed_publisher,
-  # ]
+  depends_on = [
+    google_pubsub_topic_iam_member.cai_feed_publisher,
+  ]
 }
