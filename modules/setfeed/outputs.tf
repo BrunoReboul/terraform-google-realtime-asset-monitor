@@ -19,52 +19,29 @@ output "project_id" {
   description = "Project id"
 }
 
-output "deploy_service_account_email" {
-  description = "Service account email used to deploy RAM"
-  value       = module.deploy.service_account_email
-}
-
-output "monitor_service_account_email" {
-  description = "Service account email used to run this microservice"
-  value       = module.monitor.service_account_email
-}
-
-output "compliance_status_topic_id" {
-  description = "compliance status topic id"
-  value       = module.monitor.compliance_status_topic_id
-}
-
-output "violation_topic_id" {
-  description = "violation topic id"
-  value       = module.monitor.violation_topic_id
-}
-
-output "asset_rule_topic_id" {
-  description = "asset rule topic id"
-  value       = module.fetchrules.asset_rule_topic_id
-}
-
 output "cai_feed_topic_id" {
   description = "cai feed topic id"
-  value       = module.setfeed.cai_feed_topic_id
+  value       = google_pubsub_topic.cai_feed.id
 }
 
 output "feed_iam_policy_org" {
   description = "cai feed for iam policies at organizations level"
-  value       = module.setfeed.feed_iam_policy_org
+  value       = google_cloud_asset_organization_feed.feed_iam_policy_org
 }
 
 output "feed_resource_org" {
   description = "cai feed for resource at organizations level"
-  value       = module.setfeed.feed_resource_org
+  value       = google_cloud_asset_organization_feed.feed_resource_org
 }
 
 output "feed_iam_policy_folder" {
   description = "cai feed for iam policies at folders level"
-  value       = module.setfeed.feed_iam_policy_folder
+  value       = google_cloud_asset_folder_feed.feed_iam_policy_folder
 }
 
 output "feed_resource_folder" {
   description = "cai feed for resource at folders level"
-  value       = module.setfeed.feed_resource_folder
+  value       = google_cloud_asset_folder_feed.feed_resource_folder
 }
+
+
