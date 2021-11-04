@@ -24,26 +24,6 @@ output "deploy_service_account_email" {
   value       = module.deploy.service_account_email
 }
 
-output "monitor_service_account_email" {
-  description = "Service account email used to run this microservice"
-  value       = module.monitor.service_account_email
-}
-
-output "compliance_status_topic_id" {
-  description = "compliance status topic id"
-  value       = module.monitor.compliance_status_topic_id
-}
-
-output "violation_topic_id" {
-  description = "violation topic id"
-  value       = module.monitor.violation_topic_id
-}
-
-output "asset_rule_topic_id" {
-  description = "asset rule topic id"
-  value       = module.fetchrules.asset_rule_topic_id
-}
-
 output "cai_feed_topic_id" {
   description = "cai feed topic id"
   value       = module.setfeed.cai_feed_topic_id
@@ -67,4 +47,39 @@ output "feed_iam_policy_folder" {
 output "feed_resource_folder" {
   description = "cai feed for resource at folders level"
   value       = module.setfeed.feed_resource_folder
+}
+
+
+output "convertfeed_service_account_email" {
+  description = "Service account email used to run this microservice"
+  value       = module.convertfeed.service_account_email
+}
+
+output "asset_feed_topic_id" {
+  description = "asset rule topic id"
+  value       = module.convertfeed.asset_feed_topic_id
+}
+
+output "fetchrules_service_account_email" {
+  description = "Service account email used to run this microservice"
+  value       = module.fetchrules.service_account_email
+}
+
+output "asset_rule_topic_id" {
+  description = "asset rule topic id"
+  value       = module.fetchrules.asset_rule_topic_id
+}
+output "monitor_service_account_email" {
+  description = "Service account email used to run this microservice"
+  value       = module.monitor.service_account_email
+}
+
+output "compliance_status_topic_id" {
+  description = "compliance status topic id"
+  value       = module.monitor.compliance_status_topic_id
+}
+
+output "violation_topic_id" {
+  description = "violation topic id"
+  value       = module.monitor.violation_topic_id
 }
