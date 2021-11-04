@@ -17,7 +17,7 @@
 resource "google_service_account" "microservice_sa" {
   project      = var.project_id
   account_id   = "convertfeed"
-  display_name = "RAM monitor"
+  display_name = "RAM convertfeed"
   description  = "Solution: Real-time Asset Monitor, microservice: convertfeed"
 }
 
