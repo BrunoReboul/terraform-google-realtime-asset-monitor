@@ -19,21 +19,6 @@ module "deploy" {
   project_id = var.project_id
 }
 
-module "monitor" {
-  source                       = "./modules/monitor"
-  project_id                   = var.project_id
-  compliance_status_topic_name = var.compliance_status_topic_name
-  violation_topic_name         = var.violation_topic_name
-  pubsub_allowed_regions       = var.pubsub_allowed_regions
-}
-
-module "fetchrules" {
-  source                 = "./modules/fetchrules"
-  project_id             = var.project_id
-  asset_rule_topic_name  = var.asset_rule_topic_name
-  pubsub_allowed_regions = var.pubsub_allowed_regions
-}
-
 module "setfeed" {
   source                  = "./modules/setfeed"
   project_id              = var.project_id
@@ -43,4 +28,26 @@ module "setfeed" {
   feed_iam_policy_orgs    = var.feed_iam_policy_orgs
   feed_resource_folders   = var.feed_resource_folders
   feed_resource_orgs      = var.feed_resource_orgs
+}
+
+module "convertfeed" {
+  source                 = "./modules/convertfeed"
+  project_id             = var.project_id
+  asset_rule_topic_name  = var.asset_feed_topic_name
+  pubsub_allowed_regions = var.pubsub_allowed_regions
+}
+
+module "fetchrules" {
+  source                 = "./modules/fetchrules"
+  project_id             = var.project_id
+  asset_rule_topic_name  = var.asset_rule_topic_name
+  pubsub_allowed_regions = var.pubsub_allowed_regions
+}
+
+module "monitor" {
+  source                       = "./modules/monitor"
+  project_id                   = var.project_id
+  compliance_status_topic_name = var.compliance_status_topic_name
+  violation_topic_name         = var.violation_topic_name
+  pubsub_allowed_regions       = var.pubsub_allowed_regions
 }
