@@ -55,6 +55,28 @@ output "convertfeed_service_account_email" {
   value       = module.convertfeed.service_account_email
 }
 
+output "convertfeed_crun_service_id" {
+  description = "cloud run service id"
+  value       = module.convertfeed.crun_service_id
+}
+output "convertfeed_crun_service_url" {
+  description = "cloud run service url"
+  value       = module.convertfeed.crun_service_url
+}
+
+output "convertfeed_trigger_service_account_email" {
+  description = "Service account email used to trigger this microservice"
+  value       = module.convertfeed.trigger_service_account_email
+}
+output "convertfeed_trigger_id" {
+  description = "Evenarc trigger id"
+  value       = module.convertfeed.trigger_id
+}
+
+output "convertfeed_trigger_subscription_name" {
+  description = "Evenarc trigger id"
+  value       = module.convertfeed.trigger_subscription_name
+}
 output "asset_feed_topic_id" {
   description = "asset rule topic id"
   value       = module.convertfeed.asset_feed_topic_id
