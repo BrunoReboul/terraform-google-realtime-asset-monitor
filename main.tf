@@ -35,6 +35,7 @@ module "convertfeed" {
   project_id             = var.project_id
   asset_feed_topic_name  = var.asset_feed_topic_name
   pubsub_allowed_regions = var.pubsub_allowed_regions
+  eva_transport_topic_id = module.setfeed.cai_feed_topic_id
 }
 
 module "fetchrules" {
