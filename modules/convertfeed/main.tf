@@ -117,13 +117,14 @@ resource "google_cloud_run_service" "crun_svc" {
     }
     metadata {
       annotations = {
-      "run.googleapis.com/client-name"   = "terraform"
-      "autoscaling.knative.dev/maxScale" = "${var.crun_max_instances}"
+        "run.googleapis.com/client-name"   = "terraform"
+        "autoscaling.knative.dev/maxScale" = "${var.crun_max_instances}"
       }
+    }
   }
   metadata {
     annotations = {
-      "run.googleapis.com/ingress"       = "internal"
+      "run.googleapis.com/ingress" = "internal"
     }
   }
   autogenerate_revision_name = true
