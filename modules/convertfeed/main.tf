@@ -115,12 +115,15 @@ resource "google_cloud_run_service" "crun_svc" {
       timeout_seconds       = var.crun_timeout_seconds
       service_account_name  = google_service_account.microservice_sa.email
     }
+    metadata {
+      annotations = {
+      "run.googleapis.com/client-name"   = "terraform"
+      "autoscaling.knative.dev/maxScale" = "${var.crun_max_instances}"
+      }
   }
   metadata {
     annotations = {
-      "run.googleapis.com/client-name"   = "terraform"
       "run.googleapis.com/ingress"       = "internal"
-      "autoscaling.knative.dev/maxScale" = "${var.crun_max_instances}"
     }
   }
   autogenerate_revision_name = true
@@ -176,4 +179,3 @@ resource "google_eventarc_trigger" "eva_trigger" {
     }
   }
 }
-

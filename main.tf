@@ -43,6 +43,7 @@ module "fetchrules" {
   project_id             = var.project_id
   asset_rule_topic_name  = var.asset_rule_topic_name
   pubsub_allowed_regions = var.pubsub_allowed_regions
+  eva_transport_topic_id = module.convertfeed.asset_feed_topic_id
 }
 
 module "monitor" {

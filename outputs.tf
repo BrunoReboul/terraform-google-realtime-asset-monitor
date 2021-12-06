@@ -24,6 +24,7 @@ output "deploy_service_account_email" {
   value       = module.deploy.service_account_email
 }
 
+# feed
 output "cai_feed_topic_id" {
   description = "cai feed topic id"
   value       = module.setfeed.cai_feed_topic_id
@@ -49,7 +50,7 @@ output "feed_resource_folder" {
   value       = module.setfeed.feed_resource_folder
 }
 
-
+# convertfeed
 output "convertfeed_service_account_email" {
   description = "Service account email used to run this microservice"
   value       = module.convertfeed.service_account_email
@@ -77,20 +78,47 @@ output "convertfeed_trigger_subscription_name" {
   description = "Evenarc trigger id"
   value       = module.convertfeed.trigger_subscription_name
 }
+
 output "asset_feed_topic_id" {
   description = "asset rule topic id"
   value       = module.convertfeed.asset_feed_topic_id
 }
 
+# fetchrules
 output "fetchrules_service_account_email" {
   description = "Service account email used to run this microservice"
   value       = module.fetchrules.service_account_email
+}
+
+output "fetchrules_crun_service_id" {
+  description = "cloud run service id"
+  value       = module.fetchrules.crun_service_id
+}
+output "fetchrules_crun_service_url" {
+  description = "cloud run service url"
+  value       = module.fetchrules.crun_service_url
+}
+
+output "fetchrules_trigger_service_account_email" {
+  description = "Service account email used to trigger this microservice"
+  value       = module.fetchrules.trigger_service_account_email
+}
+output "fetchrules_trigger_id" {
+  description = "Evenarc trigger id"
+  value       = module.fetchrules.trigger_id
+}
+
+output "fetchrules_trigger_subscription_name" {
+  description = "Evenarc trigger id"
+  value       = module.fetchrules.trigger_subscription_name
 }
 
 output "asset_rule_topic_id" {
   description = "asset rule topic id"
   value       = module.fetchrules.asset_rule_topic_id
 }
+
+# monitor
 output "monitor_service_account_email" {
   description = "Service account email used to run this microservice"
   value       = module.monitor.service_account_email
