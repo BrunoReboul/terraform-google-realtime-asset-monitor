@@ -28,6 +28,11 @@ variable "pubsub_allowed_regions" {
   default = ["europe-west1", "europe-west3", "europe-west4", "europe-north1", "europe-central2"]
 }
 
+variable "gcs_location" {
+  description = "Cloud Storage location"
+  default     = "europe-west1"
+}
+
 variable "crun_region" {
   description = "cloud run region"
   default     = "europe-west1"

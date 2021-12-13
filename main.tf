@@ -22,7 +22,6 @@ module "deploy" {
 module "setfeed" {
   source                  = "./modules/setfeed"
   project_id              = var.project_id
-  cai_feed_topic_name     = var.cai_feed_topic_name
   pubsub_allowed_regions  = var.pubsub_allowed_regions
   feed_iam_policy_folders = var.feed_iam_policy_folders
   feed_iam_policy_orgs    = var.feed_iam_policy_orgs
@@ -33,23 +32,22 @@ module "setfeed" {
 module "convertfeed" {
   source                 = "./modules/convertfeed"
   project_id             = var.project_id
-  asset_feed_topic_name  = var.asset_feed_topic_name
   pubsub_allowed_regions = var.pubsub_allowed_regions
+  crun_region            = var.crun_region
   eva_transport_topic_id = module.setfeed.cai_feed_topic_id
 }
 
 module "fetchrules" {
   source                 = "./modules/fetchrules"
   project_id             = var.project_id
-  asset_rule_topic_name  = var.asset_rule_topic_name
   pubsub_allowed_regions = var.pubsub_allowed_regions
+  gcs_location           = var.gcs_location
+  crun_region            = var.crun_region
   eva_transport_topic_id = module.convertfeed.asset_feed_topic_id
 }
 
 module "monitor" {
-  source                       = "./modules/monitor"
-  project_id                   = var.project_id
-  compliance_status_topic_name = var.compliance_status_topic_name
-  violation_topic_name         = var.violation_topic_name
-  pubsub_allowed_regions       = var.pubsub_allowed_regions
+  source                 = "./modules/monitor"
+  project_id             = var.project_id
+  pubsub_allowed_regions = var.pubsub_allowed_regions
 }
