@@ -90,6 +90,11 @@ output "fetchrules_service_account_email" {
   value       = module.fetchrules.service_account_email
 }
 
+output "fetchrules_rules_repo_bucket_name" {
+  description = "GCS bucket containing the compliance rules"
+  value       = module.fetchrules.rules_repo_bucket_name
+}
+
 output "fetchrules_crun_service_id" {
   description = "cloud run service id"
   value       = module.fetchrules.crun_service_id

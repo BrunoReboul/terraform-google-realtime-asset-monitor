@@ -29,6 +29,11 @@ output "asset_rule_topic_id" {
   value       = google_pubsub_topic.asset_rule.id
 }
 
+output "rules_repo_bucket_name" {
+  description = "GCS bucket containing the compliance rules"
+  value       = google_storage_bucket.rules_repo.name
+}
+
 output "crun_service_id" {
   description = "cloud run service id"
   value       = google_cloud_run_service.crun_svc.id

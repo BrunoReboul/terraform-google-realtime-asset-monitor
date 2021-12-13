@@ -54,10 +54,18 @@ resource "google_pubsub_topic_iam_member" "asset_rule_viewer" {
   member  = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
 
-resource "google_project_iam_member" "cloud_datastore_viewer" {
-  project = var.project_id
-  role    = "roles/datastore.viewer"
-  member  = "serviceAccount:${google_service_account.microservice_sa.email}"
+resource "google_storage_bucket" "rules_repo" {
+  project                     = var.project_id
+  name                        = "${var.project_id}-rulesrepo"
+  location                    = var.gcs_location
+  force_destroy               = true
+  uniform_bucket_level_access = true
+}
+
+resource "google_storage_bucket_iam_member" "rule_repo_writer" {
+  bucket = google_storage_bucket.rules_repo.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
 
 resource "google_cloud_run_service" "crun_svc" {
@@ -110,14 +118,14 @@ resource "google_cloud_run_service" "crun_svc" {
     }
     metadata {
       annotations = {
-      "run.googleapis.com/client-name"   = "terraform"
-      "autoscaling.knative.dev/maxScale" = "${var.crun_max_instances}"
+        "run.googleapis.com/client-name"   = "terraform"
+        "autoscaling.knative.dev/maxScale" = "${var.crun_max_instances}"
       }
     }
   }
   metadata {
     annotations = {
-      "run.googleapis.com/ingress"       = "internal"
+      "run.googleapis.com/ingress" = "internal"
     }
   }
   autogenerate_revision_name = true

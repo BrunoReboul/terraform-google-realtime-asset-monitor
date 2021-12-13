@@ -28,6 +28,7 @@ To use theses terraform modules, you will need a GCP project with:
     - Cloud Run Admin `roles/run.admin`
     - Service Account User `roles/iam.serviceAccountUser`
     - Eventarc Admin `roles/eventarc.admin`
+    - Storage Admin `roles/storage.admin`
   - On the monitored assets parent orgs / folders /projects
     - Cloud Asset Owner `roles/cloudasset.owner`
   - On the monitored assets projects (aka when creating CAI feeds at project level)
