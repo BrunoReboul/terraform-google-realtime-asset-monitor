@@ -67,7 +67,7 @@ resource "google_cloud_run_service" "crun_svc" {
   template {
     spec {
       containers {
-        image = "${var.ram_container_images_registry}/${google_service_account.microservice_sa.account_id}:${var.ram_microservice_image_tag}"
+        image = "${var.ram_container_images_registry}/${local.service_name}:${var.ram_microservice_image_tag}"
         resources {
           limits = {
             cpu    = "${var.crun_cpu}"
@@ -80,7 +80,7 @@ resource "google_cloud_run_service" "crun_svc" {
         }
         env {
           name  = "CONVERTFEED_ASSET_FEED_TOPIC_ID"
-          value = var.asset_feed_topic_name
+          value = google_pubsub_topic.asset_feed.name
         }
         env {
           name  = "CONVERTFEED_CACHE_MAX_AGE_MINUTES"
@@ -137,6 +137,14 @@ resource "google_cloud_run_service" "crun_svc" {
   }
 }
 
+resource "google_pubsub_topic" "cai_feed" {
+  project = var.project_id
+  name    = var.cai_feed_topic_name
+  message_storage_policy {
+    allowed_persistence_regions = var.pubsub_allowed_regions
+  }
+}
+
 resource "google_service_account" "eva_trigger_sa" {
   project      = var.project_id
   account_id   = "${local.service_name}-trigger"
@@ -166,7 +174,7 @@ resource "google_eventarc_trigger" "eva_trigger" {
   service_account = google_service_account.eva_trigger_sa.email
   transport {
     pubsub {
-      topic = var.eva_transport_topic_id
+      topic = google_pubsub_topic.cai_feed.id
     }
   }
   matching_criteria {

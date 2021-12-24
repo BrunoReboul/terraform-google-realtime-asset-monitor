@@ -19,11 +19,6 @@ output "project_id" {
   description = "Project id"
 }
 
-output "cai_feed_topic_id" {
-  description = "cai feed topic id"
-  value       = google_pubsub_topic.cai_feed.id
-}
-
 output "feed_iam_policy_org" {
   description = "cai feed for iam policies at organizations level"
   value       = google_cloud_asset_organization_feed.feed_iam_policy_org
