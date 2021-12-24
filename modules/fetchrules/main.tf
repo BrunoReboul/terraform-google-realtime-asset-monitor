@@ -76,7 +76,7 @@ resource "google_cloud_run_service" "crun_svc" {
   template {
     spec {
       containers {
-        image = "${var.ram_container_images_registry}/${google_service_account.microservice_sa.account_id}:${var.ram_microservice_image_tag}"
+        image = "${var.ram_container_images_registry}/${local.service_name}:${var.ram_microservice_image_tag}"
         resources {
           limits = {
             cpu    = "${var.crun_cpu}"
@@ -85,7 +85,7 @@ resource "google_cloud_run_service" "crun_svc" {
         }
         env {
           name  = "FETCHRULES_ASSET_RULE_TOPIC_ID"
-          value = var.asset_rule_topic_name
+          value = google_pubsub_topic.asset_rule.name
         }
         env {
           name  = "FETCHRULES_CACHE_MAX_AGE_MINUTES"

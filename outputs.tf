@@ -25,11 +25,6 @@ output "deploy_service_account_email" {
 }
 
 # feed
-output "cai_feed_topic_id" {
-  description = "cai feed topic id"
-  value       = module.setfeed.cai_feed_topic_id
-}
-
 output "feed_iam_policy_org" {
   description = "cai feed for iam policies at organizations level"
   value       = module.setfeed.feed_iam_policy_org
@@ -77,6 +72,11 @@ output "convertfeed_trigger_id" {
 output "convertfeed_trigger_subscription_name" {
   description = "Evenarc trigger id"
   value       = module.convertfeed.trigger_subscription_name
+}
+
+output "convertfeed_cai_feed_topic_id" {
+  description = "cai feed topic id"
+  value       = module.convertfeed.cai_feed_topic_id
 }
 
 output "asset_feed_topic_id" {
@@ -127,6 +127,29 @@ output "asset_rule_topic_id" {
 output "monitor_service_account_email" {
   description = "Service account email used to run this microservice"
   value       = module.monitor.service_account_email
+}
+
+output "monitor_crun_service_id" {
+  description = "cloud run service id"
+  value       = module.monitor.crun_service_id
+}
+output "monitor_crun_service_url" {
+  description = "cloud run service url"
+  value       = module.monitor.crun_service_url
+}
+
+output "monitor_trigger_service_account_email" {
+  description = "Service account email used to trigger this microservice"
+  value       = module.monitor.trigger_service_account_email
+}
+output "monitor_trigger_id" {
+  description = "Evenarc trigger id"
+  value       = module.monitor.trigger_id
+}
+
+output "monitor_trigger_subscription_name" {
+  description = "Evenarc trigger id"
+  value       = module.monitor.trigger_subscription_name
 }
 
 output "compliance_status_topic_id" {

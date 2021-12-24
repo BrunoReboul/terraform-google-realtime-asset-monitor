@@ -19,22 +19,12 @@ module "deploy" {
   project_id = var.project_id
 }
 
-module "setfeed" {
-  source                  = "./modules/setfeed"
-  project_id              = var.project_id
-  pubsub_allowed_regions  = var.pubsub_allowed_regions
-  feed_iam_policy_folders = var.feed_iam_policy_folders
-  feed_iam_policy_orgs    = var.feed_iam_policy_orgs
-  feed_resource_folders   = var.feed_resource_folders
-  feed_resource_orgs      = var.feed_resource_orgs
-}
 
 module "convertfeed" {
   source                 = "./modules/convertfeed"
   project_id             = var.project_id
   pubsub_allowed_regions = var.pubsub_allowed_regions
   crun_region            = var.crun_region
-  eva_transport_topic_id = module.setfeed.cai_feed_topic_id
 }
 
 module "fetchrules" {
@@ -50,4 +40,21 @@ module "monitor" {
   source                 = "./modules/monitor"
   project_id             = var.project_id
   pubsub_allowed_regions = var.pubsub_allowed_regions
+  crun_region            = var.crun_region
+  eva_transport_topic_id = module.fetchrules.asset_rule_topic_id
+}
+
+
+module "setfeed" {
+  depends_on = [
+    module.monitor.trigger_id
+  ]
+  source                  = "./modules/setfeed"
+  project_id              = var.project_id
+  pubsub_allowed_regions  = var.pubsub_allowed_regions
+  cai_feed_topic_id       = module.convertfeed.cai_feed_topic_id
+  feed_iam_policy_folders = var.feed_iam_policy_folders
+  feed_iam_policy_orgs    = var.feed_iam_policy_orgs
+  feed_resource_folders   = var.feed_resource_folders
+  feed_resource_orgs      = var.feed_resource_orgs
 }

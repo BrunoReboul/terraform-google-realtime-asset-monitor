@@ -18,6 +18,11 @@ variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
 }
 
+variable "cai_feed_topic_name" {
+  description = "google cloud asset inventory feed messages"
+  default     = "caiFeed"
+}
+
 variable "asset_feed_topic_name" {
   description = "the data on which to assess compliance"
   default     = "assetFeed"
@@ -89,8 +94,4 @@ variable "start_profiler" {
 variable "violation_resolver_label_key_name" {
   description = "violation resolver label tag name"
   default     = "resolver"
-}
-
-variable "eva_transport_topic_id" {
-  description = "Eventarc transport topic e.g projects/PROJECT_ID/topics/TOPIC_NAME"
 }

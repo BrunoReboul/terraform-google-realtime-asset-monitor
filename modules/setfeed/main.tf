@@ -15,14 +15,6 @@
  */
 
 
-resource "google_pubsub_topic" "cai_feed" {
-  project = var.project_id
-  name    = var.cai_feed_topic_name
-  message_storage_policy {
-    allowed_persistence_regions = var.pubsub_allowed_regions
-  }
-}
-
 resource "google_cloud_asset_organization_feed" "feed_iam_policy_org" {
   for_each        = var.feed_iam_policy_orgs
   billing_project = var.project_id
@@ -32,7 +24,7 @@ resource "google_cloud_asset_organization_feed" "feed_iam_policy_org" {
   asset_types     = each.value
   feed_output_config {
     pubsub_destination {
-      topic = google_pubsub_topic.cai_feed.id
+      topic = var.cai_feed_topic_id
     }
   }
 }
@@ -46,7 +38,7 @@ resource "google_cloud_asset_organization_feed" "feed_resource_org" {
   asset_types     = each.value
   feed_output_config {
     pubsub_destination {
-      topic = google_pubsub_topic.cai_feed.id
+      topic = var.cai_feed_topic_id
     }
   }
 }
@@ -60,7 +52,7 @@ resource "google_cloud_asset_folder_feed" "feed_iam_policy_folder" {
   asset_types     = each.value
   feed_output_config {
     pubsub_destination {
-      topic = google_pubsub_topic.cai_feed.id
+      topic = var.cai_feed_topic_id
     }
   }
 }
@@ -74,7 +66,7 @@ resource "google_cloud_asset_folder_feed" "feed_resource_folder" {
   asset_types     = each.value
   feed_output_config {
     pubsub_destination {
-      topic = google_pubsub_topic.cai_feed.id
+      topic = var.cai_feed_topic_id
     }
   }
 }

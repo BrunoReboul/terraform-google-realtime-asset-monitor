@@ -18,9 +18,8 @@ variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
 }
 
-variable "cai_feed_topic_name" {
+variable "cai_feed_topic_id" {
   description = "google cloud asset inventory feed messages"
-  default     = "caiFeed"
 }
 
 variable "pubsub_allowed_regions" {

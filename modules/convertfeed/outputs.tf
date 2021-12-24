@@ -24,6 +24,11 @@ output "service_account_email" {
   value       = google_service_account.microservice_sa.email
 }
 
+output "cai_feed_topic_id" {
+  description = "cai feed topic id"
+  value       = google_pubsub_topic.cai_feed.id
+}
+
 output "asset_feed_topic_id" {
   description = "asset feed topic id"
   value       = google_pubsub_topic.asset_feed.id
