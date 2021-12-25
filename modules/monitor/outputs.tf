@@ -46,7 +46,7 @@ output "trigger_service_account_email" {
   value       = google_service_account.eva_trigger_sa.email
 }
 output "trigger_id" {
-  description = "Evenarc trigger id"
+  description = "Eventarc trigger id"
   value       = google_eventarc_trigger.eva_trigger.id
 }
 
