@@ -14,6 +14,24 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  description = "GCP project id where to deploy RAM for a given environment like test or production"
+output "project_id" {
+  value       = var.project_id
+  description = "Project id"
+}
+
+output "service_account_email" {
+  description = "Service account email used to run this microservice"
+  value       = google_service_account.microservice_sa.email
+}
+
+output "trigger_export_topic_id" {
+  description = "trigger export topic id"
+  value       = google_pubsub_topic.export_trigger.id
+}
+
+output "job_ids" {
+  description = "Cloud Scheduler job ids"
+  value = toset([
+    for job in google_cloud_scheduler_job.job : job.id
+  ])
 }

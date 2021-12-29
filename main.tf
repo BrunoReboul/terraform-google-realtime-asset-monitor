@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,16 @@ module "stream2bq" {
   asset_feed_topic_id        = module.convertfeed.asset_feed_topic_id
   compliance_status_topic_id = module.monitor.compliance_status_topic_id
   violation_topic_id         = module.monitor.violation_topic_id
+}
+
+module "fetchexports" {
+  source                 = "./modules/fetchexports"
+  project_id             = var.project_id
+  pubsub_allowed_regions = var.pubsub_allowed_regions
+  gcs_location           = var.gcs_location
+  scheduler_region       = var.scheduler_region
+  export_org_ids         = var.export_org_ids
+  export_folder_ids      = var.export_folder_ids
 }
 
 module "setfeed" {
