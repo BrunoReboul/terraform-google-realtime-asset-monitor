@@ -62,9 +62,9 @@ resource "google_storage_bucket" "rules_repo" {
   uniform_bucket_level_access = true
 }
 
-resource "google_storage_bucket_iam_member" "rule_repo_writer" {
+resource "google_storage_bucket_iam_member" "rule_repo_reader" {
   bucket = google_storage_bucket.rules_repo.name
-  role   = "roles/storage.objectAdmin"
+  role   = "roles/storage.objectViewer"
   member = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
 
