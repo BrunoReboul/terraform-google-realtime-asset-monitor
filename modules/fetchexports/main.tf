@@ -21,7 +21,7 @@ resource "google_service_account" "microservice_sa" {
   project      = var.project_id
   account_id   = local.service_name
   display_name = "RAM fetchrule"
-  description  = "Solution: Real-time Asset Monitor, microservice: fetchrules"
+  description  = "Solution: Real-time Asset Monitor, microservice: fetchexports"
 }
 
 resource "google_project_iam_member" "project_profiler_agent" {
@@ -85,4 +85,105 @@ resource "google_cloud_scheduler_job" "job" {
   }
 }
 
+resource "google_cloud_run_service" "crun_svc" {
+  project  = var.project_id
+  name     = local.service_name
+  location = var.crun_region
+
+  template {
+    spec {
+      containers {
+        image = "${var.ram_container_images_registry}/${local.service_name}:${var.ram_microservice_image_tag}"
+        resources {
+          limits = {
+            cpu    = "${var.crun_cpu}"
+            memory = "${var.crun_memory}"
+          }
+        }
+        env {
+          name  = "FETCHEXPORTS_ENVIRONMENT"
+          value = terraform.workspace
+        }
+        env {
+          name  = "FETCHEXPORTS_LOG_ONLY_SEVERITY_LEVELS"
+          value = var.log_only_severity_levels
+        }
+        env {
+          name  = "FETCHEXPORTS_PROJECT_ID"
+          value = var.project_id
+        }
+        env {
+          name  = "FETCHEXPORTS_START_PROFILER"
+          value = var.start_profiler
+        }
+      }
+      container_concurrency = var.crun_concurrency
+      timeout_seconds       = var.crun_timeout_seconds
+      service_account_name  = google_service_account.microservice_sa.email
+    }
+    metadata {
+      annotations = {
+        "run.googleapis.com/client-name"   = "terraform"
+        "autoscaling.knative.dev/maxScale" = "${var.crun_max_instances}"
+      }
+    }
+  }
+  metadata {
+    annotations = {
+      "run.googleapis.com/ingress" = "internal"
+    }
+  }
+  autogenerate_revision_name = true
+  traffic {
+    percent         = 100
+    latest_revision = true
+  }
+  lifecycle {
+    ignore_changes = all
+  }
+}
+
+resource "google_service_account" "eva_trigger_sa" {
+  project      = var.project_id
+  account_id   = "${local.service_name}-trigger"
+  display_name = "RAM fetchexports trigger"
+  description  = "Solution: Real-time Asset Monitor, microservice tigger: fetchexports"
+}
+data "google_iam_policy" "binding" {
+  binding {
+    role = "roles/run.invoker"
+    members = [
+      "serviceAccount:${google_service_account.eva_trigger_sa.email}",
+    ]
+  }
+}
+
+resource "google_cloud_run_service_iam_policy" "trigger_invoker" {
+  location = google_cloud_run_service.crun_svc.location
+  project  = google_cloud_run_service.crun_svc.project
+  service  = google_cloud_run_service.crun_svc.name
+
+  policy_data = data.google_iam_policy.binding.policy_data
+}
+resource "google_eventarc_trigger" "eva_trigger" {
+  name            = local.service_name
+  location        = google_cloud_run_service.crun_svc.location
+  project         = google_cloud_run_service.crun_svc.project
+  service_account = google_service_account.eva_trigger_sa.email
+  transport {
+    pubsub {
+      topic = google_pubsub_topic.export_trigger.id
+    }
+  }
+  matching_criteria {
+    attribute = "type"
+    value     = "google.cloud.pubsub.topic.v1.messagePublished"
+  }
+  destination {
+    cloud_run_service {
+      service = google_cloud_run_service.crun_svc.name
+      region  = google_cloud_run_service.crun_svc.location
+    }
+  }
+}
 

@@ -19,6 +19,16 @@ variable "project_id" {
   description = "GCP project id where to deploy RAM for a given environment, like test or production"
 }
 
+variable "ram_microservice_image_tag" {
+  description = "The container image tag for this microservice"
+  default     = "latest"
+}
+
+variable "log_only_severity_levels" {
+  description = "Which type of log entry should be logged"
+  default     = "INFO WARNING NOTICE CRITICAL"
+}
+
 variable "pubsub_allowed_regions" {
   type    = list(string)
   default = ["europe-west1", "europe-west3", "europe-west4", "europe-north1", "europe-central2"]

@@ -68,3 +68,53 @@ variable "export_folder_ids" {
   description = "list of folder id where to grant Cloud Asset Inventory roles to allow export feature"
   type        = list(string)
 }
+
+variable "crun_region" {
+  description = "cloud run region"
+  default     = "europe-west1"
+}
+
+variable "crun_cpu" {
+  description = "Number of cpu in k8s quantity 1000m means 1000 millicpu aka 1"
+  default     = "1000m"
+}
+variable "crun_concurrency" {
+  description = "Number of requests a container could received at the same time"
+  default     = 80
+}
+
+variable "crun_max_instances" {
+  description = "Max number of instances"
+  default     = 1000
+}
+
+variable "crun_memory" {
+  description = "Memory allocation in k8s quantity "
+  default     = "128Mi"
+}
+
+
+variable "crun_timeout_seconds" {
+  description = "Max duration for an instance for responding to a request"
+  default     = 180
+}
+
+variable "ram_container_images_registry" {
+  description = "artifact registry path"
+  default     = "europe-docker.pkg.dev/brunore-ram-dev-100/realtime-asset-monitor"
+}
+
+variable "ram_microservice_image_tag" {
+  description = "The container image tag for this microservice"
+  default     = "latest"
+}
+
+variable "log_only_severity_levels" {
+  description = "Which type of log entry should be logged"
+  default     = "INFO WARNING NOTICE CRITICAL"
+}
+
+variable "start_profiler" {
+  description = "Continuous CPU and heap profiling in Cloud Profiler"
+  default     = "false"
+}
