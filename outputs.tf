@@ -217,6 +217,11 @@ output "fetchexports_exports_bucket_name" {
   value       = module.fetchexports.exports_bucket_name
 }
 
+output "fetchexports_exports_repo_bucket_name" {
+  description = "Cloud storage bucket where to store export schedules"
+  value       = module.fetchexports.exports_repo_bucket_name
+}
+
 output "fetchexports_crun_service_id" {
   description = "cloud run service id"
   value       = module.fetchexports.crun_service_id

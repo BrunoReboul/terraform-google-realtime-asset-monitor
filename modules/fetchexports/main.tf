@@ -60,6 +60,20 @@ resource "google_storage_bucket" "exports" {
   }
 }
 
+resource "google_storage_bucket" "exports_repo" {
+  project                     = var.project_id
+  name                        = "${var.project_id}-exportsrepo"
+  location                    = var.gcs_location
+  force_destroy               = true
+  uniform_bucket_level_access = true
+}
+
+resource "google_storage_bucket_iam_member" "exports_repo_reader" {
+  bucket = google_storage_bucket.exports_repo.name
+  role   = "roles/storage.objectViewer"
+  member = "serviceAccount:${google_service_account.microservice_sa.email}"
+}
+
 resource "google_pubsub_topic" "export_trigger" {
   project = var.project_id
   name    = var.trigger_export_topic_name
