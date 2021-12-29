@@ -33,6 +33,12 @@ variable "crun_region" {
   description = "cloud run region"
   default     = "europe-west1"
 }
+
+variable "dataset_location" {
+  description = "Bigquery dataset location"
+  default     = "EU"
+}
+
 variable "feed_iam_policy_orgs" {
   description = "For feed type IAM_POLICY, the map of monitored organizations and the targeted list assets for each. Can be empty"
   type        = map(list(string))

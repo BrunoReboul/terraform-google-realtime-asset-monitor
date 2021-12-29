@@ -44,10 +44,18 @@ module "monitor" {
   eva_transport_topic_id = module.fetchrules.asset_rule_topic_id
 }
 
+module "stream2bq" {
+  source                     = "./modules/stream2bq"
+  project_id                 = var.project_id
+  crun_region                = var.crun_region
+  asset_feed_topic_id        = module.convertfeed.asset_feed_topic_id
+  compliance_status_topic_id = module.monitor.compliance_status_topic_id
+  violation_topic_id         = module.monitor.violation_topic_id
+}
 
 module "setfeed" {
   depends_on = [
-    module.monitor.trigger_id
+    module.stream2bq.trigger_id_violation
   ]
   source                  = "./modules/setfeed"
   project_id              = var.project_id

@@ -24,16 +24,6 @@ output "service_account_email" {
   value       = google_service_account.microservice_sa.email
 }
 
-output "cai_feed_topic_id" {
-  description = "cai feed topic id"
-  value       = google_pubsub_topic.cai_feed.id
-}
-
-output "asset_feed_topic_id" {
-  description = "asset feed topic id"
-  value       = google_pubsub_topic.asset_feed.id
-}
-
 output "crun_service_id" {
   description = "cloud run service id"
   value       = google_cloud_run_service.crun_svc.id
@@ -46,12 +36,35 @@ output "trigger_service_account_email" {
   description = "Service account email used to trigger this microservice"
   value       = google_service_account.eva_trigger_sa.email
 }
-output "trigger_id" {
-  description = "Eventarc trigger id"
-  value       = google_eventarc_trigger.eva_trigger.id
+output "trigger_id_asset_feed" {
+  description = "Evenarc asset feed trigger id"
+  value       = google_eventarc_trigger.eva_trigger_asset_feed.id
 }
 
-output "trigger_subscription_name" {
-  description = "Evenarc trigger subscription name"
-  value       = google_eventarc_trigger.eva_trigger.transport[0].pubsub[0].subscription
+output "trigger_subscription_name_asset_feed" {
+  description = "Evenarc trigger asset feed subscription name"
+  value       = google_eventarc_trigger.eva_trigger_asset_feed.transport[0].pubsub[0].subscription
+}
+output "trigger_id_compliance_status" {
+  description = "Evenarc compliance status trigger id"
+  value       = google_eventarc_trigger.eva_trigger_compliance_status.id
+}
+
+output "trigger_subscription_name_compliance_status" {
+  description = "Evenarc trigger compliance status subscription name"
+  value       = google_eventarc_trigger.eva_trigger_compliance_status.transport[0].pubsub[0].subscription
+}
+
+output "trigger_id_violation" {
+  description = "Evenarc violation trigger id"
+  value       = google_eventarc_trigger.eva_trigger_violation.id
+}
+
+output "trigger_subscription_name_violation" {
+  description = "Evenarc trigger violation subscription name"
+  value       = google_eventarc_trigger.eva_trigger_violation.transport[0].pubsub[0].subscription
+}
+
+output "ram_dataset_id" {
+  value = google_bigquery_dataset.ram_dataset.dataset_id
 }
