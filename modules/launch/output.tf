@@ -29,14 +29,14 @@ output "exports_bucket_name" {
   value       = google_storage_bucket.exports.name
 }
 
-output "exports_repo_bucket_name" {
-  description = "Cloud storage bucket where to store export schedules"
-  value       = google_storage_bucket.exports_repo.name
+output "actions_repo_bucket_name" {
+  description = "Cloud storage bucket to store scheduled action configurations"
+  value       = google_storage_bucket.actions_repo.name
 }
 
-output "trigger_export_topic_id" {
-  description = "trigger export topic id"
-  value       = google_pubsub_topic.export_trigger.id
+output "action_trigger_topic_id" {
+  description = "action trigger topic id"
+  value       = google_pubsub_topic.action_trigger.id
 }
 
 output "job_ids" {

@@ -15,13 +15,13 @@
  */
 
 locals {
-  service_name = "fetchexports"
+  service_name = "launch"
 }
 resource "google_service_account" "microservice_sa" {
   project      = var.project_id
   account_id   = local.service_name
-  display_name = "RAM fetchrule"
-  description  = "Solution: Real-time Asset Monitor, microservice: fetchexports"
+  display_name = "RAM launch"
+  description  = "Solution: Real-time Asset Monitor, microservice: launch"
 }
 
 resource "google_project_iam_member" "project_profiler_agent" {
@@ -60,23 +60,23 @@ resource "google_storage_bucket" "exports" {
   }
 }
 
-resource "google_storage_bucket" "exports_repo" {
+resource "google_storage_bucket" "actions_repo" {
   project                     = var.project_id
-  name                        = "${var.project_id}-exportsrepo"
+  name                        = "${var.project_id}-actionsrepo"
   location                    = var.gcs_location
   force_destroy               = true
   uniform_bucket_level_access = true
 }
 
-resource "google_storage_bucket_iam_member" "exports_repo_reader" {
-  bucket = google_storage_bucket.exports_repo.name
+resource "google_storage_bucket_iam_member" "actions_repo_reader" {
+  bucket = google_storage_bucket.actions_repo.name
   role   = "roles/storage.objectViewer"
   member = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
 
-resource "google_pubsub_topic" "export_trigger" {
+resource "google_pubsub_topic" "action_trigger" {
   project = var.project_id
-  name    = var.trigger_export_topic_name
+  name    = var.action_trigger_topic_name
   message_storage_policy {
     allowed_persistence_regions = var.pubsub_allowed_regions
   }
@@ -94,7 +94,7 @@ resource "google_cloud_scheduler_job" "job" {
   region      = var.scheduler_region
 
   pubsub_target {
-    topic_name = google_pubsub_topic.export_trigger.id
+    topic_name = google_pubsub_topic.action_trigger.id
     data       = base64encode(each.value.name)
   }
 }
@@ -115,19 +115,19 @@ resource "google_cloud_run_service" "crun_svc" {
           }
         }
         env {
-          name  = "FETCHEXPORTS_ENVIRONMENT"
+          name  = "LAUNCH_ENVIRONMENT"
           value = terraform.workspace
         }
         env {
-          name  = "FETCHEXPORTS_LOG_ONLY_SEVERITY_LEVELS"
+          name  = "LAUNCH_LOG_ONLY_SEVERITY_LEVELS"
           value = var.log_only_severity_levels
         }
         env {
-          name  = "FETCHEXPORTS_PROJECT_ID"
+          name  = "LAUNCH_PROJECT_ID"
           value = var.project_id
         }
         env {
-          name  = "FETCHEXPORTS_START_PROFILER"
+          name  = "LAUNCH_START_PROFILER"
           value = var.start_profiler
         }
       }
@@ -160,8 +160,8 @@ resource "google_cloud_run_service" "crun_svc" {
 resource "google_service_account" "eva_trigger_sa" {
   project      = var.project_id
   account_id   = "${local.service_name}-trigger"
-  display_name = "RAM fetchexports trigger"
-  description  = "Solution: Real-time Asset Monitor, microservice tigger: fetchexports"
+  display_name = "RAM launch trigger"
+  description  = "Solution: Real-time Asset Monitor, microservice tigger: launch"
 }
 data "google_iam_policy" "binding" {
   binding {
@@ -186,7 +186,7 @@ resource "google_eventarc_trigger" "eva_trigger" {
   service_account = google_service_account.eva_trigger_sa.email
   transport {
     pubsub {
-      topic = google_pubsub_topic.export_trigger.id
+      topic = google_pubsub_topic.action_trigger.id
     }
   }
   matching_criteria {

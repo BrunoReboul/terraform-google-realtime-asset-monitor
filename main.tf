@@ -61,8 +61,8 @@ module "stream2bq" {
   violation_topic_id         = module.monitor.violation_topic_id
 }
 
-module "fetchexports" {
-  source                     = "./modules/fetchexports"
+module "launch" {
+  source                     = "./modules/launch"
   project_id                 = var.project_id
   pubsub_allowed_regions     = var.pubsub_allowed_regions
   gcs_location               = var.gcs_location

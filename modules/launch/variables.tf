@@ -18,9 +18,9 @@ variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
 }
 
-variable "trigger_export_topic_name" {
-  description = "the message body is the key used to fetch which exports to trigger"
-  default     = "exportTrigger"
+variable "action_trigger_topic_name" {
+  description = "the message body is the key used to fetch which actions to trigger"
+  default     = "actionTrigger"
 }
 
 variable "pubsub_allowed_regions" {

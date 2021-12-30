@@ -206,45 +206,45 @@ output "stream2bq_trigger_subscription_name_violation" {
   value = module.stream2bq.trigger_subscription_name_violation
 }
 
-# fetchexports
-output "fetchexports_service_account_email" {
+# launch
+output "launch_service_account_email" {
   description = "Service account email used to run this microservice"
-  value       = module.fetchexports.service_account_email
+  value       = module.launch.service_account_email
 }
 
-output "fetchexports_exports_bucket_name" {
+output "launch_exports_bucket_name" {
   description = "Cloud storage bucket where to output Cloud Asset Inventory exports"
-  value       = module.fetchexports.exports_bucket_name
+  value       = module.launch.exports_bucket_name
 }
 
-output "fetchexports_exports_repo_bucket_name" {
-  description = "Cloud storage bucket where to store export schedules"
-  value       = module.fetchexports.exports_repo_bucket_name
+output "launch_actions_repo_bucket_name" {
+  description = "Cloud storage bucket to store scheduled action configurations"
+  value       = module.launch.actions_repo_bucket_name
 }
 
-output "fetchexports_crun_service_id" {
+output "launch_crun_service_id" {
   description = "cloud run service id"
-  value       = module.fetchexports.crun_service_id
+  value       = module.launch.crun_service_id
 }
-output "fetchexports_crun_service_url" {
+output "launch_crun_service_url" {
   description = "cloud run service url"
-  value       = module.fetchexports.crun_service_url
+  value       = module.launch.crun_service_url
 }
 
-output "fetchexports_trigger_service_account_email" {
+output "launch_trigger_service_account_email" {
   description = "Service account email used to trigger this microservice"
-  value       = module.fetchexports.trigger_service_account_email
+  value       = module.launch.trigger_service_account_email
 }
-output "fetchexports_trigger_id" {
+output "launch_trigger_id" {
   description = "Eventarc trigger id"
-  value       = module.fetchexports.trigger_id
+  value       = module.launch.trigger_id
 }
 
-output "fetchexports_trigger_subscription_name" {
-  value = module.fetchexports.trigger_subscription_name
+output "launch_trigger_subscription_name" {
+  value = module.launch.trigger_subscription_name
 }
 
-output "trigger_export_topic_id" {
-  description = "trigger export topic id"
-  value       = module.fetchexports.trigger_export_topic_id
+output "action_trigger_topic_id" {
+  description = "action trigger topic id"
+  value       = module.launch.action_trigger_topic_id
 }
