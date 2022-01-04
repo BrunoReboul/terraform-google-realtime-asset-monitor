@@ -17,6 +17,11 @@
 locals {
   service_name = "launch"
 }
+
+data "google_project" "project" {
+  project_id = var.project_id
+}
+
 resource "google_service_account" "microservice_sa" {
   project      = var.project_id
   account_id   = local.service_name
@@ -58,6 +63,12 @@ resource "google_storage_bucket" "exports" {
       type = "Delete"
     }
   }
+}
+
+resource "google_storage_bucket_iam_member" "exports_admin" {
+  bucket = google_storage_bucket.exports.name
+  role   = "roles/storage.admin"
+  member = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudasset.iam.gserviceaccount.com"
 }
 
 resource "google_storage_bucket" "actions_repo" {
