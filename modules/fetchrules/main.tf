@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,9 +62,9 @@ resource "google_storage_bucket" "rules_repo" {
   uniform_bucket_level_access = true
 }
 
-resource "google_storage_bucket_iam_member" "rule_repo_writer" {
+resource "google_storage_bucket_iam_member" "rule_repo_reader" {
   bucket = google_storage_bucket.rules_repo.name
-  role   = "roles/storage.objectAdmin"
+  role   = "roles/storage.objectViewer"
   member = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
 

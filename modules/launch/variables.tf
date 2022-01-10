@@ -18,19 +18,55 @@ variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
 }
 
-variable "compliance_status_topic_name" {
-  description = "compliance status may be true for compliant or false for not compliant for a given asset version and configuration rule version"
-  default     = "ram-complianceStatus"
-}
-
-variable "violation_topic_name" {
-  description = "violations detail why an asset is not compliant to a configuration rule"
-  default     = "ram-violation"
+variable "action_trigger_topic_name" {
+  description = "the message body is the key used to fetch which actions to trigger"
+  default     = "actionTrigger"
 }
 
 variable "pubsub_allowed_regions" {
   type    = list(string)
   default = ["europe-west1", "europe-west3", "europe-west4", "europe-north1", "europe-central2"]
+}
+
+variable "schedulers" {
+  type = map(any)
+  default = {
+    prd_every_week = {
+      "environment" = "prd",
+      "name"        = "at_01am10_on_sunday",
+      "schedule"    = "10 1 * * 0",
+    },
+    prd_every_3h = {
+      "environment" = "prd",
+      "name"        = "at_minute_0_past_every_3rd_hour",
+      "schedule"    = "0 */3 * * *",
+    },
+    qa_every_year = {
+      "environment" = "qa",
+      "name"        = "at_00am00_on_day_of_month_1_in_january",
+      "schedule"    = "0 0 1 1 *",
+    },
+  }
+}
+
+variable "scheduler_region" {
+  description = "Cloud Scheduler region"
+  default     = "europe-west1"
+}
+
+variable "gcs_location" {
+  description = "Cloud Storage location"
+  default     = "europe-west1"
+}
+
+variable "export_org_ids" {
+  description = "list of organization id where to grant Cloud Asset Inventory roles to allow export feature"
+  type        = list(string)
+}
+
+variable "export_folder_ids" {
+  description = "list of folder id where to grant Cloud Asset Inventory roles to allow export feature"
+  type        = list(string)
 }
 
 variable "crun_region" {
@@ -67,6 +103,7 @@ variable "ram_container_images_registry" {
   description = "artifact registry path"
   default     = "europe-docker.pkg.dev/brunore-ram-dev-100/realtime-asset-monitor"
 }
+
 variable "ram_microservice_image_tag" {
   description = "The container image tag for this microservice"
   default     = "latest"
@@ -80,8 +117,4 @@ variable "log_only_severity_levels" {
 variable "start_profiler" {
   description = "Continuous CPU and heap profiling in Cloud Profiler"
   default     = "false"
-}
-
-variable "eva_transport_topic_id" {
-  description = "Eventarc transport topic e.g projects/PROJECT_ID/topics/TOPIC_NAME"
 }

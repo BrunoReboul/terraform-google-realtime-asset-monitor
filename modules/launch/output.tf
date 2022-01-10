@@ -24,6 +24,28 @@ output "service_account_email" {
   value       = google_service_account.microservice_sa.email
 }
 
+output "exports_bucket_name" {
+  description = "Cloud storage bucket where to output Cloud Asset Inventory exports"
+  value       = google_storage_bucket.exports.name
+}
+
+output "actions_repo_bucket_name" {
+  description = "Cloud storage bucket to store scheduled action configurations"
+  value       = google_storage_bucket.actions_repo.name
+}
+
+output "action_trigger_topic_id" {
+  description = "action trigger topic id"
+  value       = google_pubsub_topic.action_trigger.id
+}
+
+output "job_ids" {
+  description = "Cloud Scheduler job ids"
+  value = toset([
+    for job in google_cloud_scheduler_job.job : job.id
+  ])
+}
+
 output "crun_service_id" {
   description = "cloud run service id"
   value       = google_cloud_run_service.crun_svc.id
@@ -36,35 +58,12 @@ output "trigger_service_account_email" {
   description = "Service account email used to trigger this microservice"
   value       = google_service_account.eva_trigger_sa.email
 }
-output "trigger_id_asset_feed" {
-  description = "Evenarc asset feed trigger id"
-  value       = google_eventarc_trigger.eva_trigger_asset_feed.id
+output "trigger_id" {
+  description = "Eventarc trigger id"
+  value       = google_eventarc_trigger.eva_trigger.id
 }
 
-output "trigger_subscription_name_asset_feed" {
-  description = "Evenarc trigger asset feed subscription name"
-  value       = google_eventarc_trigger.eva_trigger_asset_feed.transport[0].pubsub[0].subscription
-}
-output "trigger_id_compliance_status" {
-  description = "Evenarc compliance status trigger id"
-  value       = google_eventarc_trigger.eva_trigger_compliance_status.id
-}
-
-output "trigger_subscription_name_compliance_status" {
-  description = "Evenarc trigger compliance status subscription name"
-  value       = google_eventarc_trigger.eva_trigger_compliance_status.transport[0].pubsub[0].subscription
-}
-
-output "trigger_id_violation" {
-  description = "Evenarc violation trigger id"
-  value       = google_eventarc_trigger.eva_trigger_violation.id
-}
-
-output "trigger_subscription_name_violation" {
-  description = "Evenarc trigger violation subscription name"
-  value       = google_eventarc_trigger.eva_trigger_violation.transport[0].pubsub[0].subscription
-}
-
-output "ram_dataset_id" {
-  value = google_bigquery_dataset.ram_dataset.dataset_id
+output "trigger_subscription_name" {
+  description = "Evenarc trigger subscription name"
+  value       = google_eventarc_trigger.eva_trigger.transport[0].pubsub[0].subscription
 }

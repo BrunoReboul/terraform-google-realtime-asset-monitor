@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,16 @@
 
 variable "project_id" {
   description = "GCP project id where to deploy RAM for a given environment, like test or production"
+}
+
+variable "ram_microservice_image_tag" {
+  description = "The container image tag for this microservice"
+  default     = "latest"
+}
+
+variable "log_only_severity_levels" {
+  description = "Which type of log entry should be logged"
+  default     = "INFO WARNING NOTICE CRITICAL"
 }
 
 variable "pubsub_allowed_regions" {
@@ -37,6 +47,21 @@ variable "crun_region" {
 variable "dataset_location" {
   description = "Bigquery dataset location"
   default     = "EU"
+}
+
+variable "scheduler_region" {
+  description = "Cloud Scheduler region"
+  default     = "europe-west1"
+}
+
+variable "export_org_ids" {
+  description = "list of organization id where to grant Cloud Asset Inventory roles to allow export feature"
+  type        = list(string)
+}
+
+variable "export_folder_ids" {
+  description = "list of folder id where to grant Cloud Asset Inventory roles to allow export feature"
+  type        = list(string)
 }
 
 variable "feed_iam_policy_orgs" {

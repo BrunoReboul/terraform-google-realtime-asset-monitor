@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,36 +21,57 @@ module "deploy" {
 
 
 module "convertfeed" {
-  source                 = "./modules/convertfeed"
-  project_id             = var.project_id
-  pubsub_allowed_regions = var.pubsub_allowed_regions
-  crun_region            = var.crun_region
+  source                     = "./modules/convertfeed"
+  project_id                 = var.project_id
+  pubsub_allowed_regions     = var.pubsub_allowed_regions
+  crun_region                = var.crun_region
+  ram_microservice_image_tag = var.ram_microservice_image_tag
+  log_only_severity_levels   = var.log_only_severity_levels
 }
 
 module "fetchrules" {
-  source                 = "./modules/fetchrules"
-  project_id             = var.project_id
-  pubsub_allowed_regions = var.pubsub_allowed_regions
-  gcs_location           = var.gcs_location
-  crun_region            = var.crun_region
-  eva_transport_topic_id = module.convertfeed.asset_feed_topic_id
+  source                     = "./modules/fetchrules"
+  project_id                 = var.project_id
+  pubsub_allowed_regions     = var.pubsub_allowed_regions
+  gcs_location               = var.gcs_location
+  crun_region                = var.crun_region
+  ram_microservice_image_tag = var.ram_microservice_image_tag
+  log_only_severity_levels   = var.log_only_severity_levels
+  eva_transport_topic_id     = module.convertfeed.asset_feed_topic_id
 }
 
 module "monitor" {
-  source                 = "./modules/monitor"
-  project_id             = var.project_id
-  pubsub_allowed_regions = var.pubsub_allowed_regions
-  crun_region            = var.crun_region
-  eva_transport_topic_id = module.fetchrules.asset_rule_topic_id
+  source                     = "./modules/monitor"
+  project_id                 = var.project_id
+  pubsub_allowed_regions     = var.pubsub_allowed_regions
+  crun_region                = var.crun_region
+  ram_microservice_image_tag = var.ram_microservice_image_tag
+  log_only_severity_levels   = var.log_only_severity_levels
+  eva_transport_topic_id     = module.fetchrules.asset_rule_topic_id
 }
 
 module "stream2bq" {
   source                     = "./modules/stream2bq"
   project_id                 = var.project_id
   crun_region                = var.crun_region
+  ram_microservice_image_tag = var.ram_microservice_image_tag
+  log_only_severity_levels   = var.log_only_severity_levels
   asset_feed_topic_id        = module.convertfeed.asset_feed_topic_id
   compliance_status_topic_id = module.monitor.compliance_status_topic_id
   violation_topic_id         = module.monitor.violation_topic_id
+}
+
+module "launch" {
+  source                     = "./modules/launch"
+  project_id                 = var.project_id
+  pubsub_allowed_regions     = var.pubsub_allowed_regions
+  gcs_location               = var.gcs_location
+  scheduler_region           = var.scheduler_region
+  export_org_ids             = var.export_org_ids
+  export_folder_ids          = var.export_folder_ids
+  crun_region                = var.crun_region
+  ram_microservice_image_tag = var.ram_microservice_image_tag
+  log_only_severity_levels   = var.log_only_severity_levels
 }
 
 module "setfeed" {

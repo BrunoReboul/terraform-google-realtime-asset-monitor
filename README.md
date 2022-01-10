@@ -30,8 +30,20 @@ To use theses terraform modules, you will need a GCP project with:
     - Eventarc Admin `roles/eventarc.admin`
     - Storage Admin `roles/storage.admin`
     - BigQuery Admin `roles/bigquery.admin`
-  - On the monitored assets parent orgs / folders /projects
+    - Cloud Scheduler Admin `roles/cloudscheduler.admin`
+  - On the real-time monitored assets parent orgs / folders
     - Cloud Asset Owner `roles/cloudasset.owner`
+  - on batch monitored assets parent orgs
+    - a custom role with
+      - resourcemanager.organizations.get
+      - resourcemanager.organizations.getIamPolicy
+      - resourcemanager.organizations.setIamPolicy
+  - on batch monitored assets parent folders
+    - a custome role with
+      - resourcemanager.folders.get
+      - resourcemanager.folders.getIamPolicy
+      - resourcemanager.folders.setIamPolicy
+    - or roles/resourcemanager.organizationAdmin on the folder's parent org
   - On the monitored assets projects (aka when creating CAI feeds at project level)
     - Service Usage Consumer `roles/serviceusage.serviceUsageConsumer`
 

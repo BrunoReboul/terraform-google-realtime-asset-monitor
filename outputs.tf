@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -204,4 +204,47 @@ output "stream2bq_trigger_id_violation" {
 
 output "stream2bq_trigger_subscription_name_violation" {
   value = module.stream2bq.trigger_subscription_name_violation
+}
+
+# launch
+output "launch_service_account_email" {
+  description = "Service account email used to run this microservice"
+  value       = module.launch.service_account_email
+}
+
+output "launch_exports_bucket_name" {
+  description = "Cloud storage bucket where to output Cloud Asset Inventory exports"
+  value       = module.launch.exports_bucket_name
+}
+
+output "launch_actions_repo_bucket_name" {
+  description = "Cloud storage bucket to store scheduled action configurations"
+  value       = module.launch.actions_repo_bucket_name
+}
+
+output "launch_crun_service_id" {
+  description = "cloud run service id"
+  value       = module.launch.crun_service_id
+}
+output "launch_crun_service_url" {
+  description = "cloud run service url"
+  value       = module.launch.crun_service_url
+}
+
+output "launch_trigger_service_account_email" {
+  description = "Service account email used to trigger this microservice"
+  value       = module.launch.trigger_service_account_email
+}
+output "launch_trigger_id" {
+  description = "Eventarc trigger id"
+  value       = module.launch.trigger_id
+}
+
+output "launch_trigger_subscription_name" {
+  value = module.launch.trigger_subscription_name
+}
+
+output "action_trigger_topic_id" {
+  description = "action trigger topic id"
+  value       = module.launch.action_trigger_topic_id
 }
