@@ -358,6 +358,278 @@ EOF
 
 }
 
+resource "google_bigquery_table" "last_assets" {
+  project     = var.project_id
+  dataset_id  = google_bigquery_dataset.ram_dataset.dataset_id
+  table_id    = "last_assets"
+  description = "Real-time Asset Monitor - last_assets"
+  view {
+    use_legacy_sql = false
+    query          = <<EOF
+SELECT
+    assets.*
+FROM
+    (
+        SELECT
+            name,
+            MAX(timestamp) AS timestamp
+        FROM
+            ${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.assets.table_id}
+        WHERE
+            DATE(_PARTITIONTIME) > DATE_SUB(CURRENT_DATE(), INTERVAL ${var.views_interval_days} DAY)
+            OR _PARTITIONTIME IS NULL
+        GROUP BY
+            name
+        ORDER BY
+            name
+    ) AS latest_assets
+    INNER JOIN (
+        SELECT
+            timestamp,
+            name,
+            owner,
+            violationResolver,
+            ancestryPathDisplayName,
+            ancestryPath,
+            ancestorsDisplayName,
+            ancestors,
+            assetType,
+            deleted,
+            projectID
+        FROM
+            ${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.assets.table_id}
+        WHERE
+            DATE(_PARTITIONTIME) > DATE_SUB(CURRENT_DATE(), INTERVAL ${var.views_interval_days} DAY)
+            OR _PARTITIONTIME IS NULL
+    ) AS assets ON assets.name = latest_assets.name
+    AND assets.timestamp = latest_assets.timestamp
+EOF
+  }
+}
+
+resource "google_bigquery_table" "last_compliance_status" {
+  project     = var.project_id
+  dataset_id  = google_bigquery_dataset.ram_dataset.dataset_id
+  table_id    = "last_compliancestatus"
+  description = "Real-time Asset Monitor - last_compliancestatus"
+  view {
+    use_legacy_sql = false
+    query          = <<EOF
+WITH complianceStatus0 AS (
+    SELECT
+        *
+    FROM
+        ${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.compliance_status.table_id}
+    WHERE
+        DATE(_PARTITIONTIME) > DATE_SUB(CURRENT_DATE(), INTERVAL ${var.views_interval_days} DAY)
+        OR _PARTITIONTIME IS NULL
+),
+assets AS (
+    SELECT
+        name,
+        owner,
+        violationResolver,
+        ancestryPathDisplayName,
+        ancestryPath,
+        ancestorsDisplayName,
+        ancestors,
+        assetType,
+        projectID
+    FROM
+        ${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.last_assets.table_id}
+),
+latest_asset_inventory_per_rule AS (
+    SELECT
+        assetName,
+        ruleName,
+        MAX(assetInventoryTimeStamp) AS assetInventoryTimeStamp,
+        MAX(evaluationTimeStamp) AS evaluationTimeStamp
+    FROM
+        complianceStatus0
+    GROUP BY
+        assetName,
+        ruleName
+    ORDER BY
+        assetName,
+        ruleName
+),
+latest_rules AS (
+    SELECT
+        ruleName,
+        MAX(ruleDeploymentTimeStamp) AS ruleDeploymentTimeStamp,
+        MAX(evaluationTimeStamp) AS evaluationTimeStamp
+    FROM
+        complianceStatus0
+    GROUP BY
+        ruleName
+    ORDER BY
+        ruleName
+),
+status_for_latest_rules AS (
+    SELECT
+        complianceStatus0.*
+    FROM
+        latest_rules
+        INNER JOIN complianceStatus0 ON complianceStatus0.ruleName = latest_rules.ruleName
+        AND complianceStatus0.ruleDeploymentTimeStamp = latest_rules.ruleDeploymentTimeStamp
+        AND complianceStatus0.evaluationTimeStamp = latest_rules.evaluationTimeStamp
+),
+complianceStatus1 AS (
+    SELECT
+        status_for_latest_rules.evaluationTimeStamp,
+        status_for_latest_rules.ruleName,
+        REPLACE(
+            SPLIT(
+                REPLACE(status_for_latest_rules.assetName, "//", ""),
+                "/"
+            ) [SAFE_OFFSET(0)],
+            ".googleapis.com",
+            ""
+        ) AS serviceName,
+        status_for_latest_rules.ruleDeploymentTimeStamp,
+        status_for_latest_rules.compliant,
+        status_for_latest_rules.assetName,
+        status_for_latest_rules.assetInventoryTimeStamp,
+        IF(
+            SPLIT(status_for_latest_rules.assetName, "/") [SAFE_OFFSET(2)] = "directories",
+            CONCAT(
+                SPLIT(status_for_latest_rules.assetName, "/") [SAFE_OFFSET(2)],
+                "/",
+                SPLIT(status_for_latest_rules.assetName, "/") [SAFE_OFFSET(3)]
+            ),
+            NULL
+        ) AS directoryPath,
+        IF(
+            SPLIT(status_for_latest_rules.assetName, "/") [SAFE_OFFSET(2)] = "directories",
+            CASE
+                SPLIT(status_for_latest_rules.assetName, "/") [SAFE_OFFSET(6)]
+                WHEN "members" THEN "www.googleapis.com/admin/directory/members"
+                WHEN "groupSettings" THEN "groupssettings.googleapis.com/groupSettings"
+                ELSE NULL
+            END,
+            NULL
+        ) AS directoryAssetType,
+    FROM
+        latest_asset_inventory_per_rule
+        INNER JOIN status_for_latest_rules ON status_for_latest_rules.assetName = latest_asset_inventory_per_rule.assetName
+        AND status_for_latest_rules.ruleName = latest_asset_inventory_per_rule.ruleName
+        AND status_for_latest_rules.assetInventoryTimeStamp = latest_asset_inventory_per_rule.assetInventoryTimeStamp
+    WHERE
+        status_for_latest_rules.deleted = FALSE
+),
+complianceStatus AS (
+    SELECT
+        complianceStatus1.ruleName,
+        complianceStatus1.serviceName,
+        REPLACE(
+            REPLACE(
+                REPLACE(complianceStatus1.ruleName, "ConstraintV1", ""),
+                "GCP",
+                ""
+            ),
+            "CI",
+            ""
+        ) AS ruleNameShort,
+        complianceStatus1.ruleDeploymentTimeStamp,
+        complianceStatus1.compliant,
+        NOT complianceStatus1.compliant AS notCompliant,
+        complianceStatus1.assetName,
+        complianceStatus1.assetInventoryTimeStamp,
+        complianceStatus1.evaluationTimeStamp,
+        assets.owner,
+        assets.violationResolver,
+        IFNULL(
+            assets.ancestryPath,
+            complianceStatus1.directoryPath
+        ) AS ancestryPath,
+        IFNULL(
+            assets.ancestryPathDisplayName,
+            IFNULL(
+                assets.ancestryPath,
+                complianceStatus1.directoryPath
+            )
+        ) AS ancestryPathDisplayName,
+        IF(
+            ARRAY_LENGTH(assets.ancestorsDisplayName) > 0,
+            assets.ancestorsDisplayName,
+            assets.ancestors
+        ) AS ancestorsDisplayName,
+        assets.ancestors,
+        IFNULL(
+            assets.assetType,
+            complianceStatus1.directoryAssetType
+        ) AS assetType,
+        assets.projectID,
+    FROM
+        complianceStatus1
+        LEFT JOIN assets ON complianceStatus1.assetName = assets.name
+)
+SELECT
+    complianceStatus.*,
+    SPLIT(complianceStatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(0)] AS level0,
+    SPLIT(complianceStatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(1)] AS level1,
+    SPLIT(complianceStatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(2)] AS level2,
+    SPLIT(complianceStatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(3)] AS level3,
+    SPLIT(complianceStatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(4)] AS level4,
+    SPLIT(complianceStatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(5)] AS level5,
+    SPLIT(complianceStatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(6)] AS level6,
+    SPLIT(complianceStatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(7)] AS level7,
+    SPLIT(complianceStatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(8)] AS level8,
+    SPLIT(complianceStatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(9)] AS level9
+FROM
+    complianceStatus
+ORDER BY
+    complianceStatus.ruleName,
+    complianceStatus.ruleDeploymentTimeStamp,
+    complianceStatus.compliant,
+    complianceStatus.assetName,
+    complianceStatus.assetInventoryTimeStamp
+EOF
+  }
+}
+
+resource "google_bigquery_table" "active_violations" {
+  project     = var.project_id
+  dataset_id  = google_bigquery_dataset.ram_dataset.dataset_id
+  table_id    = "active_violations"
+  description = "Real-time Asset Monitor - active_violations"
+  view {
+    use_legacy_sql = false
+    query          = <<EOF
+SELECT
+    violations.*,
+    compliancestatus.serviceName,
+    compliancestatus.ruleNameShort,
+    compliancestatus.level0,
+    compliancestatus.level1,
+    compliancestatus.level2,
+    compliancestatus.level3,
+    compliancestatus.level4,
+    compliancestatus.level5,
+    compliancestatus.level6,
+    compliancestatus.level7,
+    compliancestatus.level8,
+    compliancestatus.level9,
+    compliancestatus.projectID
+FROM
+    ${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.last_compliance_status.table_id} AS compliancestatus
+    INNER JOIN (
+        SELECT
+            *
+        FROM
+          ${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.violations.table_id}
+        WHERE
+            DATE(_PARTITIONTIME) > DATE_SUB(CURRENT_DATE(), INTERVAL ${var.views_interval_days} DAY)
+            OR _PARTITIONTIME IS NULL
+    ) AS violations ON violations.functionConfig.functionName = compliancestatus.ruleName
+    AND violations.functionConfig.deploymentTime = compliancestatus.ruleDeploymentTimeStamp
+    AND violations.feedMessage.asset.name = compliancestatus.assetName
+    AND violations.feedMessage.window.startTime = compliancestatus.assetInventoryTimeStamp
+    AND violations.nonCompliance.evaluationTimeStamp = compliancestatus.evaluationTimeStamp
+EOF
+  }
+}
+
 
 resource "google_cloud_run_service" "crun_svc" {
   project  = var.project_id
