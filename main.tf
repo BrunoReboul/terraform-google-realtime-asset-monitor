@@ -53,6 +53,7 @@ module "monitor" {
 module "stream2bq" {
   source                     = "./modules/stream2bq"
   project_id                 = var.project_id
+  views_interval_days        = var.views_interval_days
   crun_region                = var.crun_region
   ram_microservice_image_tag = var.ram_microservice_image_tag
   log_only_severity_levels   = var.log_only_severity_levels
