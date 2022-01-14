@@ -68,3 +68,15 @@ output "trigger_subscription_name_violation" {
 output "ram_dataset_id" {
   value = google_bigquery_dataset.ram_dataset.dataset_id
 }
+
+output "view_last_assets" {
+  value = google_bigquery_table.last_assets.table_id
+}
+
+output "view_last_compliance_status" {
+  value = google_bigquery_table.last_compliance_status.table_id
+}
+
+output "view_last_active_violations" {
+  value = google_bigquery_table.active_violations.table_id
+}

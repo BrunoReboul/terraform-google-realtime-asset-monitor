@@ -185,3 +185,18 @@ output "stream2bq_trigger_subscription_name_violation" {
   value = module.stream2bq.trigger_subscription_name_violation
 }
 
+output "stream2bq_ram_dataset_id" {
+  value = module.stream2bq.ram_dataset_id
+}
+
+output "stream2bq_view_last_assets" {
+  value = module.stream2bq.view_last_assets
+}
+
+output "stream2bq_view_last_compliance_status" {
+  value = module.stream2bq.view_last_compliance_status
+}
+
+output "stream2bq_view_last_active_violations" {
+  value = module.stream2bq.view_last_active_violations
+}
