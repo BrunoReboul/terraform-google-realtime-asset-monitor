@@ -6,18 +6,18 @@ To use theses terraform modules, you will need a GCP project with:
 
 - APIs enabled
   - Artifact Registry API `artifactregistry.googleapis.com`
-  - BigQuery API `bigquery.googleapis.com`
+  - BigQuery API `bigquery.googleapis.com` (default)
   - Cloud Asset API `cloudasset.googleapis.com`
   - Cloud Firestore API `firestore.googleapis.com`
-  - Cloud Logging API `logging.googleapis.com`
-  - Cloud Monitoring API `monitoring.googleapis.com`
+  - Cloud Logging API `logging.googleapis.com` (default)
+  - Cloud Monitoring API `monitoring.googleapis.com` (default)
   - Cloud Pub/Sub API `pubsub.googleapis.com`
   - Cloud Run Admin API `run.googleapis.com`
   - Cloud Scheduler API `cloudscheduler.googleapis.com`
-  - Cloud Storage API `storage.googleapis.com`
-  - Cloud Trace API `cloudtrace.googleapis.com`
+  - Cloud Storage API `storage.googleapis.com` (default)
+  - Cloud Trace API `cloudtrace.googleapis.com` (default)
   - Eventarc API `eventarc.googleapis.com`
-  - Stackdriver Profiler API `cloudprofiler.googleapis.com`
+  - Stackdriver Profiler API `cloudprofiler.googleapis.com` (default)
 
 - IAM roles for the service account used to run Terraform:
   - On the project or folder hosting RAM
@@ -48,6 +48,8 @@ To use theses terraform modules, you will need a GCP project with:
     - Service Usage Consumer `roles/serviceusage.serviceUsageConsumer`
 
 - FireStore: [select native mode](https://cloud.google.com/datastore/docs/firestore-or-datastore)
+- Provision a GCS bucket to manage Terraform state.
+- Install Terraform and google provider consistent with version specifyied in `versions.tf`
 
 ## Example
 
