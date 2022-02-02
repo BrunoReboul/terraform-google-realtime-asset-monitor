@@ -456,8 +456,7 @@ latest_asset_inventory_per_rule AS (
 latest_rules AS (
     SELECT
         ruleName,
-        MAX(ruleDeploymentTimeStamp) AS ruleDeploymentTimeStamp,
-        MAX(evaluationTimeStamp) AS evaluationTimeStamp
+        MAX(ruleDeploymentTimeStamp) AS ruleDeploymentTimeStamp
     FROM
         complianceStatus0
     GROUP BY
@@ -472,7 +471,6 @@ status_for_latest_rules AS (
         latest_rules
         INNER JOIN complianceStatus0 ON complianceStatus0.ruleName = latest_rules.ruleName
         AND complianceStatus0.ruleDeploymentTimeStamp = latest_rules.ruleDeploymentTimeStamp
-        AND complianceStatus0.evaluationTimeStamp = latest_rules.evaluationTimeStamp
 ),
 complianceStatus1 AS (
     SELECT
@@ -513,7 +511,7 @@ complianceStatus1 AS (
         latest_asset_inventory_per_rule
         INNER JOIN status_for_latest_rules ON status_for_latest_rules.assetName = latest_asset_inventory_per_rule.assetName
         AND status_for_latest_rules.ruleName = latest_asset_inventory_per_rule.ruleName
-        AND status_for_latest_rules.assetInventoryTimeStamp = latest_asset_inventory_per_rule.assetInventoryTimeStamp
+        AND status_for_latest_rules.evaluationTimeStamp = latest_asset_inventory_per_rule.evaluationTimeStamp
     WHERE
         status_for_latest_rules.deleted = FALSE
 ),
