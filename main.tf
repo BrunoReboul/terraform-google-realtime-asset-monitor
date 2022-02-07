@@ -68,11 +68,21 @@ module "launch" {
   pubsub_allowed_regions     = var.pubsub_allowed_regions
   gcs_location               = var.gcs_location
   scheduler_region           = var.scheduler_region
+  crun_region                = var.crun_region
+  ram_microservice_image_tag = var.ram_microservice_image_tag
+  log_only_severity_levels   = var.log_only_severity_levels
+}
+
+module "execute" {
+  source                     = "./modules/execute"
+  project_id                 = var.project_id
+  gcs_location               = var.gcs_location
   export_org_ids             = var.export_org_ids
   export_folder_ids          = var.export_folder_ids
   crun_region                = var.crun_region
   ram_microservice_image_tag = var.ram_microservice_image_tag
   log_only_severity_levels   = var.log_only_severity_levels
+  eva_transport_topic_id     = module.launch.action_topic_id
 }
 
 module "setfeed" {

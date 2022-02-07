@@ -24,26 +24,9 @@ output "service_account_email" {
   value       = google_service_account.microservice_sa.email
 }
 
-output "actions_repo_bucket_name" {
-  description = "Cloud storage bucket to store scheduled action configurations"
-  value       = google_storage_bucket.actions_repo.name
-}
-
-output "action_topic_id" {
-  description = "action topic id"
-  value       = google_pubsub_topic.action.id
-}
-
-output "action_trigger_topic_id" {
-  description = "action trigger topic id"
-  value       = google_pubsub_topic.action_trigger.id
-}
-
-output "job_ids" {
-  description = "Cloud Scheduler job ids"
-  value = toset([
-    for job in google_cloud_scheduler_job.job : job.id
-  ])
+output "exports_bucket_name" {
+  description = "Cloud storage bucket where to output Cloud Asset Inventory exports"
+  value       = google_storage_bucket.exports.name
 }
 
 output "crun_service_id" {
