@@ -249,7 +249,7 @@ resource "google_bigquery_table" "violations" {
                         "type": "STRING"
                     },
                     {
-                        "name": "annotation",
+                        "name": "annotations",
                         "type": "STRING"
                     }
                 ],
