@@ -15,7 +15,7 @@
  */
 
 locals {
-  service_name = "launch"
+  service_name = "execute"
 }
 
 data "google_project" "project" {
@@ -25,8 +25,8 @@ data "google_project" "project" {
 resource "google_service_account" "microservice_sa" {
   project      = var.project_id
   account_id   = local.service_name
-  display_name = "RAM launch"
-  description  = "Solution: Real-time Asset Monitor, microservice: launch"
+  display_name = "RAM execute"
+  description  = "Solution: Real-time Asset Monitor, microservice: execute"
 }
 
 resource "google_project_iam_member" "project_profiler_agent" {
@@ -35,65 +35,40 @@ resource "google_project_iam_member" "project_profiler_agent" {
   member  = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
 
-resource "google_storage_bucket" "actions_repo" {
-  project                     = var.project_id
-  name                        = "${var.project_id}-actionsrepo"
-  location                    = var.gcs_location
-  force_destroy               = true
-  uniform_bucket_level_access = true
-}
-
-resource "google_storage_bucket_iam_member" "actions_repo_reader" {
-  bucket = google_storage_bucket.actions_repo.name
-  role   = "roles/storage.objectViewer"
+resource "google_organization_iam_member" "org_cloudasset_owner" {
+  count  = length(var.export_org_ids)
+  org_id = var.export_org_ids[count.index]
+  role   = "roles/cloudasset.owner"
   member = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
 
-resource "google_pubsub_topic" "action" {
-  project = var.project_id
-  name    = var.action_topic_name
-  message_storage_policy {
-    allowed_persistence_regions = var.pubsub_allowed_regions
+resource "google_folder_iam_member" "folder_cloudasset_owner" {
+  count  = length(var.export_folder_ids)
+  folder = "folders/${var.export_folder_ids[count.index]}"
+  role   = "roles/cloudasset.owner"
+  member = "serviceAccount:${google_service_account.microservice_sa.email}"
+}
+
+resource "google_storage_bucket" "exports" {
+  project                     = var.project_id
+  name                        = "${var.project_id}-exports"
+  location                    = var.gcs_location
+  force_destroy               = true
+  uniform_bucket_level_access = true
+  lifecycle_rule {
+    condition {
+      age = 1
+    }
+    action {
+      type = "Delete"
+    }
   }
 }
 
-resource "google_pubsub_topic_iam_member" "action_publisher" {
-  project = google_pubsub_topic.action.project
-  topic   = google_pubsub_topic.action.name
-  role    = "roles/pubsub.publisher"
-  member  = "serviceAccount:${google_service_account.microservice_sa.email}"
-}
-
-resource "google_pubsub_topic_iam_member" "action_viewer" {
-  project = google_pubsub_topic.action.project
-  topic   = google_pubsub_topic.action.name
-  role    = "roles/pubsub.viewer"
-  member  = "serviceAccount:${google_service_account.microservice_sa.email}"
-}
-
-resource "google_pubsub_topic" "action_trigger" {
-  project = var.project_id
-  name    = var.action_trigger_topic_name
-  message_storage_policy {
-    allowed_persistence_regions = var.pubsub_allowed_regions
-  }
-}
-
-resource "google_cloud_scheduler_job" "job" {
-  for_each = {
-    for name, s in var.schedulers : name => s
-    if s.environment == terraform.workspace
-  }
-  project     = var.project_id
-  name        = each.value.name
-  description = "Real-time Asset Monitor ${each.value.name}"
-  schedule    = each.value.schedule
-  region      = var.scheduler_region
-
-  pubsub_target {
-    topic_name = google_pubsub_topic.action_trigger.id
-    data       = base64encode(each.value.name)
-  }
+resource "google_storage_bucket_iam_member" "exports_admin" {
+  bucket = google_storage_bucket.exports.name
+  role   = "roles/storage.admin"
+  member = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudasset.iam.gserviceaccount.com"
 }
 
 resource "google_cloud_run_service" "crun_svc" {
@@ -112,19 +87,19 @@ resource "google_cloud_run_service" "crun_svc" {
           }
         }
         env {
-          name  = "LAUNCH_ENVIRONMENT"
+          name  = "EXECUTE_ENVIRONMENT"
           value = terraform.workspace
         }
         env {
-          name  = "LAUNCH_LOG_ONLY_SEVERITY_LEVELS"
+          name  = "EXECUTE_LOG_ONLY_SEVERITY_LEVELS"
           value = var.log_only_severity_levels
         }
         env {
-          name  = "LAUNCH_PROJECT_ID"
+          name  = "EXECUTE_PROJECT_ID"
           value = var.project_id
         }
         env {
-          name  = "LAUNCH_START_PROFILER"
+          name  = "EXECUTE_START_PROFILER"
           value = var.start_profiler
         }
       }
@@ -157,8 +132,8 @@ resource "google_cloud_run_service" "crun_svc" {
 resource "google_service_account" "eva_trigger_sa" {
   project      = var.project_id
   account_id   = "${local.service_name}-trigger"
-  display_name = "RAM launch trigger"
-  description  = "Solution: Real-time Asset Monitor, microservice tigger: launch"
+  display_name = "RAM execute trigger"
+  description  = "Solution: Real-time Asset Monitor, microservice tigger: execute"
 }
 data "google_iam_policy" "binding" {
   binding {
@@ -183,7 +158,7 @@ resource "google_eventarc_trigger" "eva_trigger" {
   service_account = google_service_account.eva_trigger_sa.email
   transport {
     pubsub {
-      topic = google_pubsub_topic.action_trigger.id
+      topic = var.eva_transport_topic_id
     }
   }
   matching_criteria {

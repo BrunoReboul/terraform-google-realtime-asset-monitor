@@ -212,11 +212,6 @@ output "launch_service_account_email" {
   value       = module.launch.service_account_email
 }
 
-output "launch_exports_bucket_name" {
-  description = "Cloud storage bucket where to output Cloud Asset Inventory exports"
-  value       = module.launch.exports_bucket_name
-}
-
 output "launch_actions_repo_bucket_name" {
   description = "Cloud storage bucket to store scheduled action configurations"
   value       = module.launch.actions_repo_bucket_name
@@ -248,3 +243,37 @@ output "action_trigger_topic_id" {
   description = "action trigger topic id"
   value       = module.launch.action_trigger_topic_id
 }
+
+# execute
+output "execute_service_account_email" {
+  description = "Service account email used to run this microservice"
+  value       = module.execute.service_account_email
+}
+
+output "execute_exports_bucket_name" {
+  description = "Cloud storage bucket where to output Cloud Asset Inventory exports"
+  value       = module.execute.exports_bucket_name
+}
+
+output "execute_crun_service_id" {
+  description = "cloud run service id"
+  value       = module.execute.crun_service_id
+}
+output "execute_crun_service_url" {
+  description = "cloud run service url"
+  value       = module.execute.crun_service_url
+}
+
+output "execute_trigger_service_account_email" {
+  description = "Service account email used to trigger this microservice"
+  value       = module.execute.trigger_service_account_email
+}
+output "execute_trigger_id" {
+  description = "Eventarc trigger id"
+  value       = module.execute.trigger_id
+}
+
+output "execute_trigger_subscription_name" {
+  value = module.execute.trigger_subscription_name
+}
+
