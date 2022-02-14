@@ -37,19 +37,12 @@ output "crun_service_url" {
   description = "cloud run service url"
   value       = google_cloud_run_service.crun_svc.status[0].url
 }
-output "execute_caiexport_sub_sa_email" {
+output "subscription_sa_email" {
   description = "Service account email used to trigger this type of action"
-  value       = google_service_account.execute_caiexport_sub_sa.email
+  value       = google_service_account.subscription_sa.email
 }
-output "execute_caiexport_sub_id" {
+output "subscription_id" {
   description = "PubSub subscription id to trigger this type of action"
-  value       = google_pubsub_subscription.execute_caiexport_sub.id
+  value       = google_pubsub_subscription.subcription.id
 }
-output "execute_gcilistgroups_sub_sa_email" {
-  description = "Service account email used to trigger this type of action"
-  value       = google_service_account.execute_gcilistgroups_sub_sa.email
-}
-output "execute_gcilistgroups_sub_id" {
-  description = "PubSub subscription id to trigger this type of action"
-  value       = google_pubsub_subscription.execute_gcilistgroups_sub.id
-}
+

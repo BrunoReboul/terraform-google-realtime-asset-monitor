@@ -244,40 +244,31 @@ output "action_trigger_topic_id" {
   value       = module.launch.action_trigger_topic_id
 }
 
-# execute
-output "execute_service_account_email" {
+# executecaiexport
+output "executecaiexport_service_account_email" {
   description = "Service account email used to run this microservice"
-  value       = module.execute.service_account_email
+  value       = module.executecaiexport.service_account_email
 }
 
-output "execute_exports_bucket_name" {
+output "executecaiexport_exports_bucket_name" {
   description = "Cloud storage bucket where to output Cloud Asset Inventory exports"
-  value       = module.execute.exports_bucket_name
+  value       = module.executecaiexport.exports_bucket_name
 }
 
-output "execute_crun_service_id" {
+output "executecaiexport_crun_service_id" {
   description = "cloud run service id"
-  value       = module.execute.crun_service_id
+  value       = module.executecaiexport.crun_service_id
 }
-output "execute_crun_service_url" {
+output "executecaiexport_crun_service_url" {
   description = "cloud run service url"
-  value       = module.execute.crun_service_url
+  value       = module.executecaiexport.crun_service_url
 }
 
-output "execute_caiexport_sub_sa_email" {
+output "executecaiexport_subscription_sa_email" {
   description = "Service account email used to trigger this type of action"
-  value       = module.execute.execute_caiexport_sub_sa_email
+  value       = module.executecaiexport.subscription_sa_email
 }
-output "execute_caiexport_sub_id" {
+output "executecaiexport_subscription_id" {
   description = "PubSub subscription id to trigger this type of action"
-  value       = module.execute.execute_caiexport_sub_id
-}
-
-output "execute_gcilistgroups_sub_sa_email" {
-  description = "Service account email used to trigger this type of action"
-  value       = module.execute.execute_gcilistgroups_sub_sa_email
-}
-output "execute_gcilistgroups_sub_id" {
-  description = "PubSub subscription id to trigger this type of action"
-  value       = module.execute.execute_gcilistgroups_sub_id
+  value       = module.executecaiexport.subscription_id
 }

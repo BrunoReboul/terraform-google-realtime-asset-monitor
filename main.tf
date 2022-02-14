@@ -73,8 +73,8 @@ module "launch" {
   log_only_severity_levels   = var.log_only_severity_levels
 }
 
-module "execute" {
-  source                     = "./modules/execute"
+module "executecaiexport" {
+  source                     = "./modules/executecaiexport"
   project_id                 = var.project_id
   gcs_location               = var.gcs_location
   export_org_ids             = var.export_org_ids
