@@ -165,9 +165,12 @@ resource "google_pubsub_subscription" "subcription" {
     oidc_token {
       service_account_email = google_service_account.subscription_sa.email
     }
-    push_endpoint = google_cloud_run_service.crun_svc.status[0].url
+    #Updated endpoint to deal with WARNING in logs: failed to extract Pub/Sub topic name from the URL request path: "/", configure your subscription's push endpoint to use the following path pattern: 'projects/PROJECT_NAME/topics/TOPIC_NAME
+    push_endpoint = "${google_cloud_run_service.crun_svc.status[0].url}/${var.triggering_topic_id} "
   }
-  # no expiration policy means never expires
+  expiration_policy {
+    ttl = ""
+  }
   filter                     = "attributes.ce-type = \"com.gitlab.realtime-asset-monitor.${local.action_kind}\""
   message_retention_duration = var.sub_message_retention_duration
   retry_policy {
