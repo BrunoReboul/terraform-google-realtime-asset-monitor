@@ -129,21 +129,27 @@ resource "google_cloud_run_service" "crun_svc" {
   }
 }
 
-resource "google_service_account" "eva_trigger_sa" {
+resource "google_service_account" "execute_caiexport_sub_sa" {
   project      = var.project_id
-  account_id   = "${local.service_name}-trigger"
-  display_name = "RAM execute trigger"
-  description  = "Solution: Real-time Asset Monitor, microservice tigger: execute"
+  account_id   = "${local.service_name}-caiexport-sub"
+  display_name = "RAM execute caiexport trigger"
+  description  = "Solution: Real-time Asset Monitor, microservice tigger: execute, action: caiexport"
+}
+resource "google_service_account" "execute_gcilistgroups_sub_sa" {
+  project      = var.project_id
+  account_id   = "${local.service_name}-gcilistgroups-sub"
+  display_name = "RAM execute caiexport trigger"
+  description  = "Solution: Real-time Asset Monitor, microservice tigger: execute, action: caiexport"
 }
 data "google_iam_policy" "binding" {
   binding {
     role = "roles/run.invoker"
     members = [
-      "serviceAccount:${google_service_account.eva_trigger_sa.email}",
+      "serviceAccount:${google_service_account.execute_caiexport_sub_sa.email}",
+      "serviceAccount:${google_service_account.execute_gcilistgroups_sub_sa.email}",
     ]
   }
 }
-
 resource "google_cloud_run_service_iam_policy" "trigger_invoker" {
   location = google_cloud_run_service.crun_svc.location
   project  = google_cloud_run_service.crun_svc.project
@@ -151,25 +157,44 @@ resource "google_cloud_run_service_iam_policy" "trigger_invoker" {
 
   policy_data = data.google_iam_policy.binding.policy_data
 }
-resource "google_eventarc_trigger" "eva_trigger" {
-  name            = local.service_name
-  location        = google_cloud_run_service.crun_svc.location
-  project         = google_cloud_run_service.crun_svc.project
-  service_account = google_service_account.eva_trigger_sa.email
-  transport {
-    pubsub {
-      topic = var.eva_transport_topic_id
+
+resource "google_pubsub_subscription" "execute_caiexport_sub" {
+  project              = var.project_id
+  name                 = "${local.service_name}-caiexport"
+  topic                = var.triggering_topic_id
+  ack_deadline_seconds = 10
+  push_config {
+    oidc_token {
+      service_account_email = google_service_account.execute_caiexport_sub_sa.email
     }
+    push_endpoint = google_cloud_run_service.crun_svc.status[0].url
   }
-  matching_criteria {
-    attribute = "type"
-    value     = "google.cloud.pubsub.topic.v1.messagePublished"
-  }
-  destination {
-    cloud_run_service {
-      service = google_cloud_run_service.crun_svc.name
-      region  = google_cloud_run_service.crun_svc.location
-    }
+  # no expiration policy means never expires
+  filter                     = "attributes.ce-type = \"com.gitlab.realtime-asset-monitor.caiexport\""
+  message_retention_duration = "86400s"
+  retry_policy {
+    # https://cloud.google.com/asset-inventory/docs/quota
+    # 2022-02-11 ExportAsset quota is 60 per MINUTE -> do not retry in less than a minute
+    minimum_backoff = "65s"
   }
 }
-
+resource "google_pubsub_subscription" "execute_gcilistgroups_sub" {
+  project              = var.project_id
+  name                 = "${local.service_name}-gcilistgroups"
+  topic                = var.triggering_topic_id
+  ack_deadline_seconds = 10
+  push_config {
+    oidc_token {
+      service_account_email = google_service_account.execute_gcilistgroups_sub_sa.email
+    }
+    push_endpoint = google_cloud_run_service.crun_svc.status[0].url
+  }
+  # no expiration policy means never expires
+  filter                     = "attributes.ce-type = \"com.gitlab.realtime-asset-monitor.gcilistgroups\""
+  message_retention_duration = "86400s"
+  retry_policy {
+    # https://developers.google.com/admin-sdk/directory/v1/limits
+    # 2022-02-11 default is 3000 per 100 sec -> do not retry in less than a 105 sec
+    minimum_backoff = "105s"
+  }
+}

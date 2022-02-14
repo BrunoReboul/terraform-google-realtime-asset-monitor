@@ -37,7 +37,7 @@ module "fetchrules" {
   crun_region                = var.crun_region
   ram_microservice_image_tag = var.ram_microservice_image_tag
   log_only_severity_levels   = var.log_only_severity_levels
-  eva_transport_topic_id     = module.convertfeed.asset_feed_topic_id
+  triggering_topic_id        = module.convertfeed.asset_feed_topic_id
 }
 
 module "monitor" {
@@ -47,7 +47,7 @@ module "monitor" {
   crun_region                = var.crun_region
   ram_microservice_image_tag = var.ram_microservice_image_tag
   log_only_severity_levels   = var.log_only_severity_levels
-  eva_transport_topic_id     = module.fetchrules.asset_rule_topic_id
+  triggering_topic_id        = module.fetchrules.asset_rule_topic_id
 }
 
 module "stream2bq" {
@@ -82,7 +82,7 @@ module "execute" {
   crun_region                = var.crun_region
   ram_microservice_image_tag = var.ram_microservice_image_tag
   log_only_severity_levels   = var.log_only_severity_levels
-  eva_transport_topic_id     = module.launch.action_topic_id
+  triggering_topic_id        = module.launch.action_topic_id
 }
 
 module "setfeed" {

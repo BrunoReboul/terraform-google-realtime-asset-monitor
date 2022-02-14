@@ -167,7 +167,7 @@ resource "google_eventarc_trigger" "eva_trigger" {
   service_account = google_service_account.eva_trigger_sa.email
   transport {
     pubsub {
-      topic = var.eva_transport_topic_id
+      topic = var.triggering_topic_id
     }
   }
   matching_criteria {

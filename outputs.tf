@@ -264,16 +264,20 @@ output "execute_crun_service_url" {
   value       = module.execute.crun_service_url
 }
 
-output "execute_trigger_service_account_email" {
-  description = "Service account email used to trigger this microservice"
-  value       = module.execute.trigger_service_account_email
+output "execute_caiexport_sub_sa_email" {
+  description = "Service account email used to trigger this type of action"
+  value       = module.execute.execute_caiexport_sub_sa_email
 }
-output "execute_trigger_id" {
-  description = "Eventarc trigger id"
-  value       = module.execute.trigger_id
-}
-
-output "execute_trigger_subscription_name" {
-  value = module.execute.trigger_subscription_name
+output "execute_caiexport_sub_id" {
+  description = "PubSub subscription id to trigger this type of action"
+  value       = module.execute.execute_caiexport_sub_id
 }
 
+output "execute_gcilistgroups_sub_sa_email" {
+  description = "Service account email used to trigger this type of action"
+  value       = module.execute.execute_gcilistgroups_sub_sa_email
+}
+output "execute_gcilistgroups_sub_id" {
+  description = "PubSub subscription id to trigger this type of action"
+  value       = module.execute.execute_gcilistgroups_sub_id
+}

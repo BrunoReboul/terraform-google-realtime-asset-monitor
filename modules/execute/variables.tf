@@ -83,6 +83,6 @@ variable "start_profiler" {
   default     = "false"
 }
 
-variable "eva_transport_topic_id" {
-  description = "Eventarc transport topic e.g projects/PROJECT_ID/topics/TOPIC_NAME"
+variable "triggering_topic_id" {
+  description = "Triggering topic e.g projects/PROJECT_ID/topics/TOPIC_NAME"
 }
