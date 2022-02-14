@@ -16,6 +16,7 @@
 
 locals {
   service_name = "execute"
+  action_kind  = "caiexport"
 }
 
 data "google_project" "project" {
@@ -24,9 +25,9 @@ data "google_project" "project" {
 
 resource "google_service_account" "microservice_sa" {
   project      = var.project_id
-  account_id   = local.service_name
-  display_name = "RAM execute"
-  description  = "Solution: Real-time Asset Monitor, microservice: execute"
+  account_id   = "${local.service_name}${local.action_kind}"
+  display_name = "RAM ${local.service_name} ${local.action_kind}"
+  description  = "Solution: Real-time Asset Monitor, microservice: ${local.service_name} ${local.action_kind}"
 }
 
 resource "google_project_iam_member" "project_profiler_agent" {
@@ -73,7 +74,7 @@ resource "google_storage_bucket_iam_member" "exports_admin" {
 
 resource "google_cloud_run_service" "crun_svc" {
   project  = var.project_id
-  name     = local.service_name
+  name     = "${local.service_name}${local.action_kind}"
   location = var.crun_region
 
   template {
@@ -87,20 +88,24 @@ resource "google_cloud_run_service" "crun_svc" {
           }
         }
         env {
-          name  = "EXECUTE_ENVIRONMENT"
+          name  = "${upper(local.service_name)}_ENVIRONMENT"
           value = terraform.workspace
         }
         env {
-          name  = "EXECUTE_LOG_ONLY_SEVERITY_LEVELS"
+          name  = "${upper(local.service_name)}_LOG_ONLY_SEVERITY_LEVELS"
           value = var.log_only_severity_levels
         }
         env {
-          name  = "EXECUTE_PROJECT_ID"
+          name  = "${upper(local.service_name)}_PROJECT_ID"
           value = var.project_id
         }
         env {
-          name  = "EXECUTE_START_PROFILER"
+          name  = "${upper(local.service_name)}_START_PROFILER"
           value = var.start_profiler
+        }
+        env {
+          name  = "${upper(local.service_name)}_ACTION_KIND"
+          value = local.action_kind
         }
       }
       container_concurrency = var.crun_concurrency
@@ -129,21 +134,20 @@ resource "google_cloud_run_service" "crun_svc" {
   }
 }
 
-resource "google_service_account" "eva_trigger_sa" {
+resource "google_service_account" "subscription_sa" {
   project      = var.project_id
-  account_id   = "${local.service_name}-trigger"
-  display_name = "RAM execute trigger"
-  description  = "Solution: Real-time Asset Monitor, microservice tigger: execute"
+  account_id   = "${local.service_name}-${local.action_kind}-sub"
+  display_name = "RAM execute ${local.action_kind} trigger"
+  description  = "Solution: Real-time Asset Monitor, microservice tigger: ${local.service_name}, action: ${local.action_kind}"
 }
 data "google_iam_policy" "binding" {
   binding {
     role = "roles/run.invoker"
     members = [
-      "serviceAccount:${google_service_account.eva_trigger_sa.email}",
+      "serviceAccount:${google_service_account.subscription_sa.email}",
     ]
   }
 }
-
 resource "google_cloud_run_service_iam_policy" "trigger_invoker" {
   location = google_cloud_run_service.crun_svc.location
   project  = google_cloud_run_service.crun_svc.project
@@ -151,25 +155,25 @@ resource "google_cloud_run_service_iam_policy" "trigger_invoker" {
 
   policy_data = data.google_iam_policy.binding.policy_data
 }
-resource "google_eventarc_trigger" "eva_trigger" {
-  name            = local.service_name
-  location        = google_cloud_run_service.crun_svc.location
-  project         = google_cloud_run_service.crun_svc.project
-  service_account = google_service_account.eva_trigger_sa.email
-  transport {
-    pubsub {
-      topic = var.eva_transport_topic_id
+
+resource "google_pubsub_subscription" "subcription" {
+  project              = var.project_id
+  name                 = "${local.service_name}-${local.action_kind}"
+  topic                = var.triggering_topic_id
+  ack_deadline_seconds = var.sub_ack_deadline_seconds
+  push_config {
+    oidc_token {
+      service_account_email = google_service_account.subscription_sa.email
     }
+    #Updated endpoint to deal with WARNING in logs: failed to extract Pub/Sub topic name from the URL request path: "/", configure your subscription's push endpoint to use the following path pattern: 'projects/PROJECT_NAME/topics/TOPIC_NAME
+    push_endpoint = "${google_cloud_run_service.crun_svc.status[0].url}/${var.triggering_topic_id} "
   }
-  matching_criteria {
-    attribute = "type"
-    value     = "google.cloud.pubsub.topic.v1.messagePublished"
+  expiration_policy {
+    ttl = ""
   }
-  destination {
-    cloud_run_service {
-      service = google_cloud_run_service.crun_svc.name
-      region  = google_cloud_run_service.crun_svc.location
-    }
+  filter                     = "attributes.ce-type = \"com.gitlab.realtime-asset-monitor.${local.action_kind}\""
+  message_retention_duration = var.sub_message_retention_duration
+  retry_policy {
+    minimum_backoff = var.sub_minimum_backoff
   }
 }
-

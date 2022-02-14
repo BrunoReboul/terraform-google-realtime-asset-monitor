@@ -37,16 +37,12 @@ output "crun_service_url" {
   description = "cloud run service url"
   value       = google_cloud_run_service.crun_svc.status[0].url
 }
-output "trigger_service_account_email" {
-  description = "Service account email used to trigger this microservice"
-  value       = google_service_account.eva_trigger_sa.email
+output "subscription_sa_email" {
+  description = "Service account email used to trigger this type of action"
+  value       = google_service_account.subscription_sa.email
 }
-output "trigger_id" {
-  description = "Eventarc trigger id"
-  value       = google_eventarc_trigger.eva_trigger.id
+output "subscription_id" {
+  description = "PubSub subscription id to trigger this type of action"
+  value       = google_pubsub_subscription.subcription.id
 }
 
-output "trigger_subscription_name" {
-  description = "Evenarc trigger subscription name"
-  value       = google_eventarc_trigger.eva_trigger.transport[0].pubsub[0].subscription
-}

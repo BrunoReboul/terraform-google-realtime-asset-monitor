@@ -52,6 +52,6 @@ output "trigger_id" {
 }
 
 output "trigger_subscription_name" {
-  description = "Evenarc trigger subscription name"
+  description = "Eventarc trigger subscription name"
   value       = google_eventarc_trigger.eva_trigger.transport[0].pubsub[0].subscription
 }

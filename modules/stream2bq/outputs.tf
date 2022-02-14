@@ -37,31 +37,31 @@ output "trigger_service_account_email" {
   value       = google_service_account.eva_trigger_sa.email
 }
 output "trigger_id_asset_feed" {
-  description = "Evenarc asset feed trigger id"
+  description = "Eventarc asset feed trigger id"
   value       = google_eventarc_trigger.eva_trigger_asset_feed.id
 }
 
 output "trigger_subscription_name_asset_feed" {
-  description = "Evenarc trigger asset feed subscription name"
+  description = "Eventarc trigger asset feed subscription name"
   value       = google_eventarc_trigger.eva_trigger_asset_feed.transport[0].pubsub[0].subscription
 }
 output "trigger_id_compliance_status" {
-  description = "Evenarc compliance status trigger id"
+  description = "Eventarc compliance status trigger id"
   value       = google_eventarc_trigger.eva_trigger_compliance_status.id
 }
 
 output "trigger_subscription_name_compliance_status" {
-  description = "Evenarc trigger compliance status subscription name"
+  description = "Eventarc trigger compliance status subscription name"
   value       = google_eventarc_trigger.eva_trigger_compliance_status.transport[0].pubsub[0].subscription
 }
 
 output "trigger_id_violation" {
-  description = "Evenarc violation trigger id"
+  description = "Eventarc violation trigger id"
   value       = google_eventarc_trigger.eva_trigger_violation.id
 }
 
 output "trigger_subscription_name_violation" {
-  description = "Evenarc trigger violation subscription name"
+  description = "Eventarc trigger violation subscription name"
   value       = google_eventarc_trigger.eva_trigger_violation.transport[0].pubsub[0].subscription
 }
 

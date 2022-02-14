@@ -83,6 +83,23 @@ variable "start_profiler" {
   default     = "false"
 }
 
-variable "eva_transport_topic_id" {
-  description = "Eventarc transport topic e.g projects/PROJECT_ID/topics/TOPIC_NAME"
+variable "triggering_topic_id" {
+  description = "Triggering topic e.g projects/PROJECT_ID/topics/TOPIC_NAME"
+}
+
+variable "sub_ack_deadline_seconds" {
+  description = "The maximum time after a subscriber receives a message before the subscriber should acknowledge the message"
+  default     = 10
+}
+
+variable "sub_message_retention_duration" {
+  description = "How long to retain unacknowledged messages in the subscription's backlog,"
+  default     = "86400s"
+}
+
+# https://cloud.google.com/asset-inventory/docs/quota
+# 2022-02-11 ExportAsset quota is 60 per MINUTE -> do not retry in less than a minute
+variable "sub_minimum_backoff" {
+  description = "The minimum delay between consecutive deliveries of a given message"
+  default     = "65s"
 }
