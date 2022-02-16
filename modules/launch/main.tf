@@ -112,19 +112,19 @@ resource "google_cloud_run_service" "crun_svc" {
           }
         }
         env {
-          name  = "LAUNCH_ENVIRONMENT"
+          name  = "${upper(local.service_name)}_ENVIRONMENT"
           value = terraform.workspace
         }
         env {
-          name  = "LAUNCH_LOG_ONLY_SEVERITY_LEVELS"
+          name  = "${upper(local.service_name)}_LOG_ONLY_SEVERITY_LEVELS"
           value = var.log_only_severity_levels
         }
         env {
-          name  = "LAUNCH_PROJECT_ID"
+          name  = "${upper(local.service_name)}_PROJECT_ID"
           value = var.project_id
         }
         env {
-          name  = "LAUNCH_START_PROFILER"
+          name  = "${upper(local.service_name)}_START_PROFILER"
           value = var.start_profiler
         }
       }
