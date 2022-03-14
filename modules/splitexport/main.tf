@@ -61,6 +61,12 @@ resource "google_pubsub_topic_iam_member" "cai_feed_viewer" {
   member  = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
 
+resource "google_project_iam_member" "cloud_datastore_user" {
+  project = var.project_id
+  role    = "roles/datastore.user"
+  member  = "serviceAccount:${google_service_account.microservice_sa.email}"
+}
+
 resource "google_cloud_run_service" "crun_svc" {
   project  = var.project_id
   name     = local.service_name

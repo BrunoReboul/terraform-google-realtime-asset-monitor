@@ -72,6 +72,12 @@ resource "google_storage_bucket_iam_member" "exports_admin" {
   member = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudasset.iam.gserviceaccount.com"
 }
 
+resource "google_project_iam_member" "cloud_datastore_user" {
+  project = var.project_id
+  role    = "roles/datastore.user"
+  member  = "serviceAccount:${google_service_account.microservice_sa.email}"
+}
+
 resource "google_cloud_run_service" "crun_svc" {
   project  = var.project_id
   name     = "${local.service_name}${local.action_kind}"
