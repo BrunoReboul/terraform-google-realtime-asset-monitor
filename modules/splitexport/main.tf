@@ -15,15 +15,24 @@
  */
 
 locals {
-  service_name = "fetchrules"
+  service_name = "splitexport"
 }
 
+data "google_project" "project" {
+  project_id = var.project_id
+}
+
+resource "google_project_iam_member" "project_pubusb_publisher" {
+  project = var.project_id
+  role    = "roles/pubsub.publisher"
+  member  = "serviceAccount:service-${data.google_project.project.number}@gs-project-accounts.iam.gserviceaccount.com"
+}
 
 resource "google_service_account" "microservice_sa" {
   project      = var.project_id
   account_id   = local.service_name
-  display_name = "RAM fetchrule"
-  description  = "Solution: Real-time Asset Monitor, microservice: fetchrules"
+  display_name = "RAM ${local.service_name}"
+  description  = "Solution: Real-time Asset Monitor, microservice: ${local.service_name}"
 }
 
 resource "google_project_iam_member" "project_profiler_agent" {
@@ -32,40 +41,24 @@ resource "google_project_iam_member" "project_profiler_agent" {
   member  = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
 
-resource "google_pubsub_topic" "asset_rule" {
-  project = var.project_id
-  name    = var.asset_rule_topic_name
-  message_storage_policy {
-    allowed_persistence_regions = var.pubsub_allowed_regions
-  }
+resource "google_storage_bucket_iam_member" "exports_admin" {
+  bucket = var.exports_bucket_name
+  role   = "roles/storage.admin"
+  member = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
 
-resource "google_pubsub_topic_iam_member" "asset_rule_publisher" {
-  project = google_pubsub_topic.asset_rule.project
-  topic   = google_pubsub_topic.asset_rule.name
+resource "google_pubsub_topic_iam_member" "cai_feed_publisher" {
+  project = var.project_id
+  topic   = var.cai_feed_topic_id
   role    = "roles/pubsub.publisher"
   member  = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
 
-resource "google_pubsub_topic_iam_member" "asset_rule_viewer" {
-  project = google_pubsub_topic.asset_rule.project
-  topic   = google_pubsub_topic.asset_rule.name
+resource "google_pubsub_topic_iam_member" "cai_feed_viewer" {
+  project = var.project_id
+  topic   = var.cai_feed_topic_id
   role    = "roles/pubsub.viewer"
   member  = "serviceAccount:${google_service_account.microservice_sa.email}"
-}
-
-resource "google_storage_bucket" "rules_repo" {
-  project                     = var.project_id
-  name                        = "${var.project_id}-rulesrepo"
-  location                    = var.gcs_location
-  force_destroy               = true
-  uniform_bucket_level_access = true
-}
-
-resource "google_storage_bucket_iam_member" "rule_repo_reader" {
-  bucket = google_storage_bucket.rules_repo.name
-  role   = "roles/storage.objectViewer"
-  member = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
 
 resource "google_cloud_run_service" "crun_svc" {
@@ -84,12 +77,8 @@ resource "google_cloud_run_service" "crun_svc" {
           }
         }
         env {
-          name  = "${upper(local.service_name)}_ASSET_RULE_TOPIC_ID"
-          value = google_pubsub_topic.asset_rule.name
-        }
-        env {
-          name  = "${upper(local.service_name)}_CACHE_MAX_AGE_MINUTES"
-          value = var.cache_max_age_minutes
+          name  = "${upper(local.service_name)}_CAI_FEED_TOPIC_ID"
+          value = var.cai_feed_topic_id
         }
         env {
           name  = "${upper(local.service_name)}_ENVIRONMENT"
@@ -102,10 +91,6 @@ resource "google_cloud_run_service" "crun_svc" {
         env {
           name  = "${upper(local.service_name)}_PROJECT_ID"
           value = var.project_id
-        }
-        env {
-          name  = "${upper(local.service_name)}_RULE_COLLECTION_ID"
-          value = var.rule_collection_id
         }
         env {
           name  = "${upper(local.service_name)}_START_PROFILER"
@@ -141,8 +126,8 @@ resource "google_cloud_run_service" "crun_svc" {
 resource "google_service_account" "eva_trigger_sa" {
   project      = var.project_id
   account_id   = "${local.service_name}-trigger"
-  display_name = "RAM fetchrules trigger"
-  description  = "Solution: Real-time Asset Monitor, microservice tigger: fetchrules"
+  display_name = "RAM ${local.service_name} trigger"
+  description  = "Solution: Real-time Asset Monitor, microservice tigger: ${local.service_name}"
 }
 data "google_iam_policy" "binding" {
   binding {
@@ -160,19 +145,19 @@ resource "google_cloud_run_service_iam_policy" "trigger_invoker" {
 
   policy_data = data.google_iam_policy.binding.policy_data
 }
+
 resource "google_eventarc_trigger" "eva_trigger" {
   name            = local.service_name
   location        = google_cloud_run_service.crun_svc.location
   project         = google_cloud_run_service.crun_svc.project
   service_account = google_service_account.eva_trigger_sa.email
-  transport {
-    pubsub {
-      topic = var.triggering_topic_id
-    }
-  }
   matching_criteria {
     attribute = "type"
-    value     = "google.cloud.pubsub.topic.v1.messagePublished"
+    value     = "google.cloud.storage.object.v1.finalized"
+  }
+  matching_criteria {
+    attribute = "bucket"
+    value     = var.exports_bucket_name
   }
   destination {
     cloud_run_service {
@@ -180,4 +165,5 @@ resource "google_eventarc_trigger" "eva_trigger" {
       region  = google_cloud_run_service.crun_svc.location
     }
   }
+  depends_on = [google_project_iam_member.project_pubusb_publisher]
 }

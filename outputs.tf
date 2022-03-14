@@ -24,27 +24,6 @@ output "deploy_service_account_email" {
   value       = module.deploy.service_account_email
 }
 
-# feed
-output "feed_iam_policy_org" {
-  description = "cai feed for iam policies at organizations level"
-  value       = module.setfeed.feed_iam_policy_org
-}
-
-output "feed_resource_org" {
-  description = "cai feed for resource at organizations level"
-  value       = module.setfeed.feed_resource_org
-}
-
-output "feed_iam_policy_folder" {
-  description = "cai feed for iam policies at folders level"
-  value       = module.setfeed.feed_iam_policy_folder
-}
-
-output "feed_resource_folder" {
-  description = "cai feed for resource at folders level"
-  value       = module.setfeed.feed_resource_folder
-}
-
 # convertfeed
 output "convertfeed_service_account_email" {
   description = "Service account email used to run this microservice"
@@ -272,3 +251,53 @@ output "executecaiexport_subscription_id" {
   description = "PubSub subscription id to trigger this type of action"
   value       = module.executecaiexport.subscription_id
 }
+
+
+#splitexport
+output "splitexport_service_account_email" {
+  description = "Service account email used to run this microservice"
+  value       = module.splitexport.service_account_email
+}
+
+output "splitexport_crun_service_id" {
+  description = "cloud run service id"
+  value       = module.splitexport.crun_service_id
+}
+output "splitexport_crun_service_url" {
+  description = "cloud run service url"
+  value       = module.splitexport.crun_service_url
+}
+
+output "splitexport_trigger_service_account_email" {
+  description = "Service account email used to trigger this microservice"
+  value       = module.splitexport.trigger_service_account_email
+}
+output "splitexport_trigger_id" {
+  description = "Eventarc trigger id"
+  value       = module.splitexport.trigger_id
+}
+
+
+
+
+# feed
+output "feed_iam_policy_org" {
+  description = "cai feed for iam policies at organizations level"
+  value       = module.setfeed.feed_iam_policy_org
+}
+
+output "feed_resource_org" {
+  description = "cai feed for resource at organizations level"
+  value       = module.setfeed.feed_resource_org
+}
+
+output "feed_iam_policy_folder" {
+  description = "cai feed for iam policies at folders level"
+  value       = module.setfeed.feed_iam_policy_folder
+}
+
+output "feed_resource_folder" {
+  description = "cai feed for resource at folders level"
+  value       = module.setfeed.feed_resource_folder
+}
+

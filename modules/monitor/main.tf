@@ -91,27 +91,27 @@ resource "google_cloud_run_service" "crun_svc" {
           }
         }
         env {
-          name  = "MONITOR_COMPLIANCE_STATUS_TOPIC_ID"
+          name  = "${upper(local.service_name)}_COMPLIANCE_STATUS_TOPIC_ID"
           value = google_pubsub_topic.compliance_status.name
         }
         env {
-          name  = "MONITOR_ENVIRONMENT"
+          name  = "${upper(local.service_name)}_ENVIRONMENT"
           value = terraform.workspace
         }
         env {
-          name  = "MONITOR_LOG_ONLY_SEVERITY_LEVELS"
+          name  = "${upper(local.service_name)}_LOG_ONLY_SEVERITY_LEVELS"
           value = var.log_only_severity_levels
         }
         env {
-          name  = "MONITOR_PROJECT_ID"
+          name  = "${upper(local.service_name)}_PROJECT_ID"
           value = var.project_id
         }
         env {
-          name  = "MONITOR_START_PROFILER"
+          name  = "${upper(local.service_name)}_START_PROFILER"
           value = var.start_profiler
         }
         env {
-          name  = "MONITOR_VIOLATION_TOPIC_ID"
+          name  = "${upper(local.service_name)}_VIOLATION_TOPIC_ID"
           value = google_pubsub_topic.violation.name
         }
       }

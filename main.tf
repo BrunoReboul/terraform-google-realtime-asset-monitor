@@ -85,6 +85,16 @@ module "executecaiexport" {
   triggering_topic_id        = module.launch.action_topic_id
 }
 
+module "splitexport" {
+  source                     = "./modules/splitexport"
+  project_id                 = var.project_id
+  crun_region                = var.crun_region
+  ram_microservice_image_tag = var.ram_microservice_image_tag
+  log_only_severity_levels   = var.log_only_severity_levels
+  exports_bucket_name        = module.executecaiexport.exports_bucket_name
+  cai_feed_topic_id          = module.convertfeed.cai_feed_topic_id
+}
+
 module "setfeed" {
   depends_on = [
     module.stream2bq.trigger_id_violation

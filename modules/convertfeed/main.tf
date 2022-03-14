@@ -21,8 +21,8 @@ locals {
 resource "google_service_account" "microservice_sa" {
   project      = var.project_id
   account_id   = local.service_name
-  display_name = "RAM convertfeed"
-  description  = "Solution: Real-time Asset Monitor, microservice: convertfeed"
+  display_name = "RAM ${local.service_name}"
+  description  = "Solution: Real-time Asset Monitor, microservice: ${local.service_name}"
 }
 
 resource "google_project_iam_member" "project_profiler_agent" {
@@ -75,39 +75,39 @@ resource "google_cloud_run_service" "crun_svc" {
           }
         }
         env {
-          name  = "CONVERTFEED_ASSET_COLLECTION_ID"
+          name  = "${upper(local.service_name)}_ASSET_COLLECTION_ID"
           value = var.asset_collection_id
         }
         env {
-          name  = "CONVERTFEED_ASSET_FEED_TOPIC_ID"
+          name  = "${upper(local.service_name)}_ASSET_FEED_TOPIC_ID"
           value = google_pubsub_topic.asset_feed.name
         }
         env {
-          name  = "CONVERTFEED_CACHE_MAX_AGE_MINUTES"
+          name  = "${upper(local.service_name)}_CACHE_MAX_AGE_MINUTES"
           value = var.cache_max_age_minutes
         }
         env {
-          name  = "CONVERTFEED_ENVIRONMENT"
+          name  = "${upper(local.service_name)}_ENVIRONMENT"
           value = terraform.workspace
         }
         env {
-          name  = "CONVERTFEED_LOG_ONLY_SEVERITY_LEVELS"
+          name  = "${upper(local.service_name)}_LOG_ONLY_SEVERITY_LEVELS"
           value = var.log_only_severity_levels
         }
         env {
-          name  = "CONVERTFEED_OWNER_LABEL_KEY_NAME"
+          name  = "${upper(local.service_name)}_OWNER_LABEL_KEY_NAME"
           value = var.owner_label_Key_name
         }
         env {
-          name  = "CONVERTFEED_PROJECT_ID"
+          name  = "${upper(local.service_name)}_PROJECT_ID"
           value = var.project_id
         }
         env {
-          name  = "CONVERTFEED_START_PROFILER"
+          name  = "${upper(local.service_name)}_START_PROFILER"
           value = var.start_profiler
         }
         env {
-          name  = "CONVERTFEED_VIOLATION_RESOLVER_LABEL_KEY_NAME"
+          name  = "${upper(local.service_name)}_VIOLATION_RESOLVER_LABEL_KEY_NAME"
           value = var.violation_resolver_label_key_name
         }
       }
@@ -148,8 +148,8 @@ resource "google_pubsub_topic" "cai_feed" {
 resource "google_service_account" "eva_trigger_sa" {
   project      = var.project_id
   account_id   = "${local.service_name}-trigger"
-  display_name = "RAM convertfeed trigger"
-  description  = "Solution: Real-time Asset Monitor, microservice tigger: convertfeed"
+  display_name = "RAM ${local.service_name} trigger"
+  description  = "Solution: Real-time Asset Monitor, microservice tigger: ${local.service_name}"
 }
 data "google_iam_policy" "binding" {
   binding {
@@ -167,6 +167,7 @@ resource "google_cloud_run_service_iam_policy" "trigger_invoker" {
 
   policy_data = data.google_iam_policy.binding.policy_data
 }
+
 resource "google_eventarc_trigger" "eva_trigger" {
   name            = local.service_name
   location        = google_cloud_run_service.crun_svc.location
