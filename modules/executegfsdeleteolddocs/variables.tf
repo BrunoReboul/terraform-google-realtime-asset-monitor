@@ -18,14 +18,6 @@ variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
 }
 
-variable "exports_bucket_name" {
-  description = "Cloud storage bucket where to output Cloud Asset Inventory exports"
-}
-
-variable "cai_feed_topic_id" {
-  description = "google cloud asset inventory feed messages"
-}
-
 variable "crun_region" {
   description = "cloud run region"
   default     = "europe-west1"
@@ -53,7 +45,7 @@ variable "crun_memory" {
 
 variable "crun_timeout_seconds" {
   description = "Max duration for an instance for responding to a request"
-  default     = 180
+  default     = 3600
 }
 
 variable "ram_container_images_registry" {
@@ -74,4 +66,24 @@ variable "log_only_severity_levels" {
 variable "start_profiler" {
   description = "Continuous CPU and heap profiling in Cloud Profiler"
   default     = "false"
+}
+
+variable "triggering_topic_id" {
+  description = "Triggering topic e.g projects/PROJECT_ID/topics/TOPIC_NAME"
+}
+
+variable "sub_ack_deadline_seconds" {
+  description = "The maximum time after a subscriber receives a message before the subscriber should acknowledge the message"
+  default     = 10
+}
+
+variable "sub_message_retention_duration" {
+  description = "How long to retain unacknowledged messages in the subscription's backlog,"
+  default     = "86400s"
+}
+
+# 2022-03-16 Database operation quota is 60 per MINUTE -> do not retry in less than a minute
+variable "sub_minimum_backoff" {
+  description = "The minimum delay between consecutive deliveries of a given message"
+  default     = "65s"
 }

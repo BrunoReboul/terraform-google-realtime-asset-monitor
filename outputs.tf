@@ -252,6 +252,29 @@ output "executecaiexport_subscription_id" {
   value       = module.executecaiexport.subscription_id
 }
 
+# executegfsdeleteolddocs
+output "executegfsdeleteolddocs_service_account_email" {
+  description = "Service account email used to run this microservice"
+  value       = module.executegfsdeleteolddocs.service_account_email
+}
+
+output "executegfsdeleteolddocs_crun_service_id" {
+  description = "cloud run service id"
+  value       = module.executegfsdeleteolddocs.crun_service_id
+}
+output "executegfsdeleteolddocs_crun_service_url" {
+  description = "cloud run service url"
+  value       = module.executegfsdeleteolddocs.crun_service_url
+}
+
+output "executegfsdeleteolddocs_subscription_sa_email" {
+  description = "Service account email used to trigger this type of action"
+  value       = module.executegfsdeleteolddocs.subscription_sa_email
+}
+output "executegfsdeleteolddocs_subscription_id" {
+  description = "PubSub subscription id to trigger this type of action"
+  value       = module.executegfsdeleteolddocs.subscription_id
+}
 
 #splitexport
 output "splitexport_service_account_email" {
