@@ -85,6 +85,15 @@ module "executecaiexport" {
   triggering_topic_id        = module.launch.action_topic_id
 }
 
+module "executegfsdeleteolddocs" {
+  source                     = "./modules/executegfsdeleteolddocs"
+  project_id                 = var.project_id
+  crun_region                = var.crun_region
+  ram_microservice_image_tag = var.ram_microservice_image_tag
+  log_only_severity_levels   = var.log_only_severity_levels
+  triggering_topic_id        = module.launch.action_topic_id
+}
+
 module "splitexport" {
   source                     = "./modules/splitexport"
   project_id                 = var.project_id
