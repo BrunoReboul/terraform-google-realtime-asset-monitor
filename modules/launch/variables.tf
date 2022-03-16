@@ -51,6 +51,11 @@ variable "schedulers" {
       "name"        = "at_00am00_on_day_of_month_1_in_january",
       "schedule"    = "0 0 1 1 *",
     },
+    qa_every_3h = {
+      "environment" = "qa",
+      "name"        = "at_minute_0_past_every_3rd_hour",
+      "schedule"    = "0 */3 * * *",
+    },
   }
 }
 
