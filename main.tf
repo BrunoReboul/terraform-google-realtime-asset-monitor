@@ -115,7 +115,9 @@ module "publish2fs" {
 
 module "setfeed" {
   depends_on = [
-    module.stream2bq.trigger_id_violation
+    module.stream2bq.trigger_id_violation,
+    module.splitexport.crun_service_id,
+    module.publish2fs.crun_service_id,
   ]
   source                  = "./modules/setfeed"
   project_id              = var.project_id
