@@ -300,8 +300,29 @@ output "splitexport_trigger_id" {
   value       = module.splitexport.trigger_id
 }
 
+# publish2fs
+output "publish2fs_service_account_email" {
+  description = "Service account email used to run this microservice"
+  value       = module.publish2fs.service_account_email
+}
 
+output "publish2fs_crun_service_id" {
+  description = "cloud run service id"
+  value       = module.publish2fs.crun_service_id
+}
+output "publish2fs_crun_service_url" {
+  description = "cloud run service url"
+  value       = module.publish2fs.crun_service_url
+}
 
+output "publish2fs_subscription_sa_email" {
+  description = "Service account email used to trigger this type of action"
+  value       = module.publish2fs.subscription_sa_email
+}
+output "publish2fs_subscription_id" {
+  description = "PubSub subscription id to trigger this type of action"
+  value       = module.publish2fs.subscription_id
+}
 
 # feed
 output "feed_iam_policy_org" {

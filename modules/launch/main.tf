@@ -25,8 +25,8 @@ data "google_project" "project" {
 resource "google_service_account" "microservice_sa" {
   project      = var.project_id
   account_id   = local.service_name
-  display_name = "RAM launch"
-  description  = "Solution: Real-time Asset Monitor, microservice: launch"
+  display_name = "RAM ${local.service_name}"
+  description  = "Solution: Real-time Asset Monitor, microservice: ${local.service_name}"
 }
 
 resource "google_project_iam_member" "project_profiler_agent" {
@@ -157,8 +157,8 @@ resource "google_cloud_run_service" "crun_svc" {
 resource "google_service_account" "eva_trigger_sa" {
   project      = var.project_id
   account_id   = "${local.service_name}-trigger"
-  display_name = "RAM launch trigger"
-  description  = "Solution: Real-time Asset Monitor, microservice tigger: launch"
+  display_name = "RAM ${local.service_name} trigger"
+  description  = "Solution: Real-time Asset Monitor, microservice trigger: ${local.service_name}"
 }
 data "google_iam_policy" "binding" {
   binding {

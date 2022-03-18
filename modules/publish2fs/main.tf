@@ -15,8 +15,7 @@
  */
 
 locals {
-  service_name = "execute"
-  action_kind  = "gfsdeleteolddocs"
+  service_name = "publish2fs"
 }
 
 data "google_project" "project" {
@@ -25,9 +24,9 @@ data "google_project" "project" {
 
 resource "google_service_account" "microservice_sa" {
   project      = var.project_id
-  account_id   = "${local.service_name}${local.action_kind}"
-  display_name = "RAM ${local.service_name} ${local.action_kind}"
-  description  = "Solution: Real-time Asset Monitor, microservice: ${local.service_name} ${local.action_kind}"
+  account_id   = local.service_name
+  display_name = "RAM ${local.service_name}"
+  description  = "Solution: Real-time Asset Monitor, microservice: ${local.service_name}"
 }
 
 resource "google_project_iam_member" "project_profiler_agent" {
@@ -45,7 +44,7 @@ resource "google_project_iam_member" "cloud_datastore_user" {
 
 resource "google_cloud_run_service" "crun_svc" {
   project  = var.project_id
-  name     = "${local.service_name}${local.action_kind}"
+  name     = local.service_name
   location = var.crun_region
 
   template {
@@ -57,6 +56,10 @@ resource "google_cloud_run_service" "crun_svc" {
             cpu    = "${var.crun_cpu}"
             memory = "${var.crun_memory}"
           }
+        }
+        env {
+          name  = "${upper(local.service_name)}_ASSET_COLLECTION_ID"
+          value = var.asset_collection_id
         }
         env {
           name  = "${upper(local.service_name)}_ENVIRONMENT"
@@ -73,10 +76,6 @@ resource "google_cloud_run_service" "crun_svc" {
         env {
           name  = "${upper(local.service_name)}_START_PROFILER"
           value = var.start_profiler
-        }
-        env {
-          name  = "${upper(local.service_name)}_ACTION_KIND"
-          value = local.action_kind
         }
       }
       container_concurrency = var.crun_concurrency
@@ -107,9 +106,9 @@ resource "google_cloud_run_service" "crun_svc" {
 
 resource "google_service_account" "subscription_sa" {
   project      = var.project_id
-  account_id   = "${local.service_name}-${local.action_kind}-sub"
-  display_name = "RAM execute ${local.action_kind} trigger"
-  description  = "Solution: Real-time Asset Monitor, microservice trigger: ${local.service_name}, action: ${local.action_kind}"
+  account_id   = "trigger-${local.service_name}"
+  display_name = "RAM execute ${local.service_name} trigger"
+  description  = "Solution: Real-time Asset Monitor, microservice trigger: ${local.service_name}"
 }
 data "google_iam_policy" "binding" {
   binding {
@@ -129,7 +128,7 @@ resource "google_cloud_run_service_iam_policy" "trigger_invoker" {
 
 resource "google_pubsub_subscription" "subcription" {
   project              = var.project_id
-  name                 = "${local.service_name}-${local.action_kind}"
+  name                 = local.service_name
   topic                = var.triggering_topic_id
   ack_deadline_seconds = var.sub_ack_deadline_seconds
   push_config {
@@ -142,7 +141,7 @@ resource "google_pubsub_subscription" "subcription" {
   expiration_policy {
     ttl = ""
   }
-  filter                     = "attributes.ce-type = \"com.gitlab.realtime-asset-monitor.${local.action_kind}\""
+  filter                     = "hasPrefix(attributes.ce-type, \"com.gitlab.realtime-asset-monitor.asset_feed.cloudresourcemanager\")"
   message_retention_duration = var.sub_message_retention_duration
   retry_policy {
     minimum_backoff = var.sub_minimum_backoff

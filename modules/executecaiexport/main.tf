@@ -144,7 +144,7 @@ resource "google_service_account" "subscription_sa" {
   project      = var.project_id
   account_id   = "${local.service_name}-${local.action_kind}-sub"
   display_name = "RAM execute ${local.action_kind} trigger"
-  description  = "Solution: Real-time Asset Monitor, microservice tigger: ${local.service_name}, action: ${local.action_kind}"
+  description  = "Solution: Real-time Asset Monitor, microservice trigger: ${local.service_name}, action: ${local.action_kind}"
 }
 data "google_iam_policy" "binding" {
   binding {

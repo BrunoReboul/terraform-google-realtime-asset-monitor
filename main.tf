@@ -104,6 +104,15 @@ module "splitexport" {
   cai_feed_topic_id          = module.convertfeed.cai_feed_topic_id
 }
 
+module "publish2fs" {
+  source                     = "./modules/publish2fs"
+  project_id                 = var.project_id
+  crun_region                = var.crun_region
+  ram_microservice_image_tag = var.ram_microservice_image_tag
+  log_only_severity_levels   = var.log_only_severity_levels
+  triggering_topic_id        = module.convertfeed.asset_feed_topic_id
+}
+
 module "setfeed" {
   depends_on = [
     module.stream2bq.trigger_id_violation
