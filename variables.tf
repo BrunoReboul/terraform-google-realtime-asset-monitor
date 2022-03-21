@@ -59,6 +59,32 @@ variable "scheduler_region" {
   default     = "europe-west1"
 }
 
+variable "schedulers" {
+  type = map(any)
+  default = {
+    prd_every_week = {
+      "environment" = "prd",
+      "name"        = "at_01am10_on_sunday",
+      "schedule"    = "10 1 * * 0",
+    },
+    prd_every_3h = {
+      "environment" = "prd",
+      "name"        = "at_minute_0_past_every_3rd_hour",
+      "schedule"    = "0 */3 * * *",
+    },
+    qa_every_year = {
+      "environment" = "qa",
+      "name"        = "at_00am00_on_day_of_month_1_in_january",
+      "schedule"    = "0 0 1 1 *",
+    },
+    qa_every_3h = {
+      "environment" = "qa",
+      "name"        = "at_minute_0_past_every_3rd_hour",
+      "schedule"    = "0 */3 * * *",
+    },
+  }
+}
+
 variable "export_org_ids" {
   description = "list of organization id where to grant Cloud Asset Inventory roles to allow export feature"
   type        = list(string)
