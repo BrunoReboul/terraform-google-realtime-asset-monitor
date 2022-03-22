@@ -49,36 +49,36 @@ variable "dataset_location" {
   default     = "EU"
 }
 
-variable "views_interval_days" {
-  description = "The sliding windows in days the view uses to get data. Should not be less than the batch cadence to export assets"
-  default     = 28
-}
-
 variable "scheduler_region" {
   description = "Cloud Scheduler region"
   default     = "europe-west1"
+}
+
+variable "views_interval_days" {
+  description = "The sliding windows in days the view uses to get data. Should not be less than the batch cadence to export assets"
+  default     = 28
 }
 
 variable "schedulers" {
   type = map(any)
   default = {
     prd_every_week = {
-      "environment" = "prd",
+      "environment" = "prod",
       "name"        = "at_01am10_on_sunday",
       "schedule"    = "10 1 * * 0",
     },
     prd_every_3h = {
-      "environment" = "prd",
+      "environment" = "prod",
       "name"        = "at_minute_0_past_every_3rd_hour",
       "schedule"    = "0 */3 * * *",
     },
     qa_every_year = {
-      "environment" = "qa",
+      "environment" = "test",
       "name"        = "at_00am00_on_day_of_month_1_in_january",
       "schedule"    = "0 0 1 1 *",
     },
     qa_every_3h = {
-      "environment" = "qa",
+      "environment" = "test",
       "name"        = "at_minute_0_past_every_3rd_hour",
       "schedule"    = "0 */3 * * *",
     },

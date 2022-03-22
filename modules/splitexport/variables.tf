@@ -47,13 +47,13 @@ variable "crun_max_instances" {
 
 variable "crun_memory" {
   description = "Memory allocation in k8s quantity "
-  default     = "128Mi"
+  default     = "4Gi"
 }
 
 
 variable "crun_timeout_seconds" {
   description = "Max duration for an instance for responding to a request"
-  default     = 180
+  default     = 3600
 }
 
 variable "ram_container_images_registry" {
