@@ -24,6 +24,7 @@ variable "exports_bucket_name" {
 
 variable "cai_feed_topic_id" {
   description = "google cloud asset inventory feed messages"
+  default     = "caiFeed"
 }
 
 variable "crun_region" {

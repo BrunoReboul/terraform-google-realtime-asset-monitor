@@ -102,7 +102,7 @@ module "splitexport" {
   ram_microservice_image_tag = var.ram_microservice_image_tag
   log_only_severity_levels   = var.log_only_severity_levels
   exports_bucket_name        = module.executecaiexport.exports_bucket_name
-  cai_feed_topic_id          = module.convertfeed.cai_feed_topic_id
+  cai_feed_topic_id          = module.convertfeed.cai_feed_topic_name
 }
 
 module "publish2fs" {

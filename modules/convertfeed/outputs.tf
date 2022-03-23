@@ -29,6 +29,11 @@ output "cai_feed_topic_id" {
   value       = google_pubsub_topic.cai_feed.id
 }
 
+output "cai_feed_topic_name" {
+  description = "cai feed topic name"
+  value       = google_pubsub_topic.cai_feed.name
+}
+
 output "asset_feed_topic_id" {
   description = "asset feed topic id"
   value       = google_pubsub_topic.asset_feed.id
