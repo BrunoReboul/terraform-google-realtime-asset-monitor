@@ -374,7 +374,7 @@ FROM
             name,
             MAX(timestamp) AS timestamp
         FROM
-            ${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.assets.table_id}
+            `${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.assets.table_id}`
         WHERE
             DATE(_PARTITIONTIME) > DATE_SUB(CURRENT_DATE(), INTERVAL ${var.views_interval_days} DAY)
             OR _PARTITIONTIME IS NULL
@@ -397,7 +397,7 @@ FROM
             deleted,
             projectID
         FROM
-            ${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.assets.table_id}
+            `${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.assets.table_id}`
         WHERE
             DATE(_PARTITIONTIME) > DATE_SUB(CURRENT_DATE(), INTERVAL ${var.views_interval_days} DAY)
             OR _PARTITIONTIME IS NULL
@@ -419,7 +419,7 @@ WITH complianceStatus0 AS (
     SELECT
         *
     FROM
-        ${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.compliance_status.table_id}
+        `${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.compliance_status.table_id}`
     WHERE
         DATE(_PARTITIONTIME) > DATE_SUB(CURRENT_DATE(), INTERVAL ${var.views_interval_days} DAY)
         OR _PARTITIONTIME IS NULL
@@ -436,7 +436,7 @@ assets AS (
         assetType,
         projectID
     FROM
-        ${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.last_assets.table_id}
+        `${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.last_assets.table_id}`
 ),
 latest_asset_inventory_per_rule AS (
     SELECT
@@ -610,12 +610,12 @@ SELECT
     compliancestatus.level9,
     compliancestatus.projectID
 FROM
-    ${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.last_compliance_status.table_id} AS compliancestatus
+    `${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.last_compliance_status.table_id}` AS compliancestatus
     INNER JOIN (
         SELECT
             *
         FROM
-          ${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.violations.table_id}
+          `${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.violations.table_id}`
         WHERE
             DATE(_PARTITIONTIME) > DATE_SUB(CURRENT_DATE(), INTERVAL ${var.views_interval_days} DAY)
             OR _PARTITIONTIME IS NULL
