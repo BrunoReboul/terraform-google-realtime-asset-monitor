@@ -19,7 +19,7 @@ resource "google_cloud_asset_organization_feed" "feed_iam_policy_org" {
   for_each        = var.feed_iam_policy_orgs
   billing_project = var.project_id
   org_id          = each.key
-  feed_id         = "ram-iam-policy"
+  feed_id         = "${var.project_id}-iam-policy"
   content_type    = "IAM_POLICY"
   asset_types     = each.value
   feed_output_config {
@@ -33,7 +33,7 @@ resource "google_cloud_asset_organization_feed" "feed_resource_org" {
   for_each        = var.feed_resource_orgs
   billing_project = var.project_id
   org_id          = each.key
-  feed_id         = "ram-resource"
+  feed_id         = "${var.project_id}-resource"
   content_type    = "RESOURCE"
   asset_types     = each.value
   feed_output_config {
@@ -47,7 +47,7 @@ resource "google_cloud_asset_folder_feed" "feed_iam_policy_folder" {
   for_each        = var.feed_iam_policy_folders
   billing_project = var.project_id
   folder          = each.key
-  feed_id         = "ram-iam-policy"
+  feed_id         = "${var.project_id}-iam-policy"
   content_type    = "IAM_POLICY"
   asset_types     = each.value
   feed_output_config {
@@ -61,7 +61,7 @@ resource "google_cloud_asset_folder_feed" "feed_resource_folder" {
   for_each        = var.feed_resource_folders
   billing_project = var.project_id
   folder          = each.key
-  feed_id         = "ram-resource"
+  feed_id         = "${var.project_id}-resource"
   content_type    = "RESOURCE"
   asset_types     = each.value
   feed_output_config {
