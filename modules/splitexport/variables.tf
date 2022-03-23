@@ -38,7 +38,7 @@ variable "crun_cpu" {
 }
 variable "crun_concurrency" {
   description = "Number of requests a container could received at the same time"
-  default     = 1000
+  default     = 1
 }
 
 variable "crun_max_instances" {
