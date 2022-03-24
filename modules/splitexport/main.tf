@@ -22,10 +22,14 @@ data "google_project" "project" {
   project_id = var.project_id
 }
 
+data "google_storage_project_service_account" "gcs_account" {
+  project = var.project_id
+}
+
 resource "google_project_iam_member" "project_pubusb_publisher" {
   project = var.project_id
   role    = "roles/pubsub.publisher"
-  member  = "serviceAccount:service-${data.google_project.project.number}@gs-project-accounts.iam.gserviceaccount.com"
+  member  = "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"
 }
 
 resource "google_service_account" "microservice_sa" {

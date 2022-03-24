@@ -48,8 +48,6 @@ To use theses terraform modules, you will need a GCP project with:
     - Service Usage Consumer `roles/serviceusage.serviceUsageConsumer`
 
 - FireStore: [select native mode](https://cloud.google.com/datastore/docs/firestore-or-datastore)
-- Trigger Cloud Storage service agent service account creation [by one of theses means](https://cloud.google.com/storage/docs/getting-service-agent), for example:
-  - `gsutil kms serviceaccount -p <your-project-id>`
 - Provision a GCS bucket to manage Terraform state.
 - Install Terraform and google provider consistent with version specifyied in `versions.tf`
 
