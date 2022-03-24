@@ -23,13 +23,14 @@ data "google_project" "project" {
   project_id = var.project_id
 }
 
+# 2020-03-24 commented as customer image used to run terraform provisioning may not have gsutil, added in pre-requisite
 # https://cloud.google.com/storage/docs/projects#service-agents
 # https://cloud.google.com/storage/docs/getting-service-agent
-resource "null_resource" "trigger_storage_agent_sa_creation" {
-  provisioner "local-exec" {
-    command = "gsutil kms serviceaccount -p ${var.project_id}"
-  }
-}
+# resource "null_resource" "trigger_storage_agent_sa_creation" {
+#   provisioner "local-exec" {
+#     command = "gsutil kms serviceaccount -p ${var.project_id}"
+#   }
+# }
 
 resource "google_service_account" "microservice_sa" {
   project      = var.project_id
