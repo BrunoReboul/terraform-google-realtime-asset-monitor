@@ -49,7 +49,7 @@ variable "crun_concurrency" {
 
 variable "crun_max_instances" {
   description = "Max number of instances"
-  default     = 1000
+  default     = 10
 }
 
 variable "crun_memory" {

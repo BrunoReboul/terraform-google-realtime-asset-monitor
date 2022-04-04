@@ -129,3 +129,9 @@ module "setfeed" {
   feed_resource_folders   = var.feed_resource_folders
   feed_resource_orgs      = var.feed_resource_orgs
 }
+
+module "setdashboard" {
+  depends_on = [module.setfeed.project_id]
+  source     = "./modules/setdashboard"
+  project_id = var.project_id
+}

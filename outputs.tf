@@ -345,3 +345,19 @@ output "feed_resource_folder" {
   value       = module.setfeed.feed_resource_folder
 }
 
+#dashboard
+output "dashboard_log_metric_count_critical_log_entries_id" {
+  value = module.setdashboard.log_metric_count_critical_log_entries_id
+}
+
+output "dashboard_log_metric_count_error_log_entries_id" {
+  value = module.setdashboard.log_metric_count_error_log_entries_id
+}
+
+output "dashboard_log_metric_count_max_request_timeout_error_id" {
+  value = module.setdashboard.log_metric_count_max_request_timeout_error_id
+}
+
+output "log_metric_count_memory_limit_errors_id" {
+  value = module.setdashboard.log_metric_count_memory_limit_errors_id
+}

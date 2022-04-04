@@ -31,6 +31,8 @@ To use theses terraform modules, you will need a GCP project with:
     - Storage Admin `roles/storage.admin`
     - BigQuery Admin `roles/bigquery.admin`
     - Cloud Scheduler Admin `roles/cloudscheduler.admin`
+    - Logs Configuration Writer `roles/logging.configWriter`
+    - Monitoring Dashboard Configuration Editor `roles/monitoring.dashboardEditor`
   - On the real-time monitored assets parent orgs / folders
     - Cloud Asset Owner `roles/cloudasset.owner`
   - on batch monitored assets parent orgs

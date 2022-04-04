@@ -29,12 +29,12 @@ variable "crun_cpu" {
 }
 variable "crun_concurrency" {
   description = "Number of requests a container could received at the same time"
-  default     = 1000
+  default     = 200
 }
 
 variable "crun_max_instances" {
   description = "Max number of instances"
-  default     = 1000
+  default     = 100
 }
 
 variable "crun_memory" {
@@ -45,7 +45,7 @@ variable "crun_memory" {
 
 variable "crun_timeout_seconds" {
   description = "Max duration for an instance for responding to a request"
-  default     = 300
+  default     = 180
 }
 
 variable "ram_container_images_registry" {
