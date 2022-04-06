@@ -44,7 +44,7 @@ variable "crun_cpu" {
 }
 variable "crun_concurrency" {
   description = "Number of requests a container could received at the same time"
-  default     = 1000
+  default     = 200
 }
 
 variable "crun_max_instances" {
@@ -54,7 +54,7 @@ variable "crun_max_instances" {
 
 variable "crun_memory" {
   description = "Memory allocation in k8s quantity "
-  default     = "256Mi"
+  default     = "128Mi"
 }
 
 variable "crun_timeout_seconds" {

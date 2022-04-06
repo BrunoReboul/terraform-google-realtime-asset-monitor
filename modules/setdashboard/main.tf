@@ -102,6 +102,84 @@ resource "google_logging_metric" "count_memory_limit_errors" {
   }
 }
 
+resource "google_logging_metric" "ram_latency" {
+  project = var.project_id
+  name    = "ram_latency"
+  filter  = "resource.type=\"cloud_run_revision\" severity=\"NOTICE\" jsonPayload.message=~\"^finish\""
+  metric_descriptor {
+    metric_kind = "DELTA"
+    value_type  = "DISTRIBUTION"
+    unit        = "s"
+    labels {
+      key         = "environment"
+      value_type  = "STRING"
+      description = "qa test prod ..."
+    }
+    labels {
+      key         = "microservice_name"
+      value_type  = "STRING"
+      description = "convertfeed, fetchrules monitor stream2bq ..."
+    }
+    labels {
+      key         = "origin"
+      value_type  = "STRING"
+      description = "real-time, sheduled ..."
+    }
+  }
+  value_extractor = "EXTRACT(jsonPayload.latency_seconds)"
+  label_extractors = {
+    "environment"       = "EXTRACT(jsonPayload.environment)"
+    "microservice_name" = "EXTRACT(jsonPayload.microservice_name)"
+    "origin"            = "EXTRACT(jsonPayload.assetInventoryOrigin)"
+  }
+  bucket_options {
+    exponential_buckets {
+      num_finite_buckets = 64
+      growth_factor      = 1.4142135623731
+      scale              = 0.01
+    }
+  }
+}
+
+resource "google_logging_metric" "ram_latency_e2e" {
+  project = var.project_id
+  name    = "ram_latency_e2e"
+  filter  = "resource.type=\"cloud_run_revision\" severity=\"NOTICE\" jsonPayload.message=~\"^finish\""
+  metric_descriptor {
+    metric_kind = "DELTA"
+    value_type  = "DISTRIBUTION"
+    unit        = "s"
+    labels {
+      key         = "environment"
+      value_type  = "STRING"
+      description = "qa test prod ..."
+    }
+    labels {
+      key         = "microservice_name"
+      value_type  = "STRING"
+      description = "convertfeed, fetchrules monitor stream2bq ..."
+    }
+    labels {
+      key         = "origin"
+      value_type  = "STRING"
+      description = "real-time, sheduled ..."
+    }
+  }
+  value_extractor = "EXTRACT(jsonPayload.latency_e2e_seconds)"
+  label_extractors = {
+    "environment"       = "EXTRACT(jsonPayload.environment)"
+    "microservice_name" = "EXTRACT(jsonPayload.microservice_name)"
+    "origin"            = "EXTRACT(jsonPayload.assetInventoryOrigin)"
+  }
+  bucket_options {
+    exponential_buckets {
+      num_finite_buckets = 64
+      growth_factor      = 1.4142135623731
+      scale              = 0.01
+    }
+  }
+}
+
 resource "google_monitoring_dashboard" "ram_main_microservices" {
   project        = var.project_id
   dashboard_json = <<EOF
@@ -3864,6 +3942,569 @@ resource "google_monitoring_dashboard" "ram_errors_in_log_entries" {
       }
     ]
   }
+}
+
+EOF
+}
+
+resource "google_monitoring_dashboard" "daily_counts_top3_cost_drivers" {
+  project        = var.project_id
+  dashboard_json = <<EOF
+{
+  "category": "CUSTOM",
+  "displayName": "daily_counts_top3_cost_drivers",
+  "mosaicLayout": {
+    "columns": 12,
+    "tiles": [
+      {
+        "height": 4,
+        "widget": {
+          "title": "CLOUD RUN Billable Instance Time",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "plotType": "STACKED_BAR",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesQueryLanguage": "fetch cloud_run_revision\n| metric 'run.googleapis.com/container/billable_instance_time'\n| align delta(1d)\n| every 1d\n| within 1d \n| group_by [resource.service_name]\n"
+                }
+              }
+            ],
+            "thresholds": [],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 12,
+        "xPos": 0,
+        "yPos": 8
+      },
+      {
+        "height": 4,
+        "widget": {
+          "title": "LOG bytes ingested",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "plotType": "STACKED_BAR",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesQueryLanguage": "fetch global\n| metric 'logging.googleapis.com/billing/bytes_ingested'\n| align delta(1d)\n| every 1d\n| within 1d \n| group_by [metric.resource_type ]"
+                }
+              }
+            ],
+            "thresholds": [],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 12,
+        "xPos": 0,
+        "yPos": 4
+      },
+      {
+        "height": 4,
+        "widget": {
+          "title": "FIRESTORE - Document Reads",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "plotType": "STACKED_BAR",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "timeSeriesQueryLanguage": "fetch firestore_instance\n| metric 'firestore.googleapis.com/document/read_count'\n| align delta(1d)\n| every 1d\n| within 1d \n| group_by [metric.type]\n"
+                }
+              }
+            ],
+            "thresholds": [],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 12,
+        "xPos": 0,
+        "yPos": 0
+      }
+    ]
+  }
+}
+
+EOF
+}
+
+resource "google_monitoring_dashboard" "slo_freshness_gcp_batch" {
+  depends_on = [
+    google_logging_metric.ram_latency_e2e,
+  ]
+  project        = var.project_id
+  dashboard_json = <<EOF
+{
+    "category": "CUSTOM",
+    "displayName": "SLO freshness GCP batch",
+    "mosaicLayout": {
+      "columns": 12,
+      "tiles": [
+        {
+          "height": 2,
+          "widget": {
+            "text": {
+              "content": "**Freshness**: 99% of GCP configurations from batch flow over the last 28 days should be analyzed in less than 15 minutes.",
+              "format": "MARKDOWN"
+            },
+            "title": "GCP batch 99% < 15 minutes"
+          },
+          "width": 4,
+          "xPos": 0,
+          "yPos": 0
+        },
+        {
+          "height": 2,
+          "widget": {
+            "scorecard": {
+              "gaugeView": {
+                "lowerBound": 0.9,
+                "upperBound": 1
+              },
+              "thresholds": [
+                {
+                  "color": "RED",
+                  "direction": "BELOW",
+                  "label": "",
+                  "value": 0.99
+                }
+              ],
+              "timeSeriesQuery": {
+                "timeSeriesQueryLanguage": "fetch cloud_run_revision::logging.googleapis.com/user/ram_latency_e2e\n| filter metric.microservice_name == 'stream2bq'\n| filter metric.origin == 'scheduled'\n| align delta(28d)\n| every 28d\n| within 28d\n| group_by [metric.microservice_name]\n| fraction_less_than_from 900"
+              }
+            },
+            "title": "SLI vs SLO"
+          },
+          "width": 3,
+          "xPos": 4,
+          "yPos": 0
+        },
+        {
+          "height": 2,
+          "widget": {
+            "scorecard": {
+              "thresholds": [
+                {
+                  "color": "YELLOW",
+                  "direction": "BELOW",
+                  "label": "",
+                  "value": 0.1
+                }
+              ],
+              "timeSeriesQuery": {
+                "timeSeriesQueryLanguage": "fetch cloud_run_revision::logging.googleapis.com/user/ram_latency_e2e\n| filter metric.microservice_name == 'stream2bq'\n| filter metric.origin == 'scheduled'\n| align delta(28d)\n| every 28d\n| within 28d\n| group_by [metric.microservice_name]\n| fraction_less_than_from 900\n| neg\n| add 1\n| div 0.01\n| neg\n| add 1"
+              }
+            },
+            "title": "Remaining ERROR BUDGET"
+          },
+          "width": 3,
+          "xPos": 7,
+          "yPos": 0
+        },
+        {
+          "height": 2,
+          "widget": {
+            "scorecard": {
+              "sparkChartView": {
+                "sparkChartType": "SPARK_LINE"
+              },
+              "timeSeriesQuery": {
+                "timeSeriesQueryLanguage": "fetch cloud_run_revision::logging.googleapis.com/user/ram_latency_e2e\n| filter metric.microservice_name == 'stream2bq'\n| filter metric.origin == 'scheduled'\n| align delta(28d)\n| every 28d\n| within 28d\n| group_by [metric.microservice_name]\n| count_from"
+              }
+            },
+            "title": "Configurations analyzed in 28 days"
+          },
+          "width": 2,
+          "xPos": 10,
+          "yPos": 0
+        },
+        {
+          "height": 9,
+          "widget": {
+            "title": "Last 28days heatmap",
+            "xyChart": {
+              "chartOptions": {
+                "mode": "COLOR"
+              },
+              "dataSets": [
+                {
+                  "plotType": "HEATMAP",
+                  "targetAxis": "Y1",
+                  "timeSeriesQuery": {
+                    "timeSeriesQueryLanguage": "fetch cloud_run_revision::logging.googleapis.com/user/ram_latency_e2e\n| filter (metric.microservice_name == 'stream2bq')\n| filter metric.origin == 'scheduled'\n| align delta(28d)\n| every 28d\n| within 28d\n| group_by [metric.microservice_name]\n| graph_period 28d"
+                  }
+                }
+              ],
+              "timeshiftDuration": "0s",
+              "yAxis": {
+                "label": "y1Axis",
+                "scale": "LINEAR"
+              }
+            }
+          },
+          "width": 3,
+          "xPos": 9,
+          "yPos": 2
+        },
+        {
+          "height": 3,
+          "widget": {
+            "title": "Error budget burnrate on 7d sliding windows - Email when > 1.5",
+            "xyChart": {
+              "chartOptions": {
+                "mode": "COLOR"
+              },
+              "dataSets": [
+                {
+                  "plotType": "LINE",
+                  "targetAxis": "Y1",
+                  "timeSeriesQuery": {
+                    "timeSeriesQueryLanguage": "fetch cloud_run_revision::logging.googleapis.com/user/ram_latency_e2e\n|filter metric.microservice_name == 'stream2bq'\n| filter metric.origin == 'scheduled'\n| align delta(1m)\n| every 1m\n| group_by [metric.microservice_name], sliding(7d)\n| fraction_less_than_from 900\n| neg\n| add 1\n| div 0.01\n| cast_units \"1\""
+                  }
+                }
+              ],
+              "thresholds": [
+                {
+                  "label": "",
+                  "targetAxis": "Y1",
+                  "value": 1.5
+                }
+              ],
+              "timeshiftDuration": "0s",
+              "yAxis": {
+                "label": "y1Axis",
+                "scale": "LINEAR"
+              }
+            }
+          },
+          "width": 9,
+          "xPos": 0,
+          "yPos": 2
+        },
+        {
+          "height": 3,
+          "widget": {
+            "title": "Error budget burnrate on 12h sliding windows - Alert when > 3",
+            "xyChart": {
+              "chartOptions": {
+                "mode": "COLOR"
+              },
+              "dataSets": [
+                {
+                  "plotType": "LINE",
+                  "targetAxis": "Y1",
+                  "timeSeriesQuery": {
+                    "timeSeriesQueryLanguage": "fetch cloud_run_revision::logging.googleapis.com/user/ram_latency_e2e\n|filter metric.microservice_name == 'stream2bq'\n| filter metric.origin == 'scheduled'\n| align delta(1m)\n| every 1m\n| group_by [metric.microservice_name], sliding(12h)\n| fraction_less_than_from 900\n| neg\n| add 1\n| div 0.01\n| cast_units \"1\""
+                  }
+                }
+              ],
+              "thresholds": [
+                {
+                  "label": "",
+                  "targetAxis": "Y1",
+                  "value": 3
+                }
+              ],
+              "timeshiftDuration": "0s",
+              "yAxis": {
+                "label": "y1Axis",
+                "scale": "LINEAR"
+              }
+            }
+          },
+          "width": 9,
+          "xPos": 0,
+          "yPos": 5
+        },
+        {
+          "height": 3,
+          "widget": {
+            "title": "Error budget burnrate on 1h sliding windows - Alert when > 9",
+            "xyChart": {
+              "chartOptions": {
+                "mode": "COLOR"
+              },
+              "dataSets": [
+                {
+                  "plotType": "LINE",
+                  "targetAxis": "Y1",
+                  "timeSeriesQuery": {
+                    "timeSeriesQueryLanguage": "fetch cloud_run_revision::logging.googleapis.com/user/ram_latency_e2e\n|filter metric.microservice_name == 'stream2bq'\n| filter metric.origin == 'scheduled'\n| align delta(1m)\n| every 1m\n| group_by [metric.microservice_name], sliding(1h)\n| fraction_less_than_from 900\n| neg\n| add 1\n| div 0.01\n| cast_units \"1\""
+                  }
+                }
+              ],
+              "thresholds": [
+                {
+                  "label": "",
+                  "targetAxis": "Y1",
+                  "value": 9
+                }
+              ],
+              "timeshiftDuration": "0s",
+              "yAxis": {
+                "label": "y1Axis",
+                "scale": "LINEAR"
+              }
+            }
+          },
+          "width": 9,
+          "xPos": 0,
+          "yPos": 8
+        }
+      ]
+    }
+}
+
+EOF
+}
+
+resource "google_monitoring_dashboard" "slo_freshness_gcp_realtime" {
+  depends_on = [
+    google_logging_metric.ram_latency_e2e,
+  ]
+  project        = var.project_id
+  dashboard_json = <<EOF
+{
+    "category": "CUSTOM",
+    "displayName": "SLO freshness GCP real-time",
+    "mosaicLayout": {
+      "columns": 12,
+      "tiles": [
+        {
+          "height": 2,
+          "widget": {
+            "text": {
+              "content": "**Freshness**: 97% of GCP configurations from real-time flow over the last 28 days should be analyzed in less than 20 seconds.",
+              "format": "MARKDOWN"
+            },
+            "title": "GCP real-time 97% < 20 seconds"
+          },
+          "width": 4,
+          "xPos": 0,
+          "yPos": 0
+        },
+        {
+          "height": 2,
+          "widget": {
+            "scorecard": {
+              "gaugeView": {
+                "lowerBound": 0.9,
+                "upperBound": 1
+              },
+              "thresholds": [
+                {
+                  "color": "RED",
+                  "direction": "BELOW",
+                  "label": "",
+                  "value": 0.97
+                }
+              ],
+              "timeSeriesQuery": {
+                "timeSeriesQueryLanguage": "fetch cloud_run_revision::logging.googleapis.com/user/ram_latency_e2e\n| filter metric.microservice_name == 'stream2bq'\n| filter metric.origin == 'real-time'\n| align delta(28d)\n| every 28d\n| within 28d\n| group_by [metric.microservice_name]\n| fraction_less_than_from 20"
+              }
+            },
+            "title": "SLI vs SLO"
+          },
+          "width": 3,
+          "xPos": 4,
+          "yPos": 0
+        },
+        {
+          "height": 2,
+          "widget": {
+            "scorecard": {
+              "thresholds": [
+                {
+                  "color": "YELLOW",
+                  "direction": "BELOW",
+                  "label": "",
+                  "value": 0.1
+                }
+              ],
+              "timeSeriesQuery": {
+                "timeSeriesQueryLanguage": "fetch cloud_run_revision::logging.googleapis.com/user/ram_latency_e2e\n| filter metric.microservice_name == 'stream2bq'\n| filter metric.origin == 'real-time'\n| align delta(28d)\n| every 28d\n| within 28d\n| group_by [metric.microservice_name]\n| fraction_less_than_from 20\n| neg\n| add 1\n| div 0.03\n| neg\n| add 1"
+              }
+            },
+            "title": "Remaining ERROR BUDGET"
+          },
+          "width": 3,
+          "xPos": 7,
+          "yPos": 0
+        },
+        {
+          "height": 2,
+          "widget": {
+            "scorecard": {
+              "sparkChartView": {
+                "sparkChartType": "SPARK_LINE"
+              },
+              "timeSeriesQuery": {
+                "timeSeriesQueryLanguage": "fetch cloud_run_revision::logging.googleapis.com/user/ram_latency_e2e\n| filter metric.microservice_name == 'stream2bq'\n| filter metric.origin == 'real-time'\n| align delta(28d)\n| every 28d\n| within 28d\n| group_by [metric.microservice_name]\n| count_from"
+              }
+            },
+            "title": "Configurations analyzed in 28 days"
+          },
+          "width": 2,
+          "xPos": 10,
+          "yPos": 0
+        },
+        {
+          "height": 9,
+          "widget": {
+            "title": "Last 28days heatmap",
+            "xyChart": {
+              "chartOptions": {
+                "mode": "COLOR"
+              },
+              "dataSets": [
+                {
+                  "plotType": "HEATMAP",
+                  "targetAxis": "Y1",
+                  "timeSeriesQuery": {
+                    "timeSeriesQueryLanguage": "fetch cloud_run_revision::logging.googleapis.com/user/ram_latency_e2e\n| filter (metric.microservice_name == 'stream2bq')\n| filter metric.origin == 'real-time'\n| align delta(28d)\n| every 28d\n| within 28d\n| group_by [metric.microservice_name]\n| graph_period 28d"
+                  }
+                }
+              ],
+              "timeshiftDuration": "0s",
+              "yAxis": {
+                "label": "y1Axis",
+                "scale": "LINEAR"
+              }
+            }
+          },
+          "width": 3,
+          "xPos": 9,
+          "yPos": 2
+        },
+        {
+          "height": 3,
+          "widget": {
+            "title": "Error budget burnrate on 7d sliding windows - Email when > 1.5",
+            "xyChart": {
+              "chartOptions": {
+                "mode": "COLOR"
+              },
+              "dataSets": [
+                {
+                  "plotType": "LINE",
+                  "targetAxis": "Y1",
+                  "timeSeriesQuery": {
+                    "timeSeriesQueryLanguage": "fetch cloud_run_revision::logging.googleapis.com/user/ram_latency_e2e\n|filter metric.microservice_name == 'stream2bq'\n| filter metric.origin == 'real-time'\n| align delta(1m)\n| every 1m\n| group_by [metric.microservice_name], sliding(7d)\n| fraction_less_than_from 20\n| neg\n| add 1\n| div 0.03\n| cast_units \"1\""
+                  }
+                }
+              ],
+              "thresholds": [
+                {
+                  "label": "",
+                  "targetAxis": "Y1",
+                  "value": 1.5
+                }
+              ],
+              "timeshiftDuration": "0s",
+              "yAxis": {
+                "label": "y1Axis",
+                "scale": "LINEAR"
+              }
+            }
+          },
+          "width": 9,
+          "xPos": 0,
+          "yPos": 2
+        },
+        {
+          "height": 3,
+          "widget": {
+            "title": "Error budget burnrate on 12h sliding windows - Alert when > 3",
+            "xyChart": {
+              "chartOptions": {
+                "mode": "COLOR"
+              },
+              "dataSets": [
+                {
+                  "plotType": "LINE",
+                  "targetAxis": "Y1",
+                  "timeSeriesQuery": {
+                    "timeSeriesQueryLanguage": "fetch cloud_run_revision::logging.googleapis.com/user/ram_latency_e2e\n|filter metric.microservice_name == 'stream2bq'\n| filter metric.origin == 'real-time'\n| align delta(1m)\n| every 1m\n| group_by [metric.microservice_name], sliding(12h)\n| fraction_less_than_from 20\n| neg\n| add 1\n| div 0.03\n| cast_units \"1\""
+                  }
+                }
+              ],
+              "thresholds": [
+                {
+                  "label": "",
+                  "targetAxis": "Y1",
+                  "value": 3
+                }
+              ],
+              "timeshiftDuration": "0s",
+              "yAxis": {
+                "label": "y1Axis",
+                "scale": "LINEAR"
+              }
+            }
+          },
+          "width": 9,
+          "xPos": 0,
+          "yPos": 5
+        },
+        {
+          "height": 3,
+          "widget": {
+            "title": "Error budget burnrate on 1h sliding windows - Alert when > 9",
+            "xyChart": {
+              "chartOptions": {
+                "mode": "COLOR"
+              },
+              "dataSets": [
+                {
+                  "plotType": "LINE",
+                  "targetAxis": "Y1",
+                  "timeSeriesQuery": {
+                    "timeSeriesQueryLanguage": "fetch cloud_run_revision::logging.googleapis.com/user/ram_latency_e2e\n|filter metric.microservice_name == 'stream2bq'\n| filter metric.origin == 'real-time'\n| align delta(1m)\n| every 1m\n| group_by [metric.microservice_name], sliding(1h)\n| fraction_less_than_from 20\n| neg\n| add 1\n| div 0.03\n| cast_units \"1\""
+                  }
+                }
+              ],
+              "thresholds": [
+                {
+                  "label": "",
+                  "targetAxis": "Y1",
+                  "value": 9
+                }
+              ],
+              "timeshiftDuration": "0s",
+              "yAxis": {
+                "label": "y1Axis",
+                "scale": "LINEAR"
+              }
+            }
+          },
+          "width": 9,
+          "xPos": 0,
+          "yPos": 8
+        }
+      ]
+    }
 }
 
 EOF
