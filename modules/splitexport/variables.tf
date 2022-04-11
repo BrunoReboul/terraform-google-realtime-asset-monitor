@@ -22,6 +22,31 @@ variable "exports_bucket_name" {
   description = "Cloud storage bucket where to output Cloud Asset Inventory exports"
 }
 
+variable "gcs_notif_export_topic_name" {
+  description = "google cloud storage notification messages"
+  default     = "gcsNotifExport"
+}
+
+variable "pubsub_allowed_regions" {
+  type    = list(string)
+  default = ["europe-west1", "europe-west3", "europe-west4", "europe-north1", "europe-central2"]
+}
+
+variable "sub_ack_deadline_seconds" {
+  description = "The maximum time after a subscriber receives a message before the subscriber should acknowledge the message"
+  default     = 20
+}
+
+variable "sub_message_retention_duration" {
+  description = "How long to retain unacknowledged messages in the subscription's backlog,"
+  default     = "86400s"
+}
+
+variable "sub_minimum_backoff" {
+  description = "The minimum delay between consecutive deliveries of a given message"
+  default     = "20s"
+}
+
 variable "cai_feed_topic_id" {
   description = "google cloud asset inventory feed messages"
   default     = "caiFeed"

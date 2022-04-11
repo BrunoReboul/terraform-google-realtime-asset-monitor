@@ -291,13 +291,13 @@ output "splitexport_crun_service_url" {
   value       = module.splitexport.crun_service_url
 }
 
-output "splitexport_trigger_service_account_email" {
-  description = "Service account email used to trigger this microservice"
-  value       = module.splitexport.trigger_service_account_email
+output "splitexport_subscription_sa_email" {
+  description = "Service account email used to trigger this type of action"
+  value       = module.splitexport.subscription_sa_email
 }
-output "splitexport_trigger_id" {
-  description = "Eventarc trigger id"
-  value       = module.splitexport.trigger_id
+output "splitexport_subscription_id" {
+  description = "PubSub subscription id to trigger this type of action"
+  value       = module.splitexport.subscription_id
 }
 
 # publish2fs

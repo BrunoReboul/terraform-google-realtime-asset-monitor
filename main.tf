@@ -98,6 +98,7 @@ module "executegfsdeleteolddocs" {
 module "splitexport" {
   source                     = "./modules/splitexport"
   project_id                 = var.project_id
+  pubsub_allowed_regions     = var.pubsub_allowed_regions
   crun_region                = var.crun_region
   ram_microservice_image_tag = var.ram_microservice_image_tag
   log_only_severity_levels   = var.log_only_severity_levels

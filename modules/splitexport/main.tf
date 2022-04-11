@@ -133,7 +133,49 @@ resource "google_cloud_run_service" "crun_svc" {
   }
 }
 
-resource "google_service_account" "eva_trigger_sa" {
+
+# resource "google_eventarc_trigger" "eva_trigger" {
+#   name            = local.service_name
+#   location        = google_cloud_run_service.crun_svc.location
+#   project         = google_cloud_run_service.crun_svc.project
+#   service_account = google_service_account.eva_trigger_sa.email
+#   matching_criteria {
+#     attribute = "type"
+#     value     = "google.cloud.storage.object.v1.finalized"
+#   }
+#   matching_criteria {
+#     attribute = "bucket"
+#     value     = var.exports_bucket_name
+#   }
+#   destination {
+#     cloud_run_service {
+#       service = google_cloud_run_service.crun_svc.name
+#       region  = google_cloud_run_service.crun_svc.location
+#     }
+#   }
+#   depends_on = [google_project_iam_member.project_pubusb_publisher]
+# }
+
+resource "google_pubsub_topic" "gcs_notif_export_topic" {
+  project = var.project_id
+  name    = var.gcs_notif_export_topic_name
+  message_storage_policy {
+    allowed_persistence_regions = var.pubsub_allowed_regions
+  }
+}
+
+resource "google_storage_notification" "export_notification" {
+  bucket         = var.exports_bucket_name
+  payload_format = "JSON_API_V1"
+  topic          = google_pubsub_topic.gcs_notif_export_topic.id
+  event_types    = ["OBJECT_FINALIZE"]
+  custom_attributes = {
+    notif-type = "caiexport"
+  }
+  depends_on = [google_project_iam_member.project_pubusb_publisher]
+}
+
+resource "google_service_account" "subscription_sa" {
   project      = var.project_id
   account_id   = "${local.service_name}-trigger"
   display_name = "RAM ${local.service_name} trigger"
@@ -143,11 +185,10 @@ data "google_iam_policy" "binding" {
   binding {
     role = "roles/run.invoker"
     members = [
-      "serviceAccount:${google_service_account.eva_trigger_sa.email}",
+      "serviceAccount:${google_service_account.subscription_sa.email}",
     ]
   }
 }
-
 resource "google_cloud_run_service_iam_policy" "trigger_invoker" {
   location = google_cloud_run_service.crun_svc.location
   project  = google_cloud_run_service.crun_svc.project
@@ -156,24 +197,24 @@ resource "google_cloud_run_service_iam_policy" "trigger_invoker" {
   policy_data = data.google_iam_policy.binding.policy_data
 }
 
-resource "google_eventarc_trigger" "eva_trigger" {
-  name            = local.service_name
-  location        = google_cloud_run_service.crun_svc.location
-  project         = google_cloud_run_service.crun_svc.project
-  service_account = google_service_account.eva_trigger_sa.email
-  matching_criteria {
-    attribute = "type"
-    value     = "google.cloud.storage.object.v1.finalized"
-  }
-  matching_criteria {
-    attribute = "bucket"
-    value     = var.exports_bucket_name
-  }
-  destination {
-    cloud_run_service {
-      service = google_cloud_run_service.crun_svc.name
-      region  = google_cloud_run_service.crun_svc.location
+resource "google_pubsub_subscription" "subcription" {
+  project              = var.project_id
+  name                 = local.service_name
+  topic                = google_pubsub_topic.gcs_notif_export_topic.id
+  ack_deadline_seconds = var.sub_ack_deadline_seconds
+  push_config {
+    oidc_token {
+      service_account_email = google_service_account.subscription_sa.email
     }
+    #Updated endpoint to deal with WARNING in logs: failed to extract Pub/Sub topic name from the URL request path: "/", configure your subscription's push endpoint to use the following path pattern: 'projects/PROJECT_NAME/topics/TOPIC_NAME
+    push_endpoint = "${google_cloud_run_service.crun_svc.status[0].url}/${google_pubsub_topic.gcs_notif_export_topic.id} "
   }
-  depends_on = [google_project_iam_member.project_pubusb_publisher]
+  expiration_policy {
+    ttl = ""
+  }
+  filter                     = "attributes.notif-type = \"caiexport\""
+  message_retention_duration = var.sub_message_retention_duration
+  retry_policy {
+    minimum_backoff = var.sub_minimum_backoff
+  }
 }
