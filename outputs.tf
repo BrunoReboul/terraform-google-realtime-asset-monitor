@@ -115,17 +115,13 @@ output "monitor_crun_service_url" {
   value       = module.monitor.crun_service_url
 }
 
-output "monitor_trigger_service_account_email" {
-  description = "Service account email used to trigger this microservice"
-  value       = module.monitor.trigger_service_account_email
+output "monitor_subscription_sa_email" {
+  description = "Service account email used to trigger this type of action"
+  value       = module.monitor.subscription_sa_email
 }
-output "monitor_trigger_id" {
-  description = "Eventarc trigger id"
-  value       = module.monitor.trigger_id
-}
-
-output "monitor_trigger_subscription_name" {
-  value = module.monitor.trigger_subscription_name
+output "monitor_subscription_id" {
+  description = "PubSub subscription id to trigger this type of action"
+  value       = module.monitor.subscription_id
 }
 
 output "compliance_status_topic_id" {
@@ -154,35 +150,21 @@ output "stream2bq_crun_service_url" {
   value       = module.stream2bq.crun_service_url
 }
 
-output "stream2bq_trigger_service_account_email" {
-  description = "Service account email used to trigger this microservice"
-  value       = module.stream2bq.trigger_service_account_email
+output "stream2bq_subscription_sa_email" {
+  description = "Service account email used to trigger this type of action"
+  value       = module.stream2bq.subscription_sa_email
 }
-output "stream2bq_trigger_id_asset_feed" {
-  description = "Eventarc trigger id"
-  value       = module.stream2bq.trigger_id_asset_feed
+output "stream2bq_subscription_id_asset_feed" {
+  description = "PubSub subscription id asset feed"
+  value       = module.stream2bq.subscription_id_asset_feed
 }
-
-output "stream2bq_trigger_subscription_name_asset_feed" {
-  value = module.stream2bq.trigger_subscription_name_asset_feed
+output "stream2bq_subscription_id_compliance_status" {
+  description = "PubSub subscription id compliance status"
+  value       = module.stream2bq.subscription_id_compliance_status
 }
-
-output "stream2bq_trigger_id_compliance_status" {
-  description = "Eventarc trigger id"
-  value       = module.stream2bq.trigger_id_compliance_status
-}
-
-output "stream2bq_trigger_subscription_name_compliance_status" {
-  value = module.stream2bq.trigger_subscription_name_compliance_status
-}
-
-output "stream2bq_trigger_id_violation" {
-  description = "Eventarc trigger id"
-  value       = module.stream2bq.trigger_id_violation
-}
-
-output "stream2bq_trigger_subscription_name_violation" {
-  value = module.stream2bq.trigger_subscription_name_violation
+output "stream2bq_subscription_id_violation" {
+  description = "PubSub subscription id violation"
+  value       = module.stream2bq.subscription_id_violation
 }
 
 # launch
