@@ -82,17 +82,13 @@ output "fetchrules_crun_service_url" {
   value       = module.fetchrules.crun_service_url
 }
 
-output "fetchrules_trigger_service_account_email" {
-  description = "Service account email used to trigger this microservice"
-  value       = module.fetchrules.trigger_service_account_email
+output "fetchrules_subscription_sa_email" {
+  description = "Service account email used to trigger this type of action"
+  value       = module.fetchrules.subscription_sa_email
 }
-output "fetchrules_trigger_id" {
-  description = "Eventarc trigger id"
-  value       = module.fetchrules.trigger_id
-}
-
-output "fetchrules_trigger_subscription_name" {
-  value = module.fetchrules.trigger_subscription_name
+output "fetchrules_subscription_id" {
+  description = "PubSub subscription id to trigger this type of action"
+  value       = module.fetchrules.subscription_id
 }
 
 output "asset_rule_topic_id" {
