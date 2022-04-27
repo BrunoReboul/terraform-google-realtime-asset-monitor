@@ -93,3 +93,18 @@ variable "compliance_status_topic_id" {
 variable "violation_topic_id" {
   description = "violation topic ID e.g projects/PROJECT_ID/topics/TOPIC_NAME"
 }
+
+variable "sub_ack_deadline_seconds" {
+  description = "The maximum time after a subscriber receives a message before the subscriber should acknowledge the message"
+  default     = 240
+}
+
+variable "sub_message_retention_duration" {
+  description = "How long to retain unacknowledged messages in the subscription's backlog,"
+  default     = "86400s"
+}
+
+variable "sub_minimum_backoff" {
+  description = "The minimum delay between consecutive deliveries of a given message"
+  default     = "10s"
+}

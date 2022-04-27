@@ -32,37 +32,21 @@ output "crun_service_url" {
   description = "cloud run service url"
   value       = google_cloud_run_service.crun_svc.status[0].url
 }
-output "trigger_service_account_email" {
-  description = "Service account email used to trigger this microservice"
-  value       = google_service_account.eva_trigger_sa.email
+output "subscription_sa_email" {
+  description = "Service account email used to trigger this type of action"
+  value       = google_service_account.subscription_sa.email
 }
-output "trigger_id_asset_feed" {
-  description = "Eventarc asset feed trigger id"
-  value       = google_eventarc_trigger.eva_trigger_asset_feed.id
+output "subscription_id_asset_feed" {
+  description = "PubSub subscription id for asset feed"
+  value       = google_pubsub_subscription.subcription_asset_feed.id
 }
-
-output "trigger_subscription_name_asset_feed" {
-  description = "Eventarc trigger asset feed subscription name"
-  value       = google_eventarc_trigger.eva_trigger_asset_feed.transport[0].pubsub[0].subscription
+output "subscription_id_compliance_status" {
+  description = "PubSub subscription id for compliance status"
+  value       = google_pubsub_subscription.subcription_compliance_status.id
 }
-output "trigger_id_compliance_status" {
-  description = "Eventarc compliance status trigger id"
-  value       = google_eventarc_trigger.eva_trigger_compliance_status.id
-}
-
-output "trigger_subscription_name_compliance_status" {
-  description = "Eventarc trigger compliance status subscription name"
-  value       = google_eventarc_trigger.eva_trigger_compliance_status.transport[0].pubsub[0].subscription
-}
-
-output "trigger_id_violation" {
-  description = "Eventarc violation trigger id"
-  value       = google_eventarc_trigger.eva_trigger_violation.id
-}
-
-output "trigger_subscription_name_violation" {
-  description = "Eventarc trigger violation subscription name"
-  value       = google_eventarc_trigger.eva_trigger_violation.transport[0].pubsub[0].subscription
+output "subscription_id_violation" {
+  description = "PubSub subscription id for violation"
+  value       = google_pubsub_subscription.subcription_violation.id
 }
 
 output "ram_dataset_id" {
