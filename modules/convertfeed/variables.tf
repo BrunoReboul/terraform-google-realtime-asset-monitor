@@ -80,7 +80,7 @@ variable "cache_max_age_minutes" {
 }
 variable "log_only_severity_levels" {
   description = "Which type of log entry should be logged"
-  default     = "INFO WARNING NOTICE CRITICAL"
+  default     = "WARNING NOTICE CRITICAL"
 }
 variable "owner_label_Key_name" {
   description = "violation owner label tag name"

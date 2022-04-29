@@ -111,7 +111,7 @@ variable "ram_microservice_image_tag" {
 
 variable "log_only_severity_levels" {
   description = "Which type of log entry should be logged"
-  default     = "INFO WARNING NOTICE CRITICAL"
+  default     = "WARNING NOTICE CRITICAL"
 }
 
 variable "start_profiler" {

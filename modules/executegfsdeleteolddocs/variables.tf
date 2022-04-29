@@ -60,7 +60,7 @@ variable "ram_microservice_image_tag" {
 
 variable "log_only_severity_levels" {
   description = "Which type of log entry should be logged"
-  default     = "INFO WARNING NOTICE CRITICAL"
+  default     = "WARNING NOTICE CRITICAL"
 }
 
 variable "start_profiler" {
@@ -74,7 +74,7 @@ variable "triggering_topic_id" {
 
 variable "sub_ack_deadline_seconds" {
   description = "The maximum time after a subscriber receives a message before the subscriber should acknowledge the message"
-  default     = 10
+  default     = 600
 }
 
 variable "sub_message_retention_duration" {

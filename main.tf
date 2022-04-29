@@ -115,11 +115,22 @@ module "publish2fs" {
   triggering_topic_id        = module.convertfeed.asset_feed_topic_id
 }
 
+module "upload2gcs" {
+  source                     = "./modules/upload2gcs"
+  project_id                 = var.project_id
+  gcs_location               = var.gcs_location
+  crun_region                = var.crun_region
+  ram_microservice_image_tag = var.ram_microservice_image_tag
+  log_only_severity_levels   = var.log_only_severity_levels
+  triggering_topic_id        = module.convertfeed.asset_feed_topic_id
+}
+
 module "setfeed" {
   depends_on = [
     module.stream2bq.trigger_id_violation,
     module.splitexport.crun_service_id,
     module.publish2fs.crun_service_id,
+    module.upload2gcs.crun_service_id,
   ]
   source                  = "./modules/setfeed"
   project_id              = var.project_id
