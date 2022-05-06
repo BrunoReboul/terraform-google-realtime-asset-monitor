@@ -54,6 +54,7 @@ module "stream2bq" {
   source                     = "./modules/stream2bq"
   project_id                 = var.project_id
   views_interval_days        = var.views_interval_days
+  bq_partition_expiration_ms = var.bq_partition_expiration_ms
   crun_region                = var.crun_region
   ram_microservice_image_tag = var.ram_microservice_image_tag
   log_only_severity_levels   = var.log_only_severity_levels
