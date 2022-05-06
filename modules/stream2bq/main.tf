@@ -15,7 +15,8 @@
  */
 
 locals {
-  service_name = "stream2bq"
+  service_name                 = "stream2bq"
+  views_interval_days_extended = var.views_interval_days + 7
 }
 
 resource "google_service_account" "microservice_sa" {
@@ -54,7 +55,8 @@ resource "google_bigquery_table" "assets" {
   deletion_protection = true
 
   time_partitioning {
-    type = "DAY"
+    type          = "DAY"
+    expiration_ms = var.bq_partition_expiration_ms
   }
 
   schema = <<EOF
@@ -122,7 +124,8 @@ resource "google_bigquery_table" "compliance_status" {
   deletion_protection = true
 
   time_partitioning {
-    type = "DAY"
+    type          = "DAY"
+    expiration_ms = var.bq_partition_expiration_ms
   }
 
   schema = <<EOF
@@ -183,7 +186,8 @@ resource "google_bigquery_table" "violations" {
   deletion_protection = true
 
   time_partitioning {
-    type = "DAY"
+    type          = "DAY"
+    expiration_ms = var.bq_partition_expiration_ms
   }
 
   schema = <<EOF
@@ -442,10 +446,17 @@ latest_asset_inventory_per_rule AS (
     SELECT
         assetName,
         ruleName,
-        MAX(assetInventoryTimeStamp) AS assetInventoryTimeStamp,
-        MAX(evaluationTimeStamp) AS evaluationTimeStamp
+        array_agg(
+            struct(assetInventoryTimeStamp, evaluationTimeStamp)
+            order by
+                assetInventoryTimeStamp desc,
+                evaluationTimeStamp desc
+        ) [offset(0)] as tms
     FROM
-        complianceStatus0
+        `${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.compliance_status.table_id}`
+    WHERE
+        DATE(_PARTITIONTIME) > DATE_SUB(CURRENT_DATE(), INTERVAL ${local.views_interval_days_extended} DAY)
+        OR _PARTITIONTIME IS NULL
     GROUP BY
         assetName,
         ruleName
@@ -511,7 +522,7 @@ complianceStatus1 AS (
         latest_asset_inventory_per_rule
         INNER JOIN status_for_latest_rules ON status_for_latest_rules.assetName = latest_asset_inventory_per_rule.assetName
         AND status_for_latest_rules.ruleName = latest_asset_inventory_per_rule.ruleName
-        AND status_for_latest_rules.evaluationTimeStamp = latest_asset_inventory_per_rule.evaluationTimeStamp
+        AND status_for_latest_rules.evaluationTimeStamp = latest_asset_inventory_per_rule.tms.evaluationTimeStamp
     WHERE
         status_for_latest_rules.deleted = FALSE
 ),

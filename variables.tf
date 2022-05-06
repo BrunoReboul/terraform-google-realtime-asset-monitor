@@ -56,7 +56,12 @@ variable "scheduler_region" {
 
 variable "views_interval_days" {
   description = "The sliding windows in days the view uses to get data. Should not be less than the batch cadence to export assets"
-  default     = 28
+  default     = 7
+}
+
+variable "bq_partition_expiration_ms" {
+  description = "Bigquery table number of milliseconds for which to keep the storage for a partition"
+  default     = 2419200000
 }
 
 variable "schedulers" {
