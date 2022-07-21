@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+locals {
+  environment = var.environment != "" ? var.environment : terraform.workspace
+}
+
 module "deploy" {
   source     = "./modules/deploy"
   project_id = var.project_id
@@ -23,6 +27,7 @@ module "deploy" {
 module "convertfeed" {
   source                     = "./modules/convertfeed"
   project_id                 = var.project_id
+  environment                = local.environment
   pubsub_allowed_regions     = var.pubsub_allowed_regions
   crun_region                = var.crun_region
   ram_microservice_image_tag = var.ram_microservice_image_tag
@@ -32,6 +37,7 @@ module "convertfeed" {
 module "fetchrules" {
   source                     = "./modules/fetchrules"
   project_id                 = var.project_id
+  environment                = local.environment
   pubsub_allowed_regions     = var.pubsub_allowed_regions
   gcs_location               = var.gcs_location
   crun_region                = var.crun_region
@@ -43,6 +49,7 @@ module "fetchrules" {
 module "monitor" {
   source                     = "./modules/monitor"
   project_id                 = var.project_id
+  environment                = local.environment
   pubsub_allowed_regions     = var.pubsub_allowed_regions
   crun_region                = var.crun_region
   ram_microservice_image_tag = var.ram_microservice_image_tag
@@ -53,6 +60,7 @@ module "monitor" {
 module "stream2bq" {
   source                     = "./modules/stream2bq"
   project_id                 = var.project_id
+  environment                = local.environment
   views_interval_days        = var.views_interval_days
   bq_partition_expiration_ms = var.bq_partition_expiration_ms
   crun_region                = var.crun_region
@@ -66,6 +74,7 @@ module "stream2bq" {
 module "launch" {
   source                     = "./modules/launch"
   project_id                 = var.project_id
+  environment                = local.environment
   pubsub_allowed_regions     = var.pubsub_allowed_regions
   gcs_location               = var.gcs_location
   scheduler_region           = var.scheduler_region
@@ -78,6 +87,7 @@ module "launch" {
 module "executecaiexport" {
   source                     = "./modules/executecaiexport"
   project_id                 = var.project_id
+  environment                = local.environment
   gcs_location               = var.gcs_location
   export_org_ids             = var.export_org_ids
   export_folder_ids          = var.export_folder_ids
@@ -90,6 +100,7 @@ module "executecaiexport" {
 module "executegfsdeleteolddocs" {
   source                     = "./modules/executegfsdeleteolddocs"
   project_id                 = var.project_id
+  environment                = local.environment
   crun_region                = var.crun_region
   ram_microservice_image_tag = var.ram_microservice_image_tag
   log_only_severity_levels   = var.log_only_severity_levels
@@ -99,6 +110,7 @@ module "executegfsdeleteolddocs" {
 module "splitexport" {
   source                     = "./modules/splitexport"
   project_id                 = var.project_id
+  environment                = local.environment
   pubsub_allowed_regions     = var.pubsub_allowed_regions
   crun_region                = var.crun_region
   ram_microservice_image_tag = var.ram_microservice_image_tag
@@ -110,6 +122,7 @@ module "splitexport" {
 module "publish2fs" {
   source                     = "./modules/publish2fs"
   project_id                 = var.project_id
+  environment                = local.environment
   crun_region                = var.crun_region
   ram_microservice_image_tag = var.ram_microservice_image_tag
   log_only_severity_levels   = var.log_only_severity_levels
@@ -119,6 +132,7 @@ module "publish2fs" {
 module "upload2gcs" {
   source                     = "./modules/upload2gcs"
   project_id                 = var.project_id
+  environment                = local.environment
   gcs_location               = var.gcs_location
   crun_region                = var.crun_region
   ram_microservice_image_tag = var.ram_microservice_image_tag

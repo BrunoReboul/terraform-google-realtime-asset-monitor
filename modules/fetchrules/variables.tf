@@ -18,6 +18,10 @@ variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
 }
 
+variable "environment" {
+  description = "environment name"
+}
+
 variable "asset_rule_topic_name" {
   description = "each message combines the data of one asset and the code of one complicance rule's"
   default     = "assetRule"

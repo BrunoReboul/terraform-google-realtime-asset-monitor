@@ -18,6 +18,10 @@ variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
 }
 
+variable "environment" {
+  description = "environment name"
+}
+
 variable "crun_region" {
   description = "cloud run region"
   default     = "europe-west1"
