@@ -126,14 +126,15 @@ module "upload2gcs" {
   triggering_topic_id        = module.convertfeed.asset_feed_topic_id
 }
 
-module "setfeed" {
+module "feeds" {
+  # wait the be ready to process feeds before creating them
   depends_on = [
-    module.stream2bq.trigger_id_violation,
-    module.splitexport.crun_service_id,
-    module.publish2fs.crun_service_id,
-    module.upload2gcs.crun_service_id,
+    module.stream2bq,
+    module.splitexport,
+    module.publish2fs,
+    module.upload2gcs,
   ]
-  source                  = "./modules/setfeed"
+  source                  = "./modules/feeds"
   project_id              = var.project_id
   pubsub_allowed_regions  = var.pubsub_allowed_regions
   cai_feed_topic_id       = module.convertfeed.cai_feed_topic_id
@@ -143,8 +144,23 @@ module "setfeed" {
   feed_resource_orgs      = var.feed_resource_orgs
 }
 
-module "setdashboard" {
-  depends_on = [module.setfeed.project_id]
-  source     = "./modules/setdashboard"
+module "metrics" {
+  # create log based metrics once the microservices are deployed 
+  depends_on = [module.feeds]
+  source     = "./modules/metrics"
+  project_id = var.project_id
+}
+
+module "slos" {
+  # Create SLOs once the log based metrics have been created
+  depends_on = [module.metrics]
+  source     = "./modules/slos"
+  project_id = var.project_id
+}
+
+module "dashboards" {
+  # Create dashboards once the log based metrics have been created
+  depends_on = [module.metrics]
+  source     = "./modules/dashboards"
   project_id = var.project_id
 }

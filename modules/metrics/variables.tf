@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-output "service_account_email" {
-  description = "Service account email used to deploy RAM"
-  value       = google_service_account.deploy_sa.email
+variable "project_id" {
+  description = "RAM GCP project id for a given environment, like dev or production"
 }
