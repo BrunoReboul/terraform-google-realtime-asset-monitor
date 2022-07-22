@@ -82,7 +82,7 @@ resource "google_pubsub_topic" "action_trigger" {
 resource "google_cloud_scheduler_job" "job" {
   for_each = {
     for name, s in var.schedulers : name => s
-    if s.environment == terraform.workspace
+    if s.environment == var.environment
   }
   project     = var.project_id
   name        = each.value.name
@@ -113,7 +113,7 @@ resource "google_cloud_run_service" "crun_svc" {
         }
         env {
           name  = "${upper(local.service_name)}_ENVIRONMENT"
-          value = terraform.workspace
+          value = var.environment
         }
         env {
           name  = "${upper(local.service_name)}_LOG_ONLY_SEVERITY_LEVELS"

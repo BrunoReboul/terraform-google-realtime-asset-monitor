@@ -60,7 +60,7 @@ resource "google_cloud_run_service" "crun_svc" {
         }
         env {
           name  = "${upper(local.service_name)}_ENVIRONMENT"
-          value = terraform.workspace
+          value = var.environment
         }
         env {
           name  = "${upper(local.service_name)}_LOG_ONLY_SEVERITY_LEVELS"

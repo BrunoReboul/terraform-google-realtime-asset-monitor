@@ -18,6 +18,10 @@ variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
 }
 
+variable "environment" {
+  description = "environment name"
+}
+
 variable "compliance_status_topic_name" {
   description = "compliance status may be true for compliant or false for not compliant for a given asset version and configuration rule version"
   default     = "ram-complianceStatus"

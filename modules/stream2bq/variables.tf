@@ -18,6 +18,10 @@ variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
 }
 
+variable "environment" {
+  description = "environment name"
+}
+
 variable "dataset_name" {
   description = "Bigquery dataset name"
   default     = "ram"

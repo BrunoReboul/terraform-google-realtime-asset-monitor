@@ -18,6 +18,10 @@ variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
 }
 
+variable "environment" {
+  description = "environment name"
+}
+
 variable "exports_bucket_name" {
   description = "Cloud storage bucket where to output Cloud Asset Inventory exports"
 }

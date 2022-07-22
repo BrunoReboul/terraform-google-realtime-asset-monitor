@@ -19,6 +19,11 @@ variable "project_id" {
   description = "GCP project id where to deploy RAM for a given environment, like test or production"
 }
 
+variable "environment" {
+  description = "environment name, by default terraform.workspace is used"
+  default     = ""
+}
+
 variable "ram_microservice_image_tag" {
   description = "The container image tag for this microservice"
   default     = "latest"
