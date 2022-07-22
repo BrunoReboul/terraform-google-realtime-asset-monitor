@@ -14,7 +14,22 @@
  * limitations under the License.
  */
 
-output "service_account_email" {
-  description = "Service account email used to deploy RAM"
-  value       = google_service_account.deploy_sa.email
+output "ram_main_microservices" {
+  value = google_monitoring_dashboard.ram_main_microservices.id
+}
+
+output "ram_gcpexport_microservices" {
+  value = google_monitoring_dashboard.ram_gcpexport_microservices.id
+}
+
+output "ram_errors_in_log_entries" {
+  value = google_monitoring_dashboard.ram_errors_in_log_entries.id
+}
+
+output "daily_counts_top3_cost_drivers" {
+  value = google_monitoring_dashboard.daily_counts_top3_cost_drivers.id
+}
+
+output "ram_core_microservices_latency" {
+  value = google_monitoring_dashboard.ram_core_microservices_latency.id
 }

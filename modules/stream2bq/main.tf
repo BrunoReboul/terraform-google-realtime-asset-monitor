@@ -136,6 +136,11 @@ resource "google_bigquery_table" "compliance_status" {
         "type": "STRING"
     },
     {
+        "mode": "NULLABLE",
+        "name": "assetType",
+        "type": "STRING"
+    },
+    {
         "description": "When the asset change was captured",
         "mode": "REQUIRED",
         "name": "assetInventoryTimeStamp",

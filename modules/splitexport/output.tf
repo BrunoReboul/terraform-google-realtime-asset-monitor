@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-output "project_id" {
-  value       = var.project_id
-  description = "Project id"
-}
-
 output "service_account_email" {
   description = "Service account email used to run this microservice"
   value       = google_service_account.microservice_sa.email

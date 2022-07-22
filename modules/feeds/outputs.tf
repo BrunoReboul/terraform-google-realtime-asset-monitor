@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-output "project_id" {
-  value       = var.project_id
-  description = "Project id"
-}
-
 output "feed_iam_policy_org" {
   description = "cai feed for iam policies at organizations level"
   value       = google_cloud_asset_organization_feed.feed_iam_policy_org
