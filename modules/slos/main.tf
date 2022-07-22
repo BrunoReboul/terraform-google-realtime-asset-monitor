@@ -160,7 +160,6 @@ resource "google_monitoring_dashboard" "ram_e2e_latency_dashboard" {
                             },
                             {
                                 "targetAxis": "Y1",
-                                "value": 0,
                                 "label": "0% means ErrBdg gone: Reliability at risk"
                             }                        ]
                     }
