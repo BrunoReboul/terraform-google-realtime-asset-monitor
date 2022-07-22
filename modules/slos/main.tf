@@ -155,9 +155,14 @@ resource "google_monitoring_dashboard" "ram_e2e_latency_dashboard" {
                         "thresholds": [
                             {
                                 "targetAxis": "Y1",
-                                "value": 1
-                            }
-                        ]
+                                "value": 1,
+                                "label": "100% means ErrBdg not used: Innovation at risk"
+                            },
+                            {
+                                "targetAxis": "Y1",
+                                "value": 0,
+                                "label": "0% means ErrBdg gone: Reliability at risk"
+                            }                        ]
                     }
                 }
             },
@@ -174,7 +179,8 @@ resource "google_monitoring_dashboard" "ram_e2e_latency_dashboard" {
                         "dataSets": [
                             {
                                 "minAlignmentPeriod": "${tostring(each.value.rolling_period_days * 24 * 60 * 60)}s",
-                                "plotType": "STACKED_AREA",
+                                "plotType": "LINE",
+                                "legendTemplate": "Remaining bad events budget",
                                 "targetAxis": "Y1",
                                 "timeSeriesQuery": {
                                     "timeSeriesFilter": {
@@ -188,6 +194,7 @@ resource "google_monitoring_dashboard" "ram_e2e_latency_dashboard" {
                             {
                                 "minAlignmentPeriod": "${tostring(each.value.rolling_period_days * 24 * 60 * 60)}s",
                                 "plotType": "STACKED_AREA",
+                                "legendTemplate": "Allowed bad events budget",
                                 "targetAxis": "Y1",
                                 "timeSeriesQuery": {
                                     "timeSeriesFilter": {
@@ -277,8 +284,10 @@ resource "google_monitoring_dashboard" "ram_e2e_latency_dashboard" {
             },
             {
                 "height": 4,
+                "width": 12,
+                "yPos": 16,
                 "widget": {
-                    "title": "Count of good and bad events",
+                    "title": "Count of good and bad events over the last ${each.value.rolling_period_days} days",
                     "xyChart": {
                         "chartOptions": {
                             "mode": "COLOR"
@@ -286,12 +295,13 @@ resource "google_monitoring_dashboard" "ram_e2e_latency_dashboard" {
                         "dataSets": [
                             {
                                 "minAlignmentPeriod": "${tostring(each.value.rolling_period_days * 24 * 60 * 60)}s",
-                                "plotType": "STACKED_BAR",
+                                "plotType": "LINE",
                                 "targetAxis": "Y1",
                                 "timeSeriesQuery": {
                                     "timeSeriesFilter": {
                                         "aggregation": {
-                                            "alignmentPeriod": "${tostring(each.value.rolling_period_days * 24 * 60 * 60)}s"
+                                            "alignmentPeriod": "${tostring(each.value.rolling_period_days * 24 * 60 * 60)}s",
+                                            "perSeriesAligner": "ALIGN_SUM"
                                         },
                                         "filter": "select_slo_counts(\"${google_monitoring_slo.ram_e2e_latency[each.key].id}\")"
                                     }
@@ -304,12 +314,12 @@ resource "google_monitoring_dashboard" "ram_e2e_latency_dashboard" {
                             "scale": "LINEAR"
                         }
                     }
-                },
-                "width": 12,
-                "yPos": 16
+                }
             },
             {
                 "height": 7,
+                "width": 12,
+                "yPos": 20,
                 "widget": {
                     "title": "latency ${each.value.origin} over the last ${each.value.rolling_period_days} days 50th 95th 99th",
                     "xyChart": {
@@ -339,31 +349,48 @@ resource "google_monitoring_dashboard" "ram_e2e_latency_dashboard" {
                         "timeshiftDuration": "0s",
                         "yAxis": {
                             "label": "y1Axis",
-                            "scale": "LINEAR"
+                            "scale": "LOG10"
                         }
                     }
-                },
-                "width": 12,
-                "yPos": 20
+                }
             },
             {
                 "height": 7,
+                "width": 12,
+                "yPos": 27,
                 "widget": {
-                    "title": "latency ${each.value.origin} over the last ${each.value.rolling_period_days} days 95th by assettype / ruleName",
+                    "title": "End 2 end latency ${each.value.origin} over the last ${each.value.rolling_period_days} days 95th by assettype / ruleName",
                     "timeSeriesTable": {
                         "dataSets": [
                             {
                                 "tableDisplayOptions": {},
                                 "minAlignmentPeriod": "0s",
                                 "timeSeriesQuery": {
-                                    "timeSeriesQueryLanguage": "fetch cloud_run_revision\n| metric 'logging.googleapis.com/user/ram_latency_e2e'\n| filter\n    (metric.microservice_name == 'stream2bq' && metric.origin == '${each.value.origin}'\n     && metric.status =~ 'finish compliance status persisted|finish violation persisted')\n| align delta(28d)\n| every 28d\n| group_by [metric.asset_type, metric.rule_name],\n[value_ram_latency_e2e_percentile: percentile(value.ram_latency_e2e, 95)]"
+                                    "timeSeriesQueryLanguage": "fetch cloud_run_revision\n| metric 'logging.googleapis.com/user/ram_latency_e2e'\n| filter\n    (metric.microservice_name == 'stream2bq' && metric.origin == '${each.value.origin}'\n     && metric.status =~ 'finish compliance status persisted|finish violation persisted')\n| align delta(${tostring(each.value.rolling_period_days)}d)\n| every ${tostring(each.value.rolling_period_days)}d\n| group_by [metric.asset_type, metric.rule_name],\n[value_ram_latency_e2e_percentile: percentile(value.ram_latency_e2e, 95)]"
                                 }
                             }
                         ]
                     }
-                },
+                }
+            },
+            {
+                "height": 7,
                 "width": 12,
-                "yPos": 27
+                "yPos": 34,
+                "widget": {
+                    "title": "Trigger 2 start convertfeed latency ${each.value.origin} over the last ${each.value.rolling_period_days} days 95th by assettype / ruleName",
+                    "timeSeriesTable": {
+                        "dataSets": [
+                            {
+                                "tableDisplayOptions": {},
+                                "minAlignmentPeriod": "0s",
+                                "timeSeriesQuery": {
+                                    "timeSeriesQueryLanguage": "fetch cloud_run_revision\n| metric 'logging.googleapis.com/user/ram_latency_t2s'\n| filter\n    (metric.microservice_name == 'convertfeed' && metric.origin == '${each.value.origin}'\n     && metric.status = 'finish enrichCAIFeedMsg')\n| align delta(${tostring(each.value.rolling_period_days)}d)\n| every ${tostring(each.value.rolling_period_days)}d\n| group_by [metric.asset_type],\n[value_ram_latency_t2s_percentile: percentile(value.ram_latency_t2s, 95)]"
+                                }
+                            }
+                        ]
+                    }
+                }
             }
         ]
     }
