@@ -70,10 +70,10 @@ resource "google_monitoring_slo" "ram_e2e_latency" {
 resource "google_monitoring_alert_policy" "ram_e2e_latency_fast_burn" {
   for_each     = var.ram_e2e_latency
   project      = var.project_id
-  display_name = "Burn rate last ${each.value.alerting_fast_burn_loopback_period} > ${each.value.alerting_fast_burn_threshold} on ram latency e2e ${each.value.origin} ${each.value.threshold_value}sec"
+  display_name = "ram latency e2e ${each.value.origin} ${each.value.threshold_str} burn rate last ${each.value.alerting_fast_burn_loopback_period} > ${each.value.alerting_fast_burn_threshold}"
   combiner     = "OR"
   conditions {
-    display_name = "Burn rate last ${each.value.alerting_fast_burn_loopback_period} > ${each.value.alerting_fast_burn_threshold} on ram latency e2e ${each.value.origin} ${each.value.threshold_value}sec"
+    display_name = "ram latency e2e ${each.value.origin} ${each.value.threshold_str} burn rate last ${each.value.alerting_fast_burn_loopback_period} > ${each.value.alerting_fast_burn_threshold}"
     condition_threshold {
       filter          = "select_slo_burn_rate(\"${google_monitoring_slo.ram_e2e_latency[each.key].id}\", \"${each.value.alerting_fast_burn_loopback_period}\")"
       duration        = "0s"
@@ -92,10 +92,10 @@ resource "google_monitoring_alert_policy" "ram_e2e_latency_fast_burn" {
 resource "google_monitoring_alert_policy" "ram_e2e_latency_slow_burn" {
   for_each     = var.ram_e2e_latency
   project      = var.project_id
-  display_name = "Burn rate last ${each.value.alerting_slow_burn_loopback_period} > ${each.value.alerting_slow_burn_threshold} on ram latency e2e ${each.value.origin} ${each.value.threshold_value}sec"
+  display_name = "ram latency e2e ${each.value.origin} ${each.value.threshold_str} burn rate last ${each.value.alerting_slow_burn_loopback_period} > ${each.value.alerting_slow_burn_threshold}"
   combiner     = "OR"
   conditions {
-    display_name = "Burn rate last ${each.value.alerting_slow_burn_loopback_period} > ${each.value.alerting_slow_burn_threshold} on ram latency e2e ${each.value.origin} ${each.value.threshold_value}sec"
+    display_name = "ram latency e2e ${each.value.origin} ${each.value.threshold_str} burn rate last ${each.value.alerting_slow_burn_loopback_period} > ${each.value.alerting_slow_burn_threshold}"
     condition_threshold {
       filter          = "select_slo_burn_rate(\"${google_monitoring_slo.ram_e2e_latency[each.key].id}\", \"${each.value.alerting_slow_burn_loopback_period}\")"
       duration        = "0s"

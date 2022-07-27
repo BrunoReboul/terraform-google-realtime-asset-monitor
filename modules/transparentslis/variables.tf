@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-# service                            = "firestore.googleapis.com"
-# method                             = "google.firestore.v1.Firestore.Commit"
-
 variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
 }
@@ -28,20 +25,30 @@ variable "notification_channels" {
 variable "availability" {
   description = "Critical User Journeys CUJs map crtical microservices"
   default = {
-    # pubsub_publish = {
-    #   rolling_period_days                = 28
-    #   service                            = "pubsub.googleapis.com"
-    #   method                             = "google.pubsub.v1.Publisher.Publish"
-    #   goal                               = 0.999
-    #   alerting_fast_burn_loopback_period = "1h"
-    #   alerting_fast_burn_threshold       = 10
-    #   alerting_slow_burn_loopback_period = "24h"
-    #   alerting_slow_burn_threshold       = 2
-    # },
     pubsub_publish = {
+      rolling_period_days                = 28
+      service                            = "pubsub.googleapis.com"
+      method                             = "google.pubsub.v1.Publisher.Publish"
+      goal                               = 0.999
+      alerting_fast_burn_loopback_period = "1h"
+      alerting_fast_burn_threshold       = 10
+      alerting_slow_burn_loopback_period = "24h"
+      alerting_slow_burn_threshold       = 2
+    },
+    bigquery_insertall = {
       rolling_period_days                = 28
       service                            = "bigquery.googleapis.com"
       method                             = "google.cloud.bigquery.v2.TableDataService.InsertAll"
+      goal                               = 0.999
+      alerting_fast_burn_loopback_period = "1h"
+      alerting_fast_burn_threshold       = 10
+      alerting_slow_burn_loopback_period = "24h"
+      alerting_slow_burn_threshold       = 2
+    },
+    firestore_commit = {
+      rolling_period_days                = 28
+      service                            = "firestore.googleapis.com"
+      method                             = "google.firestore.v1.Firestore.Commit"
       goal                               = 0.999
       alerting_fast_burn_loopback_period = "1h"
       alerting_fast_burn_threshold       = 10
