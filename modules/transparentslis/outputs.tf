@@ -15,22 +15,34 @@
  */
 
 
-output "transperent_slis_custom_service_display_name" {
-  value = google_monitoring_custom_service.transperent_slis.display_name
+output "transparent_slis_custom_service_display_name" {
+  value = google_monitoring_custom_service.transparent_slis.display_name
 }
 
-output "transperent_slis_custom_service_id" {
-  value = google_monitoring_custom_service.transperent_slis.id
+output "transparent_slis_custom_service_id" {
+  value = google_monitoring_custom_service.transparent_slis.id
 }
 
-output "transperent_slis_monitoring_slo_availability" {
+output "transparent_slis_monitoring_slo_availability" {
   value = { for s in sort(keys(var.availability)) : s => google_monitoring_slo.availability[s].id }
 }
 
-output "transperent_slis_monitoring_slo_availability_fast_burn_alert" {
+output "transparent_slis_monitoring_slo_availability_fast_burn_alert" {
   value = { for s in sort(keys(var.availability)) : s => google_monitoring_alert_policy.availability_fast_burn[s].id }
 }
 
-output "transperent_slis_monitoring_slo_availability_slow_burn_alert" {
+output "transparent_slis_monitoring_slo_availability_slow_burn_alert" {
   value = { for s in sort(keys(var.availability)) : s => google_monitoring_alert_policy.availability_slow_burn[s].id }
+}
+
+output "transparent_slis_monitoring_slo_latency" {
+  value = { for s in sort(keys(var.latency)) : s => google_monitoring_slo.latency[s].id }
+}
+
+output "transparent_slis_monitoring_slo_latency_fast_burn_alert" {
+  value = { for s in sort(keys(var.latency)) : s => google_monitoring_alert_policy.latency_fast_burn[s].id }
+}
+
+output "transparent_slis_monitoring_slo_latency_slow_burn_alert" {
+  value = { for s in sort(keys(var.latency)) : s => google_monitoring_alert_policy.latency_slow_burn[s].id }
 }
