@@ -42,3 +42,15 @@ output "ram_monitoring_slo_e2e_latency_fast_burn_alert" {
 output "ram_monitoring_slo_e2e_latency_slow_burn_alert" {
   value = { for s in sort(keys(var.ram_e2e_latency)) : s => google_monitoring_alert_policy.ram_e2e_latency_slow_burn[s].id }
 }
+
+output "ram_monitoring_slo_availability" {
+  value = { for s in sort(var.ram_availability.microservice_list) : s => google_monitoring_slo.ram_availability[s].id }
+}
+
+output "ram_monitoring_slo_availability_fast_burn_alert" {
+  value = { for s in sort(var.ram_availability.microservice_list) : s => google_monitoring_alert_policy.ram_availability_fast_burn[s].id }
+}
+
+output "ram_monitoring_slo_availability_slow_burn_alert" {
+  value = { for s in sort(var.ram_availability.microservice_list) : s => google_monitoring_alert_policy.ram_availability_slow_burn[s].id }
+}
