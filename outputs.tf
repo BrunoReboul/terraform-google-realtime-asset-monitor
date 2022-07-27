@@ -75,6 +75,10 @@ output "stream2bq" {
   value = module.stream2bq
 }
 
+output "transparentslis" {
+  value = module.transparentslis
+}
+
 output "upload2gcs" {
   value = module.upload2gcs
 }

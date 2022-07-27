@@ -172,6 +172,16 @@ module "slos" {
   project_id = var.project_id
 }
 
+module "transparentslis" {
+  # Create SLOs once the log based metrics have been created
+  depends_on = [module.metrics]
+  source     = "./modules/transparentslis"
+  project_id = var.project_id
+  notification_channels = [
+    "${module.slos.ram_notification_channel_2pubsub_id}"
+  ]
+}
+
 module "dashboards" {
   # Create dashboards once the log based metrics have been created
   depends_on = [module.metrics]
