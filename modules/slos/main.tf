@@ -116,7 +116,7 @@ resource "google_monitoring_dashboard" "ram_e2e_latency_dashboard" {
   project        = var.project_id
   dashboard_json = <<EOF
 {
-    "displayName": "ram_slo_e2e_latency_${each.value.origin}",
+    "displayName": "slo_1_ram_e2e_latency_${each.value.origin}",
     "mosaicLayout": {
         "columns": 12,
         "tiles": [
@@ -462,7 +462,7 @@ resource "google_monitoring_dashboard" "ram_availability_dashboard" {
   project        = var.project_id
   dashboard_json = <<EOF
 {
-    "displayName": "ram_slo_microservice ${each.key} availability",
+    "displayName": "slo_1_ram_microservice ${each.key} availability",
     "mosaicLayout": {
         "columns": 12,
         "tiles": [

@@ -86,7 +86,7 @@ resource "google_monitoring_dashboard" "availability_dashboard" {
   project        = var.project_id
   dashboard_json = <<EOF
 {
-    "displayName": "transparent_slis_${lower(replace(each.value.method, ".", "-"))}-availability",
+    "displayName": "slo_2_dependency_${lower(replace(each.value.method, ".", "-"))}-availability",
     "mosaicLayout": {
         "columns": 12,
         "tiles": [
@@ -354,7 +354,7 @@ resource "google_monitoring_dashboard" "latency_dashboard" {
   project        = var.project_id
   dashboard_json = <<EOF
 {
-    "displayName": "transparent_slis_${lower(replace(each.value.method, ".", "-"))}-latency ${each.value.threshold_str}",
+    "displayName": "slo_2_dependency_${lower(replace(each.value.method, ".", "-"))}-latency ${each.value.threshold_str}",
     "mosaicLayout": {
         "columns": 12,
         "tiles": [
