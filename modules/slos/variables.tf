@@ -32,30 +32,7 @@ variable "pubsub_allowed_regions" {
 }
 
 variable "ram_e2e_latency" {
-  default = {
-    real-time = {
-      origin                             = "real-time"
-      threshold_str                      = "5.4min"
-      threshold_value                    = 327.68
-      goal                               = 0.95
-      rolling_period_days                = 28
-      alerting_fast_burn_loopback_period = "1h"
-      alerting_fast_burn_threshold       = 10
-      alerting_slow_burn_loopback_period = "24h"
-      alerting_slow_burn_threshold       = 2
-    },
-    batch = {
-      origin                             = "scheduled"
-      threshold_str                      = "31min"
-      threshold_value                    = 1853.638
-      goal                               = 0.99
-      rolling_period_days                = 28
-      alerting_fast_burn_loopback_period = "1h"
-      alerting_fast_burn_threshold       = 10
-      alerting_slow_burn_loopback_period = "24h"
-      alerting_slow_burn_threshold       = 2
-    }
-  }
+  type = map(any)
 }
 
 variable "ram_availability" {
