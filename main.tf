@@ -167,9 +167,26 @@ module "metrics" {
 
 module "slos" {
   # Create SLOs once the log based metrics have been created
-  depends_on = [module.metrics]
-  source     = "./modules/slos"
-  project_id = var.project_id
+  depends_on            = [module.metrics]
+  source                = "./modules/slos"
+  project_id            = var.project_id
+  notification_channels = var.notification_channels
+  ram_e2e_latency       = var.ram_e2e_latency
+}
+
+module "slos_cai" {
+  source                = "./modules/slos_cai"
+  project_id            = var.project_id
+  notification_channels = module.slos.ram_notification_channels
+  cai_latency           = var.cai_latency
+}
+
+module "transparentslis" {
+  source                = "./modules/transparentslis"
+  project_id            = var.project_id
+  notification_channels = module.slos.ram_notification_channels
+  availability          = var.api_availability
+  latency               = var.api_latency
 }
 
 module "dashboards" {

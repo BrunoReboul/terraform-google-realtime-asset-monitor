@@ -3528,11 +3528,11 @@ resource "google_monitoring_dashboard" "ram_errors_in_log_entries" {
 EOF
 }
 
-resource "google_monitoring_dashboard" "daily_counts_top3_cost_drivers" {
+resource "google_monitoring_dashboard" "ram_daily_counts_top3_cost_drivers" {
   project        = var.project_id
   dashboard_json = <<EOF
 {
-  "displayName": "daily_counts_top3_cost_drivers",
+  "displayName": "ram_daily_counts_top3_cost_drivers",
   "mosaicLayout": {
     "columns": 12,
     "tiles": [
@@ -3709,6 +3709,53 @@ resource "google_monitoring_dashboard" "ram_core_microservices_latency" {
         },
         "width": 12,
         "yPos": 8
+      }
+    ]
+  }
+}
+EOF
+}
+
+resource "google_monitoring_dashboard" "consumed_api_request_count" {
+  project        = var.project_id
+  dashboard_json = <<EOF
+{
+  "displayName": "Consumed API - Request count [SUM] over the last 28 days",
+  "mosaicLayout": {
+    "columns": 12,
+    "tiles": [
+      {
+        "height": 21,
+        "widget": {
+          "timeSeriesTable": {
+            "dataSets": [
+              {
+                "minAlignmentPeriod": "2419200s",
+                "tableDisplayOptions": {},
+                "timeSeriesQuery": {
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "2419200s",
+                      "crossSeriesReducer": "REDUCE_SUM",
+                      "groupByFields": [
+                        "resource.label.\"service\"",
+                        "resource.label.\"method\""
+                      ],
+                      "perSeriesAligner": "ALIGN_SUM"
+                    },
+                    "filter": "metric.type=\"serviceruntime.googleapis.com/api/request_count\" resource.type=\"consumed_api\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "60s"
+                    }
+                  }
+                }
+              }
+            ],
+            "metricVisualization": "NUMBER"
+          },
+          "title": "Consumed API - Request count [SUM] over the last 28 days"
+        },
+        "width": 12
       }
     ]
   }

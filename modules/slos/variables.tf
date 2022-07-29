@@ -18,6 +18,10 @@ variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
 }
 
+variable "notification_channels" {
+  type = list(string)
+}
+
 variable "alerting_topic_name" {
   default = "alerting"
 }
@@ -28,30 +32,7 @@ variable "pubsub_allowed_regions" {
 }
 
 variable "ram_e2e_latency" {
-  default = {
-    real-time = {
-      origin                             = "real-time"
-      threshold_str                      = "20sec"
-      threshold_value                    = 20.48
-      goal                               = 0.95
-      rolling_period_days                = 28
-      alerting_fast_burn_loopback_period = "1h"
-      alerting_fast_burn_threshold       = 10
-      alerting_slow_burn_loopback_period = "24h"
-      alerting_slow_burn_threshold       = 2
-    },
-    batch = {
-      origin                             = "scheduled"
-      threshold_str                      = "31min"
-      threshold_value                    = 1853.638
-      goal                               = 0.90
-      rolling_period_days                = 28
-      alerting_fast_burn_loopback_period = "1h"
-      alerting_fast_burn_threshold       = 10
-      alerting_slow_burn_loopback_period = "24h"
-      alerting_slow_burn_threshold       = 2
-    }
-  }
+  type = map(any)
 }
 
 variable "ram_availability" {
@@ -67,7 +48,7 @@ variable "ram_availability" {
       "stream2bq",
       "publish2fs"
     ]
-    goal                               = 0.9999
+    goal                               = 0.999
     rolling_period_days                = 28
     alerting_fast_burn_loopback_period = "1h"
     alerting_fast_burn_threshold       = 10

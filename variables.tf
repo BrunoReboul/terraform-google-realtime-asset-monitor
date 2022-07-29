@@ -148,3 +148,149 @@ variable "violation_topic_name" {
   description = "violations detail why an asset is not compliant to a configuration rule"
   default     = "ram-violation"
 }
+
+variable "notification_channels" {
+  type    = list(string)
+  default = []
+}
+
+variable "ram_e2e_latency" {
+  type = map(any)
+  default = {
+    real-time = {
+      origin                             = "real-time"
+      threshold_str                      = "5.4min"
+      threshold_value                    = 327.68
+      goal                               = 0.95
+      rolling_period_days                = 28
+      alerting_fast_burn_loopback_period = "1h"
+      alerting_fast_burn_threshold       = 10
+      alerting_slow_burn_loopback_period = "24h"
+      alerting_slow_burn_threshold       = 2
+    },
+    batch = {
+      origin                             = "scheduled"
+      threshold_str                      = "31min"
+      threshold_value                    = 1853.638
+      goal                               = 0.99
+      rolling_period_days                = 28
+      alerting_fast_burn_loopback_period = "1h"
+      alerting_fast_burn_threshold       = 10
+      alerting_slow_burn_loopback_period = "24h"
+      alerting_slow_burn_threshold       = 2
+    }
+  }
+}
+
+variable "cai_latency" {
+  type = map(any)
+  default = {
+    real-time = {
+      origin                             = "real-time"
+      events                             = "changes"
+      microservice_name                  = "convertfeed"
+      status                             = "finish enrichCAIFeedMsg"
+      threshold_str                      = "5.4min"
+      threshold_value                    = 327.68
+      goal                               = 0.95
+      rolling_period_days                = 28
+      alerting_fast_burn_loopback_period = "1h"
+      alerting_fast_burn_threshold       = 10
+      alerting_slow_burn_loopback_period = "24h"
+      alerting_slow_burn_threshold       = 2
+    },
+    batch = {
+      origin                             = "scheduled"
+      events                             = "exports"
+      microservice_name                  = "splitexport"
+      status                             = "finish splitToLines done|finish splitToChildExports done"
+      threshold_str                      = "31min"
+      threshold_value                    = 1853.638
+      goal                               = 0.99
+      rolling_period_days                = 28
+      alerting_fast_burn_loopback_period = "1h"
+      alerting_fast_burn_threshold       = 10
+      alerting_slow_burn_loopback_period = "24h"
+      alerting_slow_burn_threshold       = 2
+    }
+  }
+}
+
+variable "api_availability" {
+  type        = map(any)
+  description = "Critical User Journeys CUJs map crtical microservices"
+  default = {
+    pubsub_publish = {
+      rolling_period_days                = 28
+      service                            = "pubsub.googleapis.com"
+      method                             = "google.pubsub.v1.Publisher.Publish"
+      goal                               = 0.999
+      alerting_fast_burn_loopback_period = "1h"
+      alerting_fast_burn_threshold       = 10
+      alerting_slow_burn_loopback_period = "24h"
+      alerting_slow_burn_threshold       = 2
+    },
+    bigquery_insertall = {
+      rolling_period_days                = 28
+      service                            = "bigquery.googleapis.com"
+      method                             = "google.cloud.bigquery.v2.TableDataService.InsertAll"
+      goal                               = 0.999
+      alerting_fast_burn_loopback_period = "1h"
+      alerting_fast_burn_threshold       = 10
+      alerting_slow_burn_loopback_period = "24h"
+      alerting_slow_burn_threshold       = 2
+    },
+    firestore_commit = {
+      rolling_period_days                = 28
+      service                            = "firestore.googleapis.com"
+      method                             = "google.firestore.v1.Firestore.Commit"
+      goal                               = 0.999
+      alerting_fast_burn_loopback_period = "1h"
+      alerting_fast_burn_threshold       = 10
+      alerting_slow_burn_loopback_period = "24h"
+      alerting_slow_burn_threshold       = 2
+    },
+  }
+}
+
+variable "api_latency" {
+  type = map(any)
+  default = {
+    pubsub_publish = {
+      rolling_period_days                = 28
+      service                            = "pubsub.googleapis.com"
+      method                             = "google.pubsub.v1.Publisher.Publish"
+      goal                               = 0.95
+      threshold_str                      = "400ms"
+      threshold_value                    = 0.4
+      alerting_fast_burn_loopback_period = "1h"
+      alerting_fast_burn_threshold       = 10
+      alerting_slow_burn_loopback_period = "24h"
+      alerting_slow_burn_threshold       = 2
+    },
+    bigquery_insertall = {
+      rolling_period_days                = 28
+      service                            = "bigquery.googleapis.com"
+      method                             = "google.cloud.bigquery.v2.TableDataService.InsertAll"
+      goal                               = 0.95
+      threshold_str                      = "150ms"
+      threshold_value                    = 0.15
+      alerting_fast_burn_loopback_period = "1h"
+      alerting_fast_burn_threshold       = 10
+      alerting_slow_burn_loopback_period = "24h"
+      alerting_slow_burn_threshold       = 2
+    },
+    firestore_commit = {
+      rolling_period_days                = 28
+      service                            = "firestore.googleapis.com"
+      method                             = "google.firestore.v1.Firestore.Commit"
+      goal                               = 0.95
+      threshold_str                      = "150ms"
+      threshold_value                    = 0.15
+      alerting_fast_burn_loopback_period = "1h"
+      alerting_fast_burn_threshold       = 10
+      alerting_slow_burn_loopback_period = "24h"
+      alerting_slow_burn_threshold       = 2
+    },
+  }
+}

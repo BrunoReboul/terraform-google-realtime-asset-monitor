@@ -26,10 +26,14 @@ output "ram_errors_in_log_entries" {
   value = google_monitoring_dashboard.ram_errors_in_log_entries.id
 }
 
-output "daily_counts_top3_cost_drivers" {
-  value = google_monitoring_dashboard.daily_counts_top3_cost_drivers.id
+output "ram_daily_counts_top3_cost_drivers" {
+  value = google_monitoring_dashboard.ram_daily_counts_top3_cost_drivers.id
 }
 
 output "ram_core_microservices_latency" {
   value = google_monitoring_dashboard.ram_core_microservices_latency.id
+}
+
+output "consumed_api_request_count" {
+  value = google_monitoring_dashboard.consumed_api_request_count.id
 }

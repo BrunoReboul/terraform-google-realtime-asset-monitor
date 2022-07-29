@@ -67,12 +67,20 @@ output "slos" {
   value = module.slos
 }
 
+output "slos_cai" {
+  value = module.slos_cai
+}
+
 output "splitexport" {
   value = module.splitexport
 }
 
 output "stream2bq" {
   value = module.stream2bq
+}
+
+output "transparentslis" {
+  value = module.transparentslis
 }
 
 output "upload2gcs" {
