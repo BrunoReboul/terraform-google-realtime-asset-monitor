@@ -45,7 +45,7 @@ variable "cai_latency" {
       status                             = "finish splitToLines done|finish splitToChildExports done"
       threshold_str                      = "31min"
       threshold_value                    = 1853.638
-      goal                               = 0.90
+      goal                               = 0.99
       rolling_period_days                = 28
       alerting_fast_burn_loopback_period = "1h"
       alerting_fast_burn_threshold       = 10
