@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+locals {
+  notification_channels = concat(var.notification_channels, [google_monitoring_notification_channel.alerting2pubsub.name])
+}
+
 
 resource "google_monitoring_custom_service" "ram" {
   project      = var.project_id
@@ -54,7 +58,7 @@ resource "google_monitoring_slo" "ram_e2e_latency" {
   project             = var.project_id
   service             = google_monitoring_custom_service.ram.service_id
   slo_id              = "ram-e2e-latency-${each.value.origin}"
-  display_name        = "ram end2end latency ${each.value.origin} ${tostring(each.value.goal * 100)}% of changes over the last ${each.value.rolling_period_days} days should be analyzed in less than ${each.value.threshold_str}"
+  display_name        = "ram end2end latency ${each.value.origin}: ${tostring(each.value.goal * 100)}% of changes over the last ${each.value.rolling_period_days} days should be analyzed in less than ${each.value.threshold_str}"
   goal                = each.value.goal
   rolling_period_days = each.value.rolling_period_days
   request_based_sli {
@@ -84,9 +88,7 @@ resource "google_monitoring_alert_policy" "ram_e2e_latency_fast_burn" {
       }
     }
   }
-  notification_channels = [
-    "${google_monitoring_notification_channel.alerting2pubsub.name}"
-  ]
+  notification_channels = local.notification_channels
 }
 
 resource "google_monitoring_alert_policy" "ram_e2e_latency_slow_burn" {
@@ -106,9 +108,7 @@ resource "google_monitoring_alert_policy" "ram_e2e_latency_slow_burn" {
       }
     }
   }
-  notification_channels = [
-    "${google_monitoring_notification_channel.alerting2pubsub.name}"
-  ]
+  notification_channels = local.notification_channels
 }
 
 resource "google_monitoring_dashboard" "ram_e2e_latency_dashboard" {
@@ -125,7 +125,7 @@ resource "google_monitoring_dashboard" "ram_e2e_latency_dashboard" {
                 "width": 12,
                 "widget": {
                     "collapsibleGroup": {},
-                    "title": "${tostring(each.value.goal * 100)}% of changes over the last ${each.value.rolling_period_days} days should be analyzed in realtime in less than ${each.value.threshold_str}"
+                    "title": "${tostring(each.value.goal * 100)}% of changes over the last ${each.value.rolling_period_days} days should be analyzed in ${each.value.origin} in less than ${each.value.threshold_str}"
                 }
             },
             {
@@ -368,7 +368,8 @@ resource "google_monitoring_dashboard" "ram_e2e_latency_dashboard" {
                                     "timeSeriesQueryLanguage": "fetch cloud_run_revision\n| metric 'logging.googleapis.com/user/ram_latency_e2e'\n| filter\n    (metric.microservice_name == 'stream2bq' && metric.origin == '${each.value.origin}'\n     && metric.status =~ 'finish compliance status persisted|finish violation persisted')\n| align delta(${tostring(each.value.rolling_period_days)}d)\n| every ${tostring(each.value.rolling_period_days)}d\n| group_by [metric.asset_type, metric.rule_name],\n[value_ram_latency_e2e_percentile: percentile(value.ram_latency_e2e, 95)]"
                                 }
                             }
-                        ]
+                        ],
+                        "metricVisualization": "NUMBER"
                     }
                 }
             },
@@ -387,7 +388,8 @@ resource "google_monitoring_dashboard" "ram_e2e_latency_dashboard" {
                                     "timeSeriesQueryLanguage": "fetch cloud_run_revision\n| metric 'logging.googleapis.com/user/ram_latency_t2s'\n| filter\n    (metric.microservice_name == 'convertfeed' && metric.origin == '${each.value.origin}'\n     && metric.status = 'finish enrichCAIFeedMsg')\n| align delta(${tostring(each.value.rolling_period_days)}d)\n| every ${tostring(each.value.rolling_period_days)}d\n| group_by [metric.asset_type],\n[value_ram_latency_t2s_percentile: percentile(value.ram_latency_t2s, 95)]"
                                 }
                             }
-                        ]
+                        ],
+                        "metricVisualization": "NUMBER"
                     }
                 }
             }
@@ -402,7 +404,7 @@ resource "google_monitoring_slo" "ram_availability" {
   project             = var.project_id
   service             = google_monitoring_custom_service.ram.service_id
   slo_id              = "ram-microservice-${each.key}-availability"
-  display_name        = "ram ${each.key} availability ${tostring(var.ram_availability.goal * 100)}% of responses over the last ${var.ram_availability.rolling_period_days} days should be served successfully"
+  display_name        = "ram ${each.key} availability: ${tostring(var.ram_availability.goal * 100)}% of responses over the last ${var.ram_availability.rolling_period_days} days should be served successfully"
   goal                = var.ram_availability.goal
   rolling_period_days = var.ram_availability.rolling_period_days
   request_based_sli {

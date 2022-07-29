@@ -3750,7 +3750,8 @@ resource "google_monitoring_dashboard" "consumed_api_request_count" {
                   }
                 }
               }
-            ]
+            ],
+            "metricVisualization": "NUMBER"
           },
           "title": "Consumed API - Request count [SUM] over the last 28 days"
         },

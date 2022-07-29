@@ -148,3 +148,8 @@ variable "violation_topic_name" {
   description = "violations detail why an asset is not compliant to a configuration rule"
   default     = "ram-violation"
 }
+
+variable "notification_channels" {
+  type    = list(string)
+  default = []
+}

@@ -67,6 +67,10 @@ output "slos" {
   value = module.slos
 }
 
+output "slos_cai" {
+  value = module.slos_cai
+}
+
 output "splitexport" {
   value = module.splitexport
 }

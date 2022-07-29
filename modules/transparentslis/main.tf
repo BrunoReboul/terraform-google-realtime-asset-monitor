@@ -21,16 +21,12 @@ resource "google_monitoring_custom_service" "transparent_slis" {
   display_name = "2 Dependency on Google APIs"
 }
 
-data "google_project" "project" {
-  project_id = var.project_id
-}
-
 resource "google_monitoring_slo" "availability" {
   for_each            = var.availability
   project             = var.project_id
   service             = google_monitoring_custom_service.transparent_slis.service_id
   slo_id              = "tsli-${lower(replace(each.value.method, ".", "-"))}-availability"
-  display_name        = "${lower(replace(each.value.method, ".", "-"))} Availability ${tostring(each.value.goal * 100)}% of responses over the last ${each.value.rolling_period_days} days should be served successfully"
+  display_name        = "${lower(replace(each.value.method, ".", "-"))} availability: ${tostring(each.value.goal * 100)}% of responses over the last ${each.value.rolling_period_days} days should be served successfully"
   goal                = each.value.goal
   rolling_period_days = each.value.rolling_period_days
   request_based_sli {
@@ -296,7 +292,7 @@ resource "google_monitoring_slo" "latency" {
   project             = var.project_id
   service             = google_monitoring_custom_service.transparent_slis.service_id
   slo_id              = "tsli-${lower(replace(each.value.method, ".", "-"))}-latency"
-  display_name        = "${lower(replace(each.value.method, ".", "-"))} Latency ${tostring(each.value.goal * 100)}% of responses over the last ${each.value.rolling_period_days} days should be served faster than ${each.value.threshold_str}"
+  display_name        = "${lower(replace(each.value.method, ".", "-"))} latency: ${tostring(each.value.goal * 100)}% of responses over the last ${each.value.rolling_period_days} days should be served faster than ${each.value.threshold_str}"
   goal                = each.value.goal
   rolling_period_days = each.value.rolling_period_days
   request_based_sli {

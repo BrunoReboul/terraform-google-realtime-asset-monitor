@@ -31,6 +31,10 @@ output "ram_notification_channel_2pubsub_id" {
   value = google_monitoring_notification_channel.alerting2pubsub.id
 }
 
+output "ram_notification_channels" {
+  value = local.notification_channels
+}
+
 output "ram_monitoring_slo_e2e_latency" {
   value = { for s in sort(keys(var.ram_e2e_latency)) : s => google_monitoring_slo.ram_e2e_latency[s].id }
 }

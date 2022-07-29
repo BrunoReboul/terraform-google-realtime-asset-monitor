@@ -22,19 +22,13 @@ variable "notification_channels" {
   type = list(string)
 }
 
-variable "alerting_topic_name" {
-  default = "alerting"
-}
-
-variable "pubsub_allowed_regions" {
-  type    = list(string)
-  default = ["europe-central2", "europe-north1", "europe-west1", "europe-west3", "europe-west4"]
-}
-
-variable "ram_e2e_latency" {
+variable "cai_latency" {
   default = {
     real-time = {
       origin                             = "real-time"
+      events                             = "changes"
+      microservice_name                  = "convertfeed"
+      status                             = "finish enrichCAIFeedMsg"
       threshold_str                      = "5.4min"
       threshold_value                    = 327.68
       goal                               = 0.95
@@ -46,6 +40,9 @@ variable "ram_e2e_latency" {
     },
     batch = {
       origin                             = "scheduled"
+      events                             = "exports"
+      microservice_name                  = "splitexport"
+      status                             = "finish splitToLines done|finish splitToChildExports done"
       threshold_str                      = "31min"
       threshold_value                    = 1853.638
       goal                               = 0.90
@@ -55,27 +52,5 @@ variable "ram_e2e_latency" {
       alerting_slow_burn_loopback_period = "24h"
       alerting_slow_burn_threshold       = 2
     }
-  }
-}
-
-variable "ram_availability" {
-  description = "Critical User Journeys CUJs map crtical microservices"
-  default = {
-    microservice_list = [
-      "launch",
-      "execute",
-      "splitexport",
-      "convertfeed",
-      "fetchrules",
-      "monitor",
-      "stream2bq",
-      "publish2fs"
-    ]
-    goal                               = 0.999
-    rolling_period_days                = 28
-    alerting_fast_burn_loopback_period = "1h"
-    alerting_fast_burn_threshold       = 10
-    alerting_slow_burn_loopback_period = "24h"
-    alerting_slow_burn_threshold       = 2
   }
 }
