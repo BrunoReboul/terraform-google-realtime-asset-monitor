@@ -287,6 +287,7 @@ variable "api_latency" {
       goal                               = 0.95
       threshold_str                      = "1s"
       threshold_value                    = 1
+
       alerting_fast_burn_loopback_period = "1h"
       alerting_fast_burn_threshold       = 10
       alerting_slow_burn_loopback_period = "24h"
