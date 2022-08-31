@@ -159,6 +159,8 @@ variable "ram_e2e_latency" {
   default = {
     real-time = {
       origin                             = "real-time"
+      suffix                             = ""
+      extra_filter                       = ""
       threshold_str                      = "5.4min"
       threshold_value                    = 327.68
       goal                               = 0.95
@@ -170,8 +172,23 @@ variable "ram_e2e_latency" {
     },
     batch = {
       origin                             = "scheduled"
-      threshold_str                      = "31min"
-      threshold_value                    = 1853.638
+      suffix                             = "-general"
+      extra_filter                       = "metric.label.\"asset_type\"!=\"k8s.io/Pod\""
+      threshold_str                      = "15.5min"
+      threshold_value                    = 926.819
+      goal                               = 0.99
+      rolling_period_days                = 28
+      alerting_fast_burn_loopback_period = "1h"
+      alerting_fast_burn_threshold       = 10
+      alerting_slow_burn_loopback_period = "24h"
+      alerting_slow_burn_threshold       = 2
+    }
+    batch_pods = {
+      origin                             = "scheduled"
+      suffix                             = "-k8s-pods"
+      extra_filter                       = "metric.label.\"asset_type\"=\"k8s.io/Pod\""
+      threshold_str                      = "44min"
+      threshold_value                    = 2621.440
       goal                               = 0.99
       rolling_period_days                = 28
       alerting_fast_burn_loopback_period = "1h"
