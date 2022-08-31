@@ -57,13 +57,13 @@ resource "google_monitoring_slo" "ram_e2e_latency" {
   for_each            = var.ram_e2e_latency
   project             = var.project_id
   service             = google_monitoring_custom_service.ram.service_id
-  slo_id              = "ram-e2e-latency-${each.value.origin}"
-  display_name        = "ram end2end latency ${each.value.origin}: ${tostring(each.value.goal * 100)}% of changes over the last ${each.value.rolling_period_days} days should be analyzed in less than ${each.value.threshold_str}"
+  slo_id              = "ram-e2e-latency-${each.value.origin}${each.value.suffix}"
+  display_name        = "ram end2end latency ${each.value.origin}${each.value.suffix}: ${tostring(each.value.goal * 100)}% of changes over the last ${each.value.rolling_period_days} days should be analyzed in less than ${each.value.threshold_str}"
   goal                = each.value.goal
   rolling_period_days = each.value.rolling_period_days
   request_based_sli {
     distribution_cut {
-      distribution_filter = "metric.type=\"logging.googleapis.com/user/ram_latency_e2e\" metric.label.\"microservice_name\"=\"stream2bq\" metric.label.\"origin\"=\"${each.value.origin}\" resource.type=\"cloud_run_revision\" resource.label.\"project_id\"=\"${var.project_id}\""
+      distribution_filter = "metric.type=\"logging.googleapis.com/user/ram_latency_e2e\" metric.label.\"microservice_name\"=\"stream2bq\" metric.label.\"origin\"=\"${each.value.origin}\" resource.type=\"cloud_run_revision\" resource.label.\"project_id\"=\"${var.project_id}\" ${each.value.extra_filter}"
       range {
         max = each.value.threshold_value
       }
@@ -74,10 +74,10 @@ resource "google_monitoring_slo" "ram_e2e_latency" {
 resource "google_monitoring_alert_policy" "ram_e2e_latency_fast_burn" {
   for_each     = var.ram_e2e_latency
   project      = var.project_id
-  display_name = "ram e2e latency ${each.value.origin} ${each.value.threshold_str} burn rate last ${each.value.alerting_fast_burn_loopback_period} > ${each.value.alerting_fast_burn_threshold}"
+  display_name = "ram e2e latency ${each.value.origin}${each.value.suffix} ${each.value.threshold_str} burn rate last ${each.value.alerting_fast_burn_loopback_period} > ${each.value.alerting_fast_burn_threshold}"
   combiner     = "OR"
   conditions {
-    display_name = "ram e2e latency ${each.value.origin} ${each.value.threshold_str} burn rate last ${each.value.alerting_fast_burn_loopback_period} > ${each.value.alerting_fast_burn_threshold}"
+    display_name = "ram e2e latency ${each.value.origin}${each.value.suffix} ${each.value.threshold_str} burn rate last ${each.value.alerting_fast_burn_loopback_period} > ${each.value.alerting_fast_burn_threshold}"
     condition_threshold {
       filter          = "select_slo_burn_rate(\"${google_monitoring_slo.ram_e2e_latency[each.key].id}\", \"${each.value.alerting_fast_burn_loopback_period}\")"
       duration        = "0s"
@@ -94,10 +94,10 @@ resource "google_monitoring_alert_policy" "ram_e2e_latency_fast_burn" {
 resource "google_monitoring_alert_policy" "ram_e2e_latency_slow_burn" {
   for_each     = var.ram_e2e_latency
   project      = var.project_id
-  display_name = "ram e2e latency ${each.value.origin} ${each.value.threshold_str} burn rate last ${each.value.alerting_slow_burn_loopback_period} > ${each.value.alerting_slow_burn_threshold}"
+  display_name = "ram e2e latency ${each.value.origin}${each.value.suffix} ${each.value.threshold_str} burn rate last ${each.value.alerting_slow_burn_loopback_period} > ${each.value.alerting_slow_burn_threshold}"
   combiner     = "OR"
   conditions {
-    display_name = "ram e2e latency ${each.value.origin} ${each.value.threshold_str} burn rate last ${each.value.alerting_slow_burn_loopback_period} > ${each.value.alerting_slow_burn_threshold}"
+    display_name = "ram e2e latency ${each.value.origin}${each.value.suffix} ${each.value.threshold_str} burn rate last ${each.value.alerting_slow_burn_loopback_period} > ${each.value.alerting_slow_burn_threshold}"
     condition_threshold {
       filter          = "select_slo_burn_rate(\"${google_monitoring_slo.ram_e2e_latency[each.key].id}\", \"${each.value.alerting_slow_burn_loopback_period}\")"
       duration        = "0s"
@@ -116,7 +116,7 @@ resource "google_monitoring_dashboard" "ram_e2e_latency_dashboard" {
   project        = var.project_id
   dashboard_json = <<EOF
 {
-    "displayName": "slo_1_ram_e2e_latency_${each.value.origin}",
+    "displayName": "slo_1_ram_e2e_latency_${each.value.origin}${each.value.suffix}",
     "mosaicLayout": {
         "columns": 12,
         "tiles": [
@@ -320,7 +320,7 @@ resource "google_monitoring_dashboard" "ram_e2e_latency_dashboard" {
                 "width": 12,
                 "yPos": 20,
                 "widget": {
-                    "title": "latency ${each.value.origin} over the last ${each.value.rolling_period_days} days 50th 95th 99th",
+                    "title": "latency ${each.value.origin}${each.value.suffix} over the last ${each.value.rolling_period_days} days 50th 95th 99th",
                     "xyChart": {
                         "chartOptions": {
                             "mode": "COLOR"
