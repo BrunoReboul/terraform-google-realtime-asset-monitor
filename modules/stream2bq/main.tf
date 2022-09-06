@@ -375,43 +375,62 @@ resource "google_bigquery_table" "last_assets" {
   view {
     use_legacy_sql = false
     query          = <<EOF
+WITH dedup_and_more_details AS (
+    SELECT
+        timestamp,
+        name,
+        MAX(owner) AS owner,
+        MAX(violationResolver) AS violationResolver,
+        ancestryPathDisplayName,
+        ancestryPath,
+        TO_JSON_STRING(ancestorsDisplayName) AS j_ancestorsDisplayName,
+        TO_JSON_STRING(ancestors) AS j_ancestors,
+        assetType,
+        deleted,
+        projectID
+    FROM
+        `${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.assets.table_id}`
+    WHERE
+        DATE(_PARTITIONTIME) > DATE_SUB(CURRENT_DATE(), INTERVAL 28 DAY)
+        OR _PARTITIONTIME IS NULL
+    GROUP BY
+        timestamp,
+        name,
+        ancestryPathDisplayName,
+        ancestryPath,
+        j_ancestorsDisplayName,
+        j_ancestors,
+        assetType,
+        deleted,
+        projectID
+),
+most_recent AS (
+    SELECT
+        name,
+        MAX(timestamp) AS timestamp
+    FROM
+        dedup_and_more_details
+    GROUP BY
+        name
+    ORDER BY
+        name
+)
 SELECT
-    assets.*
+    dedup_and_more_details.timestamp,
+    dedup_and_more_details.name,
+    dedup_and_more_details.owner,
+    dedup_and_more_details.violationResolver,
+    dedup_and_more_details.ancestryPathDisplayName,
+    dedup_and_more_details.ancestryPath,
+    JSON_QUERY_ARRAY(dedup_and_more_details.j_ancestorsDisplayName) AS ancestorsDisplayName,
+    JSON_QUERY_ARRAY(dedup_and_more_details.j_ancestors) AS ancestors,
+    dedup_and_more_details.assetType,
+    dedup_and_more_details.deleted,
+    dedup_and_more_details.projectID
 FROM
-    (
-        SELECT
-            name,
-            MAX(timestamp) AS timestamp
-        FROM
-            `${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.assets.table_id}`
-        WHERE
-            DATE(_PARTITIONTIME) > DATE_SUB(CURRENT_DATE(), INTERVAL ${var.views_interval_days} DAY)
-            OR _PARTITIONTIME IS NULL
-        GROUP BY
-            name
-        ORDER BY
-            name
-    ) AS latest_assets
-    INNER JOIN (
-        SELECT
-            timestamp,
-            name,
-            owner,
-            violationResolver,
-            ancestryPathDisplayName,
-            ancestryPath,
-            ancestorsDisplayName,
-            ancestors,
-            assetType,
-            deleted,
-            projectID
-        FROM
-            `${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.assets.table_id}`
-        WHERE
-            DATE(_PARTITIONTIME) > DATE_SUB(CURRENT_DATE(), INTERVAL ${var.views_interval_days} DAY)
-            OR _PARTITIONTIME IS NULL
-    ) AS assets ON assets.name = latest_assets.name
-    AND assets.timestamp = latest_assets.timestamp
+    dedup_and_more_details
+    INNER JOIN most_recent ON dedup_and_more_details.name = most_recent.name
+    AND dedup_and_more_details.timestamp = most_recent.timestamp
 EOF
   }
 }
@@ -424,7 +443,7 @@ resource "google_bigquery_table" "last_compliance_status" {
   view {
     use_legacy_sql = false
     query          = <<EOF
-WITH complianceStatus0 AS (
+WITH last_x_days_complianceStatus AS (
     SELECT
         *
     FROM
@@ -435,6 +454,7 @@ WITH complianceStatus0 AS (
 ),
 assets AS (
     SELECT
+        timestamp,
         name,
         owner,
         violationResolver,
@@ -474,7 +494,7 @@ latest_rules AS (
         ruleName,
         MAX(ruleDeploymentTimeStamp) AS ruleDeploymentTimeStamp
     FROM
-        complianceStatus0
+        last_x_days_complianceStatus
     GROUP BY
         ruleName
     ORDER BY
@@ -482,13 +502,13 @@ latest_rules AS (
 ),
 status_for_latest_rules AS (
     SELECT
-        complianceStatus0.*
+        last_x_days_complianceStatus.*
     FROM
         latest_rules
-        INNER JOIN complianceStatus0 ON complianceStatus0.ruleName = latest_rules.ruleName
-        AND complianceStatus0.ruleDeploymentTimeStamp = latest_rules.ruleDeploymentTimeStamp
+        INNER JOIN last_x_days_complianceStatus ON last_x_days_complianceStatus.ruleName = latest_rules.ruleName
+        AND last_x_days_complianceStatus.ruleDeploymentTimeStamp = latest_rules.ruleDeploymentTimeStamp
 ),
-complianceStatus1 AS (
+lastrule_lastasset_compliancestatus AS (
     SELECT
         status_for_latest_rules.evaluationTimeStamp,
         status_for_latest_rules.ruleName,
@@ -531,36 +551,36 @@ complianceStatus1 AS (
     WHERE
         status_for_latest_rules.deleted = FALSE
 ),
-complianceStatus AS (
+enriched_compliancestatus AS (
     SELECT
-        complianceStatus1.ruleName,
-        complianceStatus1.serviceName,
+        lastrule_lastasset_compliancestatus.ruleName,
+        lastrule_lastasset_compliancestatus.serviceName,
         REPLACE(
             REPLACE(
-                REPLACE(complianceStatus1.ruleName, "ConstraintV1", ""),
+                REPLACE(lastrule_lastasset_compliancestatus.ruleName, "ConstraintV1", ""),
                 "GCP",
                 ""
             ),
             "CI",
             ""
         ) AS ruleNameShort,
-        complianceStatus1.ruleDeploymentTimeStamp,
-        complianceStatus1.compliant,
-        NOT complianceStatus1.compliant AS notCompliant,
-        complianceStatus1.assetName,
-        complianceStatus1.assetInventoryTimeStamp,
-        complianceStatus1.evaluationTimeStamp,
+        lastrule_lastasset_compliancestatus.ruleDeploymentTimeStamp,
+        lastrule_lastasset_compliancestatus.compliant,
+        NOT lastrule_lastasset_compliancestatus.compliant AS notCompliant,
+        lastrule_lastasset_compliancestatus.assetName,
+        lastrule_lastasset_compliancestatus.assetInventoryTimeStamp,
+        lastrule_lastasset_compliancestatus.evaluationTimeStamp,
         assets.owner,
         assets.violationResolver,
         IFNULL(
             assets.ancestryPath,
-            complianceStatus1.directoryPath
+            lastrule_lastasset_compliancestatus.directoryPath
         ) AS ancestryPath,
         IFNULL(
             assets.ancestryPathDisplayName,
             IFNULL(
                 assets.ancestryPath,
-                complianceStatus1.directoryPath
+                lastrule_lastasset_compliancestatus.directoryPath
             )
         ) AS ancestryPathDisplayName,
         IF(
@@ -571,33 +591,34 @@ complianceStatus AS (
         assets.ancestors,
         IFNULL(
             assets.assetType,
-            complianceStatus1.directoryAssetType
+            lastrule_lastasset_compliancestatus.directoryAssetType
         ) AS assetType,
         assets.projectID,
     FROM
-        complianceStatus1
-        LEFT JOIN assets ON complianceStatus1.assetName = assets.name
+        lastrule_lastasset_compliancestatus
+        LEFT JOIN assets ON lastrule_lastasset_compliancestatus.assetName = assets.name
+        AND lastrule_lastasset_compliancestatus.assetInventoryTimeStamp = assets.timestamp
 )
 SELECT
-    complianceStatus.*,
-    SPLIT(complianceStatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(0)] AS level0,
-    SPLIT(complianceStatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(1)] AS level1,
-    SPLIT(complianceStatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(2)] AS level2,
-    SPLIT(complianceStatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(3)] AS level3,
-    SPLIT(complianceStatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(4)] AS level4,
-    SPLIT(complianceStatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(5)] AS level5,
-    SPLIT(complianceStatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(6)] AS level6,
-    SPLIT(complianceStatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(7)] AS level7,
-    SPLIT(complianceStatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(8)] AS level8,
-    SPLIT(complianceStatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(9)] AS level9
+    enriched_compliancestatus.*,
+    SPLIT(enriched_compliancestatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(0)] AS level0,
+    SPLIT(enriched_compliancestatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(1)] AS level1,
+    SPLIT(enriched_compliancestatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(2)] AS level2,
+    SPLIT(enriched_compliancestatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(3)] AS level3,
+    SPLIT(enriched_compliancestatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(4)] AS level4,
+    SPLIT(enriched_compliancestatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(5)] AS level5,
+    SPLIT(enriched_compliancestatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(6)] AS level6,
+    SPLIT(enriched_compliancestatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(7)] AS level7,
+    SPLIT(enriched_compliancestatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(8)] AS level8,
+    SPLIT(enriched_compliancestatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(9)] AS level9
 FROM
-    complianceStatus
+    enriched_compliancestatus
 ORDER BY
-    complianceStatus.ruleName,
-    complianceStatus.ruleDeploymentTimeStamp,
-    complianceStatus.compliant,
-    complianceStatus.assetName,
-    complianceStatus.assetInventoryTimeStamp
+    enriched_compliancestatus.ruleName,
+    enriched_compliancestatus.ruleDeploymentTimeStamp,
+    enriched_compliancestatus.compliant,
+    enriched_compliancestatus.assetName,
+    enriched_compliancestatus.assetInventoryTimeStamp
 EOF
   }
 }
