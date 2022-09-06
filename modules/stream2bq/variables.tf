@@ -38,8 +38,8 @@ variable "views_interval_days" {
 }
 
 variable "bq_partition_expiration_ms" {
-  description = "Bigquery table number of milliseconds for which to keep the storage for a partition"
-  default     = 2419200000
+  description = "Bigquery table number of milliseconds for which to keep the storage for a partition MUST be > 30 days project pending deletion delay"
+  default     = 3024000000
 }
 
 variable "crun_region" {
