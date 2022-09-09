@@ -333,6 +333,10 @@ resource "google_bigquery_table" "violations" {
                     {
                         "name": "resource",
                         "type": "STRING"
+                    },
+                    {
+                        "name": "updateTime",
+                        "type": "TIMESTAMP"
                     }
                 ],
                 "name": "asset",
@@ -659,7 +663,15 @@ FROM
     ) AS violations ON violations.functionConfig.functionName = compliancestatus.ruleName
     AND violations.functionConfig.deploymentTime = compliancestatus.ruleDeploymentTimeStamp
     AND violations.feedMessage.asset.name = compliancestatus.assetName
-    AND violations.feedMessage.window.startTime = compliancestatus.assetInventoryTimeStamp
+    AND IF(
+        violations.feedMessage.origin = "real-time",
+        violations.feedMessage.window.startTime,
+        IF(
+            violations.feedMessage.asset.updateTime IS NULL,
+            violations.feedMessage.window.startTime,
+            violations.feedMessage.asset.updateTime
+        )
+    ) = compliancestatus.assetInventoryTimeStamp
     AND violations.nonCompliance.evaluationTimeStamp = compliancestatus.evaluationTimeStamp
 EOF
   }
