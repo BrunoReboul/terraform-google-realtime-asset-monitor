@@ -110,6 +110,14 @@ resource "google_bigquery_table" "assets" {
     {
         "name": "projectID",
         "type": "STRING"
+    },
+    {
+        "name": "persistTimestamp",
+        "type": "TIMESTAMP"
+    },
+    {
+        "name": "scheduledRootTriggeringID",
+        "type": "STRING"
     }
 ]
 EOF
@@ -177,6 +185,10 @@ resource "google_bigquery_table" "compliance_status" {
         "mode": "REQUIRED",
         "name": "evaluationTimeStamp",
         "type": "TIMESTAMP"
+    },
+    {
+        "name": "scheduledRootTriggeringID",
+        "type": "STRING"
     }
 ]
 EOF
@@ -337,6 +349,10 @@ resource "google_bigquery_table" "violations" {
                     {
                         "name": "updateTime",
                         "type": "TIMESTAMP"
+                    },
+                    {
+                        "name": "scheduledRootTriggeringID",
+                        "type": "STRING"
                     }
                 ],
                 "name": "asset",
@@ -379,7 +395,25 @@ resource "google_bigquery_table" "last_assets" {
   view {
     use_legacy_sql = false
     query          = <<EOF
-WITH dedup_and_more_details AS (
+WITH scoped_assets AS (
+    SELECT
+        *
+    FROM
+        `${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.assets.table_id}`
+    WHERE
+        DATE(_PARTITIONTIME) > DATE_SUB(CURRENT_DATE(), INTERVAL ${var.views_interval_days} DAY)
+        OR _PARTITIONTIME IS NULL
+),
+old AS (
+    SELECT
+        scoped_assets.*,
+        0 AS change
+    FROM
+        scoped_assets
+    WHERE
+        persistTimeStamp IS NULL
+),
+old_dedup_and_more_details AS (
     SELECT
         timestamp,
         name,
@@ -391,12 +425,12 @@ WITH dedup_and_more_details AS (
         TO_JSON_STRING(ancestors) AS j_ancestors,
         assetType,
         deleted,
-        projectID
+        projectID,
+        persistTimeStamp,
+        scheduledRootTriggeringID,
+        change
     FROM
-        `${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.assets.table_id}`
-    WHERE
-        DATE(_PARTITIONTIME) > DATE_SUB(CURRENT_DATE(), INTERVAL 28 DAY)
-        OR _PARTITIONTIME IS NULL
+        old
     GROUP BY
         timestamp,
         name,
@@ -406,35 +440,122 @@ WITH dedup_and_more_details AS (
         j_ancestors,
         assetType,
         deleted,
-        projectID
+        projectID,
+        persistTimeStamp,
+        scheduledRootTriggeringID,
+        change
 ),
-most_recent AS (
+old_most_recent AS (
     SELECT
         name,
         MAX(timestamp) AS timestamp
     FROM
-        dedup_and_more_details
+        old_dedup_and_more_details
     GROUP BY
         name
     ORDER BY
         name
+),
+old_last_assets AS (
+    SELECT
+        old_dedup_and_more_details.timestamp,
+        old_dedup_and_more_details.name,
+        old_dedup_and_more_details.owner,
+        old_dedup_and_more_details.violationResolver,
+        old_dedup_and_more_details.ancestryPathDisplayName,
+        old_dedup_and_more_details.ancestryPath,
+        JSON_QUERY_ARRAY(
+            old_dedup_and_more_details.j_ancestorsDisplayName
+        ) AS ancestorsDisplayName,
+        JSON_QUERY_ARRAY(old_dedup_and_more_details.j_ancestors) AS ancestors,
+        old_dedup_and_more_details.assetType,
+        old_dedup_and_more_details.deleted,
+        old_dedup_and_more_details.projectID,
+        old_dedup_and_more_details.persistTimeStamp,
+        old_dedup_and_more_details.scheduledRootTriggeringID,
+        old_dedup_and_more_details.change
+    FROM
+        old_dedup_and_more_details
+        INNER JOIN old_most_recent ON old_dedup_and_more_details.name = old_most_recent.name
+        AND old_dedup_and_more_details.timestamp = old_most_recent.timestamp
+),
+wpts AS (
+    SELECT
+        scoped_assets.*,
+        1 AS change
+    FROM
+        scoped_assets
+    WHERE
+        persistTimeStamp IS NOT NULL
+),
+wpts_most_recent AS (
+    SELECT
+        name,
+        array_agg(
+            struct(timeStamp, persistTimeStamp)
+            order by
+                timeStamp desc,
+                persistTimeStamp desc
+        ) [offset(0)] as tms
+    FROM
+        wpts
+    GROUP BY
+        name
+    ORDER BY
+        name
+),
+wpts_last_assets AS (
+    SELECT
+        wpts.*
+    FROM
+        wpts
+        INNER JOIN wpts_most_recent ON wpts.name = wpts_most_recent.name
+        AND wpts.timestamp = wpts_most_recent.tms.timestamp
+        AND wpts.persistTimeStamp = wpts_most_recent.tms.persistTimeStamp
+),
+old_union_new_last_assets AS (
+    SELECT
+        *
+    FROM
+        old_last_assets
+    UNION
+    ALL
+    SELECT
+        *
+    FROM
+        wpts_last_assets
+),
+prefer_new AS (
+    SELECT
+        name,
+        MAX(change) AS change
+    FROM
+        old_union_new_last_assets
+    GROUP BY
+        name
 )
 SELECT
-    dedup_and_more_details.timestamp,
-    dedup_and_more_details.name,
-    dedup_and_more_details.owner,
-    dedup_and_more_details.violationResolver,
-    dedup_and_more_details.ancestryPathDisplayName,
-    dedup_and_more_details.ancestryPath,
-    JSON_QUERY_ARRAY(dedup_and_more_details.j_ancestorsDisplayName) AS ancestorsDisplayName,
-    JSON_QUERY_ARRAY(dedup_and_more_details.j_ancestors) AS ancestors,
-    dedup_and_more_details.assetType,
-    dedup_and_more_details.deleted,
-    dedup_and_more_details.projectID
+    timestamp,
+    old_union_new_last_assets.name,
+    owner,
+    violationResolver,
+    ancestryPathDisplayName,
+    ancestryPath,
+    ancestorsDisplayName,
+    ancestors,
+    assetType,
+    deleted,
+    projectID,
+    IF(
+        persistTimeStamp IS NULL,
+        timeStamp,
+        persistTimeStamp
+    ) AS persistTimeStamp,
+    scheduledRootTriggeringID
 FROM
-    dedup_and_more_details
-    INNER JOIN most_recent ON dedup_and_more_details.name = most_recent.name
-    AND dedup_and_more_details.timestamp = most_recent.timestamp
+    old_union_new_last_assets
+    INNER JOIN prefer_new ON prefer_new.name = old_union_new_last_assets.name
+    AND prefer_new.change = old_union_new_last_assets.change
 EOF
   }
 }
@@ -467,7 +588,9 @@ assets AS (
         ancestorsDisplayName,
         ancestors,
         assetType,
-        projectID
+        projectID,
+        persistTimeStamp,
+        scheduledRootTriggeringID
     FROM
         `${var.project_id}.${google_bigquery_dataset.ram_dataset.dataset_id}.${google_bigquery_table.last_assets.table_id}`
 ),
@@ -528,6 +651,7 @@ lastrule_lastasset_compliancestatus AS (
         status_for_latest_rules.compliant,
         status_for_latest_rules.assetName,
         status_for_latest_rules.assetInventoryTimeStamp,
+        status_for_latest_rules.scheduledRootTriggeringID,
         IF(
             SPLIT(status_for_latest_rules.assetName, "/") [SAFE_OFFSET(2)] = "directories",
             CONCAT(
@@ -561,7 +685,11 @@ enriched_compliancestatus AS (
         lastrule_lastasset_compliancestatus.serviceName,
         REPLACE(
             REPLACE(
-                REPLACE(lastrule_lastasset_compliancestatus.ruleName, "ConstraintV1", ""),
+                REPLACE(
+                    lastrule_lastasset_compliancestatus.ruleName,
+                    "ConstraintV1",
+                    ""
+                ),
                 "GCP",
                 ""
             ),
@@ -574,6 +702,7 @@ enriched_compliancestatus AS (
         lastrule_lastasset_compliancestatus.assetName,
         lastrule_lastasset_compliancestatus.assetInventoryTimeStamp,
         lastrule_lastasset_compliancestatus.evaluationTimeStamp,
+        lastrule_lastasset_compliancestatus.scheduledRootTriggeringID,
         assets.owner,
         assets.violationResolver,
         IFNULL(
@@ -601,20 +730,49 @@ enriched_compliancestatus AS (
     FROM
         lastrule_lastasset_compliancestatus
         LEFT JOIN assets ON lastrule_lastasset_compliancestatus.assetName = assets.name
-        AND lastrule_lastasset_compliancestatus.assetInventoryTimeStamp = assets.timestamp
 )
 SELECT
     enriched_compliancestatus.*,
-    SPLIT(enriched_compliancestatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(0)] AS level0,
-    SPLIT(enriched_compliancestatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(1)] AS level1,
-    SPLIT(enriched_compliancestatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(2)] AS level2,
-    SPLIT(enriched_compliancestatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(3)] AS level3,
-    SPLIT(enriched_compliancestatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(4)] AS level4,
-    SPLIT(enriched_compliancestatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(5)] AS level5,
-    SPLIT(enriched_compliancestatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(6)] AS level6,
-    SPLIT(enriched_compliancestatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(7)] AS level7,
-    SPLIT(enriched_compliancestatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(8)] AS level8,
-    SPLIT(enriched_compliancestatus.ancestryPathDisplayName, "/") [SAFE_OFFSET(9)] AS level9
+    SPLIT(
+        enriched_compliancestatus.ancestryPathDisplayName,
+        "/"
+    ) [SAFE_OFFSET(0)] AS level0,
+    SPLIT(
+        enriched_compliancestatus.ancestryPathDisplayName,
+        "/"
+    ) [SAFE_OFFSET(1)] AS level1,
+    SPLIT(
+        enriched_compliancestatus.ancestryPathDisplayName,
+        "/"
+    ) [SAFE_OFFSET(2)] AS level2,
+    SPLIT(
+        enriched_compliancestatus.ancestryPathDisplayName,
+        "/"
+    ) [SAFE_OFFSET(3)] AS level3,
+    SPLIT(
+        enriched_compliancestatus.ancestryPathDisplayName,
+        "/"
+    ) [SAFE_OFFSET(4)] AS level4,
+    SPLIT(
+        enriched_compliancestatus.ancestryPathDisplayName,
+        "/"
+    ) [SAFE_OFFSET(5)] AS level5,
+    SPLIT(
+        enriched_compliancestatus.ancestryPathDisplayName,
+        "/"
+    ) [SAFE_OFFSET(6)] AS level6,
+    SPLIT(
+        enriched_compliancestatus.ancestryPathDisplayName,
+        "/"
+    ) [SAFE_OFFSET(7)] AS level7,
+    SPLIT(
+        enriched_compliancestatus.ancestryPathDisplayName,
+        "/"
+    ) [SAFE_OFFSET(8)] AS level8,
+    SPLIT(
+        enriched_compliancestatus.ancestryPathDisplayName,
+        "/"
+    ) [SAFE_OFFSET(9)] AS level9
 FROM
     enriched_compliancestatus
 ORDER BY
