@@ -3731,7 +3731,6 @@ resource "google_monitoring_dashboard" "consumed_api_request_count" {
             "dataSets": [
               {
                 "minAlignmentPeriod": "2419200s",
-                "tableDisplayOptions": {},
                 "timeSeriesQuery": {
                   "timeSeriesFilter": {
                     "aggregation": {

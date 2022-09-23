@@ -362,7 +362,6 @@ resource "google_monitoring_dashboard" "ram_e2e_latency_dashboard" {
                     "timeSeriesTable": {
                         "dataSets": [
                             {
-                                "tableDisplayOptions": {},
                                 "minAlignmentPeriod": "0s",
                                 "timeSeriesQuery": {
                                     "timeSeriesQueryLanguage": "fetch cloud_run_revision\n| metric 'logging.googleapis.com/user/ram_latency_e2e'\n| filter\n    (metric.microservice_name == 'stream2bq' && metric.origin == '${each.value.origin}'\n     && metric.status =~ 'finish compliance status persisted|finish violation persisted')\n| align delta(${tostring(each.value.rolling_period_days)}d)\n| every ${tostring(each.value.rolling_period_days)}d\n| group_by [metric.asset_type, metric.rule_name],\n[value_ram_latency_e2e_percentile: percentile(value.ram_latency_e2e, 95)]"
@@ -382,7 +381,6 @@ resource "google_monitoring_dashboard" "ram_e2e_latency_dashboard" {
                     "timeSeriesTable": {
                         "dataSets": [
                             {
-                                "tableDisplayOptions": {},
                                 "minAlignmentPeriod": "0s",
                                 "timeSeriesQuery": {
                                     "timeSeriesQueryLanguage": "fetch cloud_run_revision\n| metric 'logging.googleapis.com/user/ram_latency_t2s'\n| filter\n    (metric.microservice_name == 'convertfeed' && metric.origin == '${each.value.origin}'\n     && metric.status = 'finish enrichCAIFeedMsg')\n| align delta(${tostring(each.value.rolling_period_days)}d)\n| every ${tostring(each.value.rolling_period_days)}d\n| group_by [metric.asset_type],\n[value_ram_latency_t2s_percentile: percentile(value.ram_latency_t2s, 95)]"
