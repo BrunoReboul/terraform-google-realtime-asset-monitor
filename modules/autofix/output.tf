@@ -15,9 +15,9 @@
  */
 
 output "ram_autofix_tag_keys_id" {
-  value = { for o in sort(var.autofix_org_ids) : o => google_tags_tag_key.autofix_key[o].id }
+  value = tomap({ for o in sort(var.autofix_org_ids) : o => google_tags_tag_key.autofix_key[o].id })
 }
 
 output "ram_autofix_bqdsdelete_tag_value_id" {
-  value = { for o in sort(var.autofix_org_ids) : o => google_tags_tag_value.autofix_bqdsdelete_value[o].id }
+  value = tomap({ for o in sort(var.autofix_org_ids) : o => google_tags_tag_value.autofix_bqdsdelete_value[o].id })
 }
