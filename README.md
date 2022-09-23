@@ -50,6 +50,8 @@ To use theses terraform modules, you will need a GCP project with:
     - or roles/resourcemanager.organizationAdmin on the folder's parent org
   - On the monitored assets projects (aka when creating CAI feeds at project level)
     - Service Usage Consumer `roles/serviceusage.serviceUsageConsumer`
+  - On organization where to use `autofix` feature:
+    - Tag Administrator `roles/resourcemanager.tagAdmin`
 
 - FireStore: [select native mode](https://cloud.google.com/datastore/docs/firestore-or-datastore)
 - Provision a GCS bucket to manage Terraform state.
