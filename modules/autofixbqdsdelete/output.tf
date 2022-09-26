@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
-output "tag_key_ids" {
-  value = tomap({ for o in sort(var.autofix_org_ids) : o => google_tags_tag_key.autofix_key[o].id })
+
+output "tag_value_ids" {
+  value = tomap({ for o in sort(var.autofix_org_ids) : o => google_tags_tag_value.tag_value[o].id })
 }

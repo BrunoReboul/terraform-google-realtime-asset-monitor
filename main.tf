@@ -195,3 +195,16 @@ module "dashboards" {
   source     = "./modules/dashboards"
   project_id = var.project_id
 }
+
+module "autofix" {
+  depends_on      = [module.monitor]
+  source          = "./modules/autofix"
+  autofix_org_ids = var.autofix_org_ids
+}
+
+module "autofixbqdsdelete" {
+  count               = var.deploy_autofix_bqdsdelete == true ? 1 : 0
+  source              = "./modules/autofixbqdsdelete"
+  autofix_org_ids     = var.autofix_org_ids
+  autofix_tag_key_ids = module.autofix.tag_key_ids
+}

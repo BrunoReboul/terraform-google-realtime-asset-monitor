@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
-output "tag_key_ids" {
-  value = tomap({ for o in sort(var.autofix_org_ids) : o => google_tags_tag_key.autofix_key[o].id })
+variable "autofix_org_ids" {
+  type        = list(string)
+  description = "List of organization numbers where to create the autofix tag key and values"
+}
+
+variable "autofix_tag_key_ids" {
+  type = map(string)
 }
