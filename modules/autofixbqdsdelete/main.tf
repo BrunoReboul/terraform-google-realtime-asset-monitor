@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
-output "tag_key_ids" {
-  value = tomap({ for o in sort(var.autofix_org_ids) : o => google_tags_tag_key.autofix_key[o].id })
+resource "google_tags_tag_value" "tag_value" {
+  for_each    = var.autofix_tag_key_ids
+  parent      = each.value
+  short_name  = "bqdsdelete"
+  description = "Real-time Asset Monitor delete Bigquery Dataset"
 }

@@ -311,3 +311,20 @@ variable "api_latency" {
     },
   }
 }
+
+variable "autofix_org_ids" {
+  type        = list(string)
+  description = "List of organization numbers where to create the autofix tag key and values"
+}
+
+variable "deploy_autofix" {
+  type        = bool
+  description = "Deploy autofix when true"
+  default     = false
+}
+
+variable "deploy_autofix_bqdsdelete" {
+  type        = bool
+  description = "Deploy autofix bqdsdelete when true"
+  default     = false
+}

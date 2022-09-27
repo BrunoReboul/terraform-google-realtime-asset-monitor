@@ -20,10 +20,3 @@ resource "google_tags_tag_key" "autofix_key" {
   short_name  = "autofix"
   description = "Real-time Asset Monitor automatic remediation"
 }
-
-resource "google_tags_tag_value" "autofix_bqdsdelete_value" {
-  for_each    = toset(var.autofix_org_ids)
-  parent      = "tagKeys/${google_tags_tag_key.autofix_key[each.key].name}"
-  short_name  = "bqdsdelete"
-  description = "Real-time Asset Monitor delete Bigquery Dataset"
-}
