@@ -671,13 +671,12 @@ lastrule_lastasset_compliancestatus AS (
             END,
             NULL
         ) AS directoryAssetType,
+        status_for_latest_rules.deleted,
     FROM
         latest_asset_inventory_per_rule
         INNER JOIN status_for_latest_rules ON status_for_latest_rules.assetName = latest_asset_inventory_per_rule.assetName
         AND status_for_latest_rules.ruleName = latest_asset_inventory_per_rule.ruleName
         AND status_for_latest_rules.evaluationTimeStamp = latest_asset_inventory_per_rule.tms.evaluationTimeStamp
-    WHERE
-        status_for_latest_rules.deleted = FALSE
 ),
 enriched_compliancestatus AS (
     SELECT
@@ -703,6 +702,7 @@ enriched_compliancestatus AS (
         lastrule_lastasset_compliancestatus.assetInventoryTimeStamp,
         lastrule_lastasset_compliancestatus.evaluationTimeStamp,
         lastrule_lastasset_compliancestatus.scheduledRootTriggeringID,
+        lastrule_lastasset_compliancestatus.deleted,
         assets.owner,
         assets.violationResolver,
         IFNULL(
