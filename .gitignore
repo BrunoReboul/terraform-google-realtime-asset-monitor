@@ -29,3 +29,5 @@ override.tf.json
 # example: *tfplan*
 **/set_env_vars.sh
 .VSCodeCounter/**
+
+**/.vscode/
