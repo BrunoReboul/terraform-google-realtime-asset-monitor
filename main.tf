@@ -23,7 +23,6 @@ module "deploy" {
   project_id = var.project_id
 }
 
-
 module "convertfeed" {
   source                     = "./modules/convertfeed"
   project_id                 = var.project_id
@@ -203,8 +202,14 @@ module "autofix" {
 }
 
 module "autofixbqdsdelete" {
-  count               = var.deploy_autofix_bqdsdelete == true ? 1 : 0
-  source              = "./modules/autofixbqdsdelete"
-  autofix_org_ids     = var.autofix_org_ids
-  autofix_tag_key_ids = module.autofix.tag_key_ids
+  count                      = var.deploy_autofix_bqdsdelete == true ? 1 : 0
+  source                     = "./modules/autofixbqdsdelete"
+  autofix_org_ids            = var.autofix_org_ids
+  autofix_tag_key_ids        = module.autofix.tag_key_ids
+  project_id                 = var.project_id
+  environment                = local.environment
+  crun_region                = var.crun_region
+  ram_microservice_image_tag = var.ram_microservice_image_tag
+  log_only_severity_levels   = var.log_only_severity_levels
+  triggering_topic_id        = module.monitor.violation_topic_id
 }

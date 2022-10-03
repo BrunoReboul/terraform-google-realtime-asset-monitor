@@ -14,7 +14,28 @@
  * limitations under the License.
  */
 
-
 output "tag_value_ids" {
   value = tomap({ for o in sort(var.autofix_org_ids) : o => google_tags_tag_value.tag_value[o].id })
+}
+
+output "service_account_email" {
+  description = "Service account email used to run this microservice"
+  value       = google_service_account.microservice_sa.email
+}
+
+output "crun_service_id" {
+  description = "cloud run service id"
+  value       = google_cloud_run_service.crun_svc.id
+}
+output "crun_service_url" {
+  description = "cloud run service url"
+  value       = google_cloud_run_service.crun_svc.status[0].url
+}
+output "subscription_sa_email" {
+  description = "Service account email used to trigger this type of action"
+  value       = google_service_account.subscription_sa.email
+}
+output "subscription_id" {
+  description = "PubSub subscription id to trigger this type of action"
+  value       = google_pubsub_subscription.subcription.id
 }
