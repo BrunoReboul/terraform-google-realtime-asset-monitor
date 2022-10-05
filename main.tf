@@ -84,16 +84,17 @@ module "launch" {
 }
 
 module "executecaiexport" {
-  source                     = "./modules/executecaiexport"
-  project_id                 = var.project_id
-  environment                = local.environment
-  gcs_location               = var.gcs_location
-  export_org_ids             = var.export_org_ids
-  export_folder_ids          = var.export_folder_ids
-  crun_region                = var.crun_region
-  ram_microservice_image_tag = var.ram_microservice_image_tag
-  log_only_severity_levels   = var.log_only_severity_levels
-  triggering_topic_id        = module.launch.action_topic_id
+  source                                = "./modules/executecaiexport"
+  project_id                            = var.project_id
+  environment                           = local.environment
+  gcs_location                          = var.gcs_location
+  gcs_export_bucket_object_max_age_days = var.gcs_export_bucket_object_max_age_days
+  export_org_ids                        = var.export_org_ids
+  export_folder_ids                     = var.export_folder_ids
+  crun_region                           = var.crun_region
+  ram_microservice_image_tag            = var.ram_microservice_image_tag
+  log_only_severity_levels              = var.log_only_severity_levels
+  triggering_topic_id                   = module.launch.action_topic_id
 }
 
 module "executegfsdeleteolddocs" {
@@ -129,14 +130,15 @@ module "publish2fs" {
 }
 
 module "upload2gcs" {
-  source                     = "./modules/upload2gcs"
-  project_id                 = var.project_id
-  environment                = local.environment
-  gcs_location               = var.gcs_location
-  crun_region                = var.crun_region
-  ram_microservice_image_tag = var.ram_microservice_image_tag
-  log_only_severity_levels   = var.log_only_severity_levels
-  triggering_topic_id        = module.convertfeed.asset_feed_topic_id
+  source                                   = "./modules/upload2gcs"
+  project_id                               = var.project_id
+  environment                              = local.environment
+  gcs_location                             = var.gcs_location
+  crun_region                              = var.crun_region
+  ram_microservice_image_tag               = var.ram_microservice_image_tag
+  log_only_severity_levels                 = var.log_only_severity_levels
+  triggering_topic_id                      = module.convertfeed.asset_feed_topic_id
+  gcs_assetjson_bucket_object_max_age_days = var.gcs_assetjson_bucket_object_max_age_days
 }
 
 module "feeds" {

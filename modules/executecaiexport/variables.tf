@@ -27,6 +27,10 @@ variable "gcs_location" {
   default     = "europe-west1"
 }
 
+variable "gcs_export_bucket_object_max_age_days" {
+  description = "A lifecycle rule deletes objects older than this duration"
+}
+
 variable "export_org_ids" {
   description = "list of organization id where to grant Cloud Asset Inventory roles to allow export feature"
   type        = list(string)

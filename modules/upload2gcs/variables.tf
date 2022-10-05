@@ -32,6 +32,11 @@ variable "crun_region" {
   default     = "europe-west1"
 }
 
+variable "gcs_assetjson_bucket_object_max_age_days" {
+  description = "A lifecycle rule deletes objects older than this duration"
+}
+
+
 variable "crun_cpu" {
   description = "Number of cpu in k8s quantity 1000m means 1000 millicpu aka 1"
   default     = "1000m"

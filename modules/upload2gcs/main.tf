@@ -43,7 +43,7 @@ resource "google_storage_bucket" "assetjson" {
   uniform_bucket_level_access = true
   lifecycle_rule {
     condition {
-      age = 1
+      age = var.gcs_assetjson_bucket_object_max_age_days
     }
     action {
       type = "Delete"
