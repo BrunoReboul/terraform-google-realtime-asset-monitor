@@ -58,7 +58,7 @@ resource "google_storage_bucket" "exports" {
   uniform_bucket_level_access = true
   lifecycle_rule {
     condition {
-      age = 1
+      age = var.gcs_export_bucket_object_max_age_days
     }
     action {
       type = "Delete"

@@ -44,6 +44,16 @@ variable "gcs_location" {
   default     = "europe-west1"
 }
 
+variable "gcs_export_bucket_object_max_age_days" {
+  description = "A lifecycle rule deletes objects older than this duration"
+  default     = 1
+}
+
+variable "gcs_assetjson_bucket_object_max_age_days" {
+  description = "A lifecycle rule deletes objects older than this duration"
+  default     = 1
+}
+
 variable "crun_region" {
   description = "cloud run region"
   default     = "europe-west1"
