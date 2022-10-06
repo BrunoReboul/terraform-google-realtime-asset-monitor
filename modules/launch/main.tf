@@ -41,6 +41,15 @@ resource "google_storage_bucket" "actions_repo" {
   location                    = var.gcs_location
   force_destroy               = true
   uniform_bucket_level_access = true
+  lifecycle_rule {
+    condition {
+      age = 36500
+    }
+    action {
+      type          = "SetStorageClass"
+      storage_class = "STANDARD"
+    }
+  }
 }
 
 resource "google_storage_bucket_iam_member" "actions_repo_reader" {
