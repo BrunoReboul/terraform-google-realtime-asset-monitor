@@ -87,10 +87,6 @@ output "upload2gcs" {
   value = module.upload2gcs
 }
 
-output "autofix" {
-  value = module.autofix
-}
-
 output "autofixbqdsdelete" {
   value = module.autofixbqdsdelete
 }

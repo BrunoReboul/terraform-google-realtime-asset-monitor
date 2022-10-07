@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-output "tag_value_ids" {
-  value = tomap({ for o in sort(var.autofix_org_ids) : o => google_tags_tag_value.tag_value[o].id })
-}
-
 output "service_account_email" {
   description = "Service account email used to run this microservice"
   value       = google_service_account.microservice_sa.email

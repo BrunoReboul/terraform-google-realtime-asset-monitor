@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-variable "autofix_org_ids" {
-  type        = list(string)
-  description = "List of organization numbers where to create the autofix tag key and values"
-}
-
-variable "autofix_tag_key_ids" {
-  type = map(string)
-}
-
 variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
 }
