@@ -20,13 +20,6 @@ locals {
   rule_name    = "GCPBigQueryDatasetLocationConstraintV1"
 }
 
-resource "google_tags_tag_value" "tag_value" {
-  for_each    = var.autofix_tag_key_ids
-  parent      = each.value
-  short_name  = local.action_kind
-  description = "Real-time Asset Monitor delete Bigquery Dataset"
-}
-
 data "google_project" "project" {
   project_id = var.project_id
 }
