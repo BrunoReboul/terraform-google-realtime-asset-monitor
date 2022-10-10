@@ -322,31 +322,8 @@ variable "api_latency" {
   }
 }
 
-variable "create_autofix_tag_key_and_values" {
-  type        = bool
-  description = "Give choice to provide or create autofix tag key and tag values"
-  default     = false
-}
-
-variable "autofix_org_ids" {
-  type        = list(string)
-  description = "List of organization numbers where to create the autofix tag key and values"
-}
-
-variable "autofix_tag_key_id" {
-  type        = map(string)
-  description = "To be provided when create_autofix_tag_key_and_values is false and at least one deploy_autofix scenario is true. The map is \"orgId\" = \"tagKeys/0123456789\""
-  default     = { "" = "" }
-}
-
 variable "deploy_autofix_bqdsdelete" {
   type        = bool
   description = "Deploy autofix bqdsdelete when true"
   default     = false
-}
-
-variable "autofix_bqdsdelete_tag_value_id" {
-  type        = map(string)
-  description = "To be provided when create_autofix_tag_key_and_values is false and deploy_autofix_bqdsdelete is true. The map is \"orgId\" = \"tagValue/0123456789\""
-  default     = { "" = "" }
 }
