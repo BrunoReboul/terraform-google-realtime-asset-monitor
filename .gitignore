@@ -31,3 +31,5 @@ override.tf.json
 .VSCodeCounter/**
 
 **/.vscode/
+
+env/*
