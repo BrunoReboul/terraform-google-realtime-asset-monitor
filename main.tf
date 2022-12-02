@@ -168,11 +168,12 @@ module "metrics" {
 
 module "slos" {
   # Create SLOs once the log based metrics have been created
-  depends_on            = [module.metrics]
-  source                = "./modules/slos"
-  project_id            = var.project_id
-  notification_channels = var.notification_channels
-  ram_e2e_latency       = var.ram_e2e_latency
+  depends_on             = [module.metrics]
+  source                 = "./modules/slos"
+  project_id             = var.project_id
+  pubsub_allowed_regions = var.pubsub_allowed_regions
+  notification_channels  = var.notification_channels
+  ram_e2e_latency        = var.ram_e2e_latency
 }
 
 module "slos_cai" {

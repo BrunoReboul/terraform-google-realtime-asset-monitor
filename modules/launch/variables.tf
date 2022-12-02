@@ -33,8 +33,7 @@ variable "action_trigger_topic_name" {
 }
 
 variable "pubsub_allowed_regions" {
-  type    = list(string)
-  default = ["europe-central2", "europe-north1", "europe-west1", "europe-west3", "europe-west4"]
+  type = list(string)
 }
 
 variable "schedulers" {
