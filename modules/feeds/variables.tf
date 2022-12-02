@@ -23,8 +23,7 @@ variable "cai_feed_topic_id" {
 }
 
 variable "pubsub_allowed_regions" {
-  type    = list(string)
-  default = ["europe-central2", "europe-north1", "europe-west1", "europe-west3", "europe-west4"]
+  type = list(string)
 }
 
 variable "feed_iam_policy_orgs" {
