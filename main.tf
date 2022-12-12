@@ -151,7 +151,6 @@ module "feeds" {
   ]
   source                  = "./modules/feeds"
   project_id              = var.project_id
-  pubsub_allowed_regions  = var.pubsub_allowed_regions
   cai_feed_topic_id       = module.convertfeed.cai_feed_topic_id
   feed_iam_policy_folders = var.feed_iam_policy_folders
   feed_iam_policy_orgs    = var.feed_iam_policy_orgs
