@@ -22,10 +22,6 @@ variable "cai_feed_topic_id" {
   description = "google cloud asset inventory feed messages"
 }
 
-variable "pubsub_allowed_regions" {
-  type = list(string)
-}
-
 variable "feed_iam_policy_orgs" {
   description = "For feed type IAM_POLICY, the map of monitored organizations and the targeted list assets for each. Can be empty"
   type        = map(list(string))
