@@ -327,3 +327,9 @@ variable "deploy_autofix_bqdsdelete" {
   description = "Deploy autofix bqdsdelete when true"
   default     = false
 }
+
+variable "deploy_frontend" {
+  type        = bool
+  description = "Deploy the frontend and its BFF backend for frontend"
+  default     = false
+}

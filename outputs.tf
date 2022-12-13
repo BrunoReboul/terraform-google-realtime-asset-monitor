@@ -90,3 +90,7 @@ output "upload2gcs" {
 output "autofixbqdsdelete" {
   value = module.autofixbqdsdelete
 }
+
+output "backend4frontend" {
+  value = module.backend4frontend
+}

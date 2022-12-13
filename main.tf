@@ -207,3 +207,13 @@ module "autofixbqdsdelete" {
   log_only_severity_levels   = var.log_only_severity_levels
   triggering_topic_id        = module.monitor.violation_topic_id
 }
+
+module "backend4frontend" {
+  count                      = var.deploy_frontend == true ? 1 : 0
+  source                     = "./modules/backend4frontend"
+  project_id                 = var.project_id
+  environment                = local.environment
+  crun_region                = var.crun_region
+  ram_microservice_image_tag = var.ram_microservice_image_tag
+  log_only_severity_levels   = var.log_only_severity_levels
+}
