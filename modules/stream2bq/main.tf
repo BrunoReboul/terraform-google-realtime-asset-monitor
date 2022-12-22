@@ -189,6 +189,10 @@ resource "google_bigquery_table" "compliance_status" {
     {
         "name": "scheduledRootTriggeringID",
         "type": "STRING"
+    },
+    {
+        "name": "scheduledRootTriggeringTimestamp",
+        "type": "TIMESTAMP"
     }
 ]
 EOF
