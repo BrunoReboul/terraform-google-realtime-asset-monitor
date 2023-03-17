@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-output "service_account_email" {
-  description = "Service account email used to run this microservice"
-  value       = google_service_account.microservice_sa.email
+output "external_ip_address" {
+  description = "The external global IP address of the global external https load balancer "
+  value       = google_compute_global_address.ram_ext_ip.address
 }
 
-output "crun_service_id" {
-  description = "cloud run service id"
-  value       = google_cloud_run_service.crun_svc.id
+output "admin_backend_name" {
+  value = google_compute_backend_service.admin.name
 }
-output "crun_service_url" {
-  description = "cloud run service url"
-  value       = google_cloud_run_service.crun_svc.status[0].url
+
+output "results_backend_name" {
+  value = google_compute_backend_service.results.name
 }
+
+# output "urlmap" {
+#   value = google_compute_url_map.ram_urlmap
+# }

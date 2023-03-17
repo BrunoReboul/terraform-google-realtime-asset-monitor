@@ -18,10 +18,24 @@ variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
 }
 
-variable "notification_channels" {
-  type = list(string)
+variable "region" {
+  description = "gcp region"
+  default     = "europe-west1"
 }
 
-variable "cai_latency" {
-  type = map(any)
+variable "dns_name" {
+  description = "The DNS name used to expose RAM e.g. ram.example.com"
+}
+
+variable "support_email" {
+  description = "iap brand support email"
+}
+
+variable "gcs_location" {
+  description = "Cloud Storage location"
+  default     = "europe-west1"
+}
+
+variable "static_public_bucket_name_suffix" {
+  description = "suffix to the bucketname hosting public static content"
 }
