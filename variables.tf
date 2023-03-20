@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -328,8 +328,29 @@ variable "deploy_autofix_bqdsdelete" {
   default     = false
 }
 
-variable "deploy_frontend" {
+variable "deploy_console" {
   type        = bool
-  description = "Deploy the frontend and its BFF backend for frontend"
+  description = "Deploy the console frontend and its BFF backend for frontend"
   default     = false
+}
+
+variable "deploy_loadbalancer" {
+  type        = bool
+  description = "Deploy the load balancer for front ends and their BFF"
+  default     = false
+}
+
+variable "dns_name" {
+  description = "The DNS name used to expose RAM"
+  default     = "ram.example.com"
+}
+
+variable "support_email" {
+  description = "iap brand support email"
+  default     = "support@example.com"
+}
+
+variable "static_public_bucket_name_suffix" {
+  description = "suffix to the bucketname hosting public static content"
+  default     = "-staticpublicweb"
 }

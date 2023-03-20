@@ -22,18 +22,8 @@ variable "environment" {
   description = "environment name"
 }
 
-variable "cai_feed_topic_name" {
-  description = "google cloud asset inventory feed messages"
-  default     = "caiFeed"
-}
-
-variable "asset_feed_topic_name" {
-  description = "the data on which to assess compliance"
-  default     = "assetFeed"
-}
-
-variable "pubsub_allowed_regions" {
-  type = list(string)
+variable "bigquery_dataset_id" {
+  description = "RAM Bigquery dataset id"
 }
 
 variable "crun_region" {
@@ -43,16 +33,16 @@ variable "crun_region" {
 
 variable "crun_cpu" {
   description = "Number of cpu in k8s quantity 1000m means 1000 millicpu aka 1"
-  default     = "2000m"
+  default     = "1000m"
 }
 variable "crun_concurrency" {
   description = "Number of requests a container could received at the same time"
-  default     = 200
+  default     = 80
 }
 
 variable "crun_max_instances" {
   description = "Max number of instances"
-  default     = 1000
+  default     = 10
 }
 
 variable "crun_memory" {
@@ -62,7 +52,7 @@ variable "crun_memory" {
 
 variable "crun_timeout_seconds" {
   description = "Max duration for an instance for responding to a request"
-  default     = 180
+  default     = 60
 }
 
 variable "ram_container_images_registry" {
@@ -73,27 +63,12 @@ variable "ram_microservice_image_tag" {
   description = "The container image tag for this microservice"
   default     = "latest"
 }
-variable "asset_collection_id" {
-  description = "firestore assets collection id"
-  default     = "assets"
-}
-variable "cache_max_age_minutes" {
-  description = "Duration in minutes after which the asset cache should be reloaded"
-  default     = "60"
-}
 variable "log_only_severity_levels" {
   description = "Which type of log entry should be logged"
   default     = "WARNING NOTICE CRITICAL"
 }
-variable "owner_label_Key_name" {
-  description = "violation owner label tag name"
-  default     = "owner"
-}
+
 variable "start_profiler" {
   description = "Continuous CPU and heap profiling in Cloud Profiler"
   default     = "false"
-}
-variable "violation_resolver_label_key_name" {
-  description = "violation resolver label tag name"
-  default     = "resolver"
 }

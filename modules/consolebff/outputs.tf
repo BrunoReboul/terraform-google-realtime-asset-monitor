@@ -19,21 +19,6 @@ output "service_account_email" {
   value       = google_service_account.microservice_sa.email
 }
 
-output "cai_feed_topic_id" {
-  description = "cai feed topic id"
-  value       = google_pubsub_topic.cai_feed.id
-}
-
-output "cai_feed_topic_name" {
-  description = "cai feed topic name"
-  value       = google_pubsub_topic.cai_feed.name
-}
-
-output "asset_feed_topic_id" {
-  description = "asset feed topic id"
-  value       = google_pubsub_topic.asset_feed.id
-}
-
 output "crun_service_id" {
   description = "cloud run service id"
   value       = google_cloud_run_service.crun_svc.id
@@ -41,17 +26,4 @@ output "crun_service_id" {
 output "crun_service_url" {
   description = "cloud run service url"
   value       = google_cloud_run_service.crun_svc.status[0].url
-}
-output "trigger_service_account_email" {
-  description = "Service account email used to trigger this microservice"
-  value       = google_service_account.eva_trigger_sa.email
-}
-output "trigger_id" {
-  description = "Eventarc trigger id"
-  value       = google_eventarc_trigger.eva_trigger.id
-}
-
-output "trigger_subscription_name" {
-  description = "Eventarc trigger subscription name"
-  value       = google_eventarc_trigger.eva_trigger.transport[0].pubsub[0].subscription
 }

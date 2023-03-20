@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 locals {
-  service_name = "backend4frontend"
+  service_name = "console"
 }
 
 resource "google_service_account" "microservice_sa" {
@@ -30,6 +30,7 @@ resource "google_project_iam_member" "project_profiler_agent" {
   role    = "roles/cloudprofiler.agent"
   member  = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
+
 resource "google_cloud_run_service" "crun_svc" {
   project  = var.project_id
   name     = local.service_name
@@ -46,20 +47,20 @@ resource "google_cloud_run_service" "crun_svc" {
           }
         }
         env {
-          name  = "${upper(local.service_name)}_ENVIRONMENT"
-          value = var.environment
+          name  = "BFF_BASE_URL"
+          value = "https://${var.dns_name}"
         }
         env {
-          name  = "${upper(local.service_name)}_LOG_ONLY_SEVERITY_LEVELS"
-          value = var.log_only_severity_levels
+          name  = "BFF_CONNECT_TIMEOUT_MS"
+          value = var.bff_connect_timeout_ms
         }
         env {
-          name  = "${upper(local.service_name)}_PROJECT_ID"
-          value = var.project_id
+          name  = "BFF_RECEIVE_TIMEOUT_MS"
+          value = var.bff_receive_timeout_ms
         }
         env {
-          name  = "${upper(local.service_name)}_START_PROFILER"
-          value = var.start_profiler
+          name  = "BASE_HREF"
+          value = "/${local.service_name}/"
         }
       }
       container_concurrency = var.crun_concurrency
@@ -75,7 +76,7 @@ resource "google_cloud_run_service" "crun_svc" {
   }
   metadata {
     annotations = {
-      "run.googleapis.com/ingress" = "internal"
+      "run.googleapis.com/ingress" = "internal-and-cloud-load-balancing"
     }
   }
   autogenerate_revision_name = true
@@ -86,4 +87,21 @@ resource "google_cloud_run_service" "crun_svc" {
   lifecycle {
     ignore_changes = all
   }
+}
+
+data "google_iam_policy" "noauth" {
+  binding {
+    role = "roles/run.invoker"
+    members = [
+      "allUsers", # a secured by IAP
+    ]
+  }
+}
+
+resource "google_cloud_run_service_iam_policy" "noauth" {
+  location = google_cloud_run_service.crun_svc.location
+  project  = google_cloud_run_service.crun_svc.project
+  service  = google_cloud_run_service.crun_svc.name
+
+  policy_data = data.google_iam_policy.noauth.policy_data
 }

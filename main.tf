@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -208,12 +208,32 @@ module "autofixbqdsdelete" {
   triggering_topic_id        = module.monitor.violation_topic_id
 }
 
-module "backend4frontend" {
-  count                      = var.deploy_frontend == true ? 1 : 0
-  source                     = "./modules/backend4frontend"
+module "console" {
+  count                      = var.deploy_console == true ? 1 : 0
+  source                     = "./modules/console"
   project_id                 = var.project_id
+  crun_region                = var.crun_region
+  ram_microservice_image_tag = var.ram_microservice_image_tag
+  dns_name                   = var.dns_name
+}
+
+module "consolebff" {
+  count                      = var.deploy_console == true ? 1 : 0
+  source                     = "./modules/consolebff"
+  project_id                 = var.project_id
+  bigquery_dataset_id        = module.stream2bq.ram_dataset_id
   environment                = local.environment
   crun_region                = var.crun_region
   ram_microservice_image_tag = var.ram_microservice_image_tag
   log_only_severity_levels   = var.log_only_severity_levels
+}
+
+module "loadbalancer" {
+  count                            = var.deploy_loadbalancer == true ? 1 : 0
+  source                           = "./modules/loadbalancer"
+  project_id                       = var.project_id
+  region                           = var.crun_region
+  dns_name                         = var.dns_name
+  support_email                    = var.support_email
+  static_public_bucket_name_suffix = var.static_public_bucket_name_suffix
 }

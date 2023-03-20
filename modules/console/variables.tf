@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,6 @@
 
 variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
-}
-
-variable "environment" {
-  description = "environment name"
 }
 
 variable "crun_region" {
@@ -48,7 +44,7 @@ variable "crun_memory" {
 
 variable "crun_timeout_seconds" {
   description = "Max duration for an instance for responding to a request"
-  default     = 300
+  default     = 60
 }
 
 variable "ram_container_images_registry" {
@@ -59,12 +55,17 @@ variable "ram_microservice_image_tag" {
   description = "The container image tag for this microservice"
   default     = "latest"
 }
-variable "log_only_severity_levels" {
-  description = "Which type of log entry should be logged"
-  default     = "WARNING NOTICE CRITICAL"
+
+variable "dns_name" {
+  description = "The DNS name used to expose RAM e.g. ram.example.com"
 }
 
-variable "start_profiler" {
-  description = "Continuous CPU and heap profiling in Cloud Profiler"
-  default     = "false"
+variable "bff_connect_timeout_ms" {
+  description = "Connection timeout to back for front in milliseconds"
+  default     = 60000
+}
+
+variable "bff_receive_timeout_ms" {
+  description = "Reveive timeout from back for front in milliseconds"
+  default     = 60000
 }

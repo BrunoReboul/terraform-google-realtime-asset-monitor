@@ -9,6 +9,7 @@ To use theses terraform modules, you will need a GCP project with:
   - BigQuery API `bigquery.googleapis.com` (default)
   - Cloud Asset API `cloudasset.googleapis.com`
   - Cloud Firestore API `firestore.googleapis.com`
+  - Cloud Identity-Aware Proxy API `iap.googleapis.com`
   - Cloud Logging API `logging.googleapis.com` (default)
   - Cloud Monitoring API `monitoring.googleapis.com` (default)
   - Cloud Pub/Sub API `pubsub.googleapis.com`
@@ -16,6 +17,7 @@ To use theses terraform modules, you will need a GCP project with:
   - Cloud Scheduler API `cloudscheduler.googleapis.com`
   - Cloud Storage API `storage.googleapis.com` (default)
   - Cloud Trace API `cloudtrace.googleapis.com` (default)
+  - Compute Engine API `compute.googleapis.com` (load balancer)
   - Eventarc API `eventarc.googleapis.com`
   - Stackdriver Profiler API `cloudprofiler.googleapis.com` (default)
 
@@ -35,6 +37,28 @@ To use theses terraform modules, you will need a GCP project with:
     - Log Viewer `roles/logging.viewer`
     - Monitoring Dashboard Configuration Editor `roles/monitoring.dashboardEditor`
     - Monitoring Editor `roles/monitoring.editor`
+    - When deploying RAM console frontend:
+      - Compute Instance Admin `roles/compute.instanceAdmin`
+      - Compute Load Balancer Admin `roles/compute.loadBalancerAdmin`
+      - Compute Security Admin `roles/compute.securityAdmin`
+      - IAP Policy Admin `roles/iap.admin`
+      - Network Admin `roles/compute.networkAdmin`
+      - Security Admin `roles/compute.securityAdmin`
+      - A custom role to grant permissions to create iap brand and client:
+        - `clientauthconfig.brands.create`
+        - `clientauthconfig.brands.delete`
+        - `clientauthconfig.brands.get`
+        - `clientauthconfig.brands.list`
+        - `clientauthconfig.clients.create`
+        - `clientauthconfig.clients.createSecret`
+        - `clientauthconfig.clients.delete`
+        - `clientauthconfig.clients.get`
+        - `clientauthconfig.clients.getwithSecret`
+        - `clientauthconfig.clients.list`
+        - `clientauthconfig.clients.listWithSecrets`
+        - `clientauthconfig.clients.undelete`
+        - `clientauthconfig.clients.update`
+      - The service account used to run terraform need to [own the group used as iap support email](https://github.com/hashicorp/terraform-provider-google/issues/6104)
   - On the real-time monitored assets parent orgs / folders
     - Cloud Asset Owner `roles/cloudasset.owner`
   - on batch monitored assets parent orgs

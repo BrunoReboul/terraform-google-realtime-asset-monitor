@@ -15,20 +15,14 @@
  */
 
 locals {
-  service_name = "autofix"
-  action_kind  = "bqdsdelete"
-  rule_name    = "GCPBigQueryDatasetLocationConstraintV1"
-}
-
-data "google_project" "project" {
-  project_id = var.project_id
+  service_name = "consolebff"
 }
 
 resource "google_service_account" "microservice_sa" {
   project      = var.project_id
-  account_id   = "${local.service_name}${local.action_kind}"
-  display_name = "RAM ${local.service_name} ${local.action_kind}"
-  description  = "Solution: Real-time Asset Monitor, microservice: ${local.service_name} ${local.action_kind}"
+  account_id   = local.service_name
+  display_name = "RAM ${local.service_name}"
+  description  = "Solution: Real-time Asset Monitor, microservice: ${local.service_name}"
 }
 
 resource "google_project_iam_member" "project_profiler_agent" {
@@ -37,9 +31,22 @@ resource "google_project_iam_member" "project_profiler_agent" {
   member  = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
 
+resource "google_project_iam_member" "project_bigquery_jobuser" {
+  project = var.project_id
+  role    = "roles/bigquery.jobUser"
+  member  = "serviceAccount:${google_service_account.microservice_sa.email}"
+}
+
+resource "google_bigquery_dataset_iam_member" "editor" {
+  project    = var.project_id
+  dataset_id = var.bigquery_dataset_id
+  role       = "roles/bigquery.dataViewer"
+  member     = "serviceAccount:${google_service_account.microservice_sa.email}"
+}
+
 resource "google_cloud_run_service" "crun_svc" {
   project  = var.project_id
-  name     = "${local.service_name}${local.action_kind}"
+  name     = local.service_name
   location = var.crun_region
 
   template {
@@ -68,10 +75,6 @@ resource "google_cloud_run_service" "crun_svc" {
           name  = "${upper(local.service_name)}_START_PROFILER"
           value = var.start_profiler
         }
-        env {
-          name  = "${upper(local.service_name)}_ACTION_KIND"
-          value = local.action_kind
-        }
       }
       container_concurrency = var.crun_concurrency
       timeout_seconds       = var.crun_timeout_seconds
@@ -86,7 +89,7 @@ resource "google_cloud_run_service" "crun_svc" {
   }
   metadata {
     annotations = {
-      "run.googleapis.com/ingress" = "internal"
+      "run.googleapis.com/ingress" = "internal-and-cloud-load-balancing"
     }
   }
   autogenerate_revision_name = true
@@ -99,46 +102,19 @@ resource "google_cloud_run_service" "crun_svc" {
   }
 }
 
-resource "google_service_account" "subscription_sa" {
-  project      = var.project_id
-  account_id   = "${local.service_name}-${local.action_kind}-sub"
-  display_name = "RAM ${local.service_name} ${local.action_kind} trigger"
-  description  = "Solution: Real-time Asset Monitor, microservice trigger: ${local.service_name}, action: ${local.action_kind}"
-}
-data "google_iam_policy" "binding" {
+data "google_iam_policy" "noauth" {
   binding {
     role = "roles/run.invoker"
     members = [
-      "serviceAccount:${google_service_account.subscription_sa.email}",
+      "allUsers", # a secured by IAP
     ]
   }
 }
-resource "google_cloud_run_service_iam_policy" "trigger_invoker" {
+
+resource "google_cloud_run_service_iam_policy" "noauth" {
   location = google_cloud_run_service.crun_svc.location
   project  = google_cloud_run_service.crun_svc.project
   service  = google_cloud_run_service.crun_svc.name
 
-  policy_data = data.google_iam_policy.binding.policy_data
-}
-
-resource "google_pubsub_subscription" "subcription" {
-  project              = var.project_id
-  name                 = "${local.service_name}-${local.action_kind}"
-  topic                = var.triggering_topic_id
-  ack_deadline_seconds = var.sub_ack_deadline_seconds
-  push_config {
-    oidc_token {
-      service_account_email = google_service_account.subscription_sa.email
-    }
-    #Updated endpoint to deal with WARNING in logs: failed to extract Pub/Sub topic name from the URL request path: "/", configure your subscription's push endpoint to use the following path pattern: 'projects/PROJECT_NAME/topics/TOPIC_NAME
-    push_endpoint = "${google_cloud_run_service.crun_svc.status[0].url}/${var.triggering_topic_id} "
-  }
-  expiration_policy {
-    ttl = ""
-  }
-  filter                     = "attributes.ce-type = \"com.gitlab.realtime-asset-monitor.violation_on_rule.${local.rule_name}.real-time\""
-  message_retention_duration = var.sub_message_retention_duration
-  retry_policy {
-    minimum_backoff = var.sub_minimum_backoff
-  }
+  policy_data = data.google_iam_policy.noauth.policy_data
 }
