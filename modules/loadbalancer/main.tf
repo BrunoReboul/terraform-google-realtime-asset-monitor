@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-resource "google_iap_brand" "ram_brand" {
-  project           = var.project_id
-  application_title = "Real-time Asset Monitor"
-  support_email     = var.support_email
+data "google_secret_manager_secret_version_access" "ram_iap_client_id" {
+  project = var.project_id
+  secret  = "ram-iap-client-id"
 }
 
-resource "google_iap_client" "ram_iap_client" {
-  display_name = "ram-iap-client"
-  brand        = google_iap_brand.ram_brand.name
+data "google_secret_manager_secret_version_access" "ram_iap_client_secret" {
+  project = var.project_id
+  secret  = "ram-iap-client-secret"
 }
 
 resource "google_compute_security_policy" "cloud_armor_edge" {
@@ -105,8 +104,8 @@ resource "google_compute_backend_service" "results" {
     group = google_compute_region_network_endpoint_group.results_neg.id
   }
   iap {
-    oauth2_client_id     = google_iap_client.ram_iap_client.client_id
-    oauth2_client_secret = google_iap_client.ram_iap_client.secret
+    oauth2_client_id     = data.google_secret_manager_secret_version_access.ram_iap_client_id.secret_data
+    oauth2_client_secret = data.google_secret_manager_secret_version_access.ram_iap_client_secret.secret
   }
   security_policy = google_compute_security_policy.cloud_armor.id
 }
@@ -132,8 +131,8 @@ resource "google_compute_backend_service" "admin" {
     group = google_compute_region_network_endpoint_group.admin_neg.id
   }
   iap {
-    oauth2_client_id     = google_iap_client.ram_iap_client.client_id
-    oauth2_client_secret = google_iap_client.ram_iap_client.secret
+    oauth2_client_id     = data.google_secret_manager_secret_version_access.ram_iap_client_id.secret_data
+    oauth2_client_secret = data.google_secret_manager_secret_version_access.ram_iap_client_secret.secret_data
   }
   security_policy = google_compute_security_policy.cloud_armor.id
 }
