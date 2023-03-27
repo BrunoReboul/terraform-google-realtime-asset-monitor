@@ -105,7 +105,7 @@ resource "google_compute_backend_service" "results" {
   }
   iap {
     oauth2_client_id     = data.google_secret_manager_secret_version_access.ram_iap_client_id.secret_data
-    oauth2_client_secret = data.google_secret_manager_secret_version_access.ram_iap_client_secret.secret
+    oauth2_client_secret = data.google_secret_manager_secret_version_access.ram_iap_client_secret.secret_data
   }
   security_policy = google_compute_security_policy.cloud_armor.id
 }
