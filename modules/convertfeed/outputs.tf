@@ -19,6 +19,12 @@ output "service_account_email" {
   value       = google_service_account.microservice_sa.email
 }
 
+output "attributes_repo_bucket_name" {
+  description = "Cloud storage bucket to store pubsub attributes configuration"
+  value       = google_storage_bucket.attributes_repo.name
+}
+
+
 output "cai_feed_topic_id" {
   description = "cai feed topic id"
   value       = google_pubsub_topic.cai_feed.id

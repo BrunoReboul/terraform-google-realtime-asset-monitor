@@ -36,6 +36,11 @@ variable "pubsub_allowed_regions" {
   type = list(string)
 }
 
+variable "gcs_location" {
+  description = "Cloud Storage location"
+  default     = "europe-west1"
+}
+
 variable "crun_region" {
   description = "cloud run region"
   default     = "europe-west1"
