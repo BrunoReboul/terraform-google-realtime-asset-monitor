@@ -116,6 +116,11 @@ resource "google_logging_metric" "count_status" {
       description = "asset type, e.g. cloudfunctions.googleapis.com/CloudFunction"
     }
     labels {
+      key         = "content_type"
+      value_type  = "STRING"
+      description = "content type, e.g. RESOURCES or IAM_POLICY"
+    }
+    labels {
       key         = "environment"
       value_type  = "STRING"
       description = "qa test prod ..."
@@ -143,6 +148,7 @@ resource "google_logging_metric" "count_status" {
   }
   label_extractors = {
     "asset_type"        = "EXTRACT(jsonPayload.assetType)"
+    "content_type"      = "EXTRACT(jsonPayload.contentType)"
     "environment"       = "EXTRACT(jsonPayload.environment)"
     "microservice_name" = "EXTRACT(jsonPayload.microservice_name)"
     "origin"            = "EXTRACT(jsonPayload.assetInventoryOrigin)"
@@ -163,6 +169,11 @@ resource "google_logging_metric" "ram_latency" {
       key         = "asset_type"
       value_type  = "STRING"
       description = "asset type, e.g. cloudfunctions.googleapis.com/CloudFunction"
+    }
+    labels {
+      key         = "content_type"
+      value_type  = "STRING"
+      description = "content type, e.g. RESOURCES or IAM_POLICY"
     }
     labels {
       key         = "environment"
@@ -193,6 +204,7 @@ resource "google_logging_metric" "ram_latency" {
   value_extractor = "EXTRACT(jsonPayload.latency_seconds)"
   label_extractors = {
     "asset_type"        = "EXTRACT(jsonPayload.assetType)"
+    "content_type"      = "EXTRACT(jsonPayload.contentType)"
     "environment"       = "EXTRACT(jsonPayload.environment)"
     "microservice_name" = "EXTRACT(jsonPayload.microservice_name)"
     "origin"            = "EXTRACT(jsonPayload.assetInventoryOrigin)"
@@ -220,6 +232,11 @@ resource "google_logging_metric" "ram_latency_e2e" {
       key         = "asset_type"
       value_type  = "STRING"
       description = "asset type, e.g. cloudfunctions.googleapis.com/CloudFunction"
+    }
+    labels {
+      key         = "content_type"
+      value_type  = "STRING"
+      description = "content type, e.g. RESOURCES or IAM_POLICY"
     }
     labels {
       key         = "environment"
@@ -250,6 +267,7 @@ resource "google_logging_metric" "ram_latency_e2e" {
   value_extractor = "EXTRACT(jsonPayload.latency_e2e_seconds)"
   label_extractors = {
     "asset_type"        = "EXTRACT(jsonPayload.assetType)"
+    "content_type"      = "EXTRACT(jsonPayload.contentType)"
     "environment"       = "EXTRACT(jsonPayload.environment)"
     "microservice_name" = "EXTRACT(jsonPayload.microservice_name)"
     "origin"            = "EXTRACT(jsonPayload.assetInventoryOrigin)"
@@ -277,6 +295,11 @@ resource "google_logging_metric" "ram_latency_t2s" {
       key         = "asset_type"
       value_type  = "STRING"
       description = "asset type, e.g. cloudfunctions.googleapis.com/CloudFunction"
+    }
+    labels {
+      key         = "content_type"
+      value_type  = "STRING"
+      description = "content type, e.g. RESOURCES or IAM_POLICY"
     }
     labels {
       key         = "environment"
@@ -312,6 +335,7 @@ resource "google_logging_metric" "ram_latency_t2s" {
   value_extractor = "EXTRACT(jsonPayload.latency_t2s_seconds)"
   label_extractors = {
     "asset_type"        = "EXTRACT(jsonPayload.assetType)"
+    "content_type"      = "EXTRACT(jsonPayload.contentType)"
     "environment"       = "EXTRACT(jsonPayload.environment)"
     "microservice_name" = "EXTRACT(jsonPayload.microservice_name)"
     "origin"            = "EXTRACT(jsonPayload.assetInventoryOrigin)"
