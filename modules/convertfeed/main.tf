@@ -31,6 +31,38 @@ resource "google_project_iam_member" "project_profiler_agent" {
   member  = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
 
+resource "google_storage_bucket" "attributes_repo" {
+  project                     = var.project_id
+  name                        = "${var.project_id}-attributesrepo"
+  location                    = var.gcs_location
+  force_destroy               = true
+  uniform_bucket_level_access = true
+  lifecycle_rule {
+    condition {
+      age = 36500
+    }
+    action {
+      type          = "SetStorageClass"
+      storage_class = "STANDARD"
+    }
+  }
+}
+
+resource "google_storage_bucket_iam_member" "attributes_repo_reader" {
+  bucket = google_storage_bucket.attributes_repo.name
+  role   = "roles/storage.objectViewer"
+  member = "serviceAccount:${google_service_account.microservice_sa.email}"
+}
+
+resource "google_storage_bucket_object" "attributes_to_publish2fs_default" {
+  name   = "publish2fs.yaml"
+  source = "${path.module}/publish2fs.yaml"
+  bucket = google_storage_bucket.attributes_repo.id
+  lifecycle {
+    ignore_changes = all
+  }
+}
+
 resource "google_pubsub_topic" "asset_feed" {
   project = var.project_id
   name    = var.asset_feed_topic_name
