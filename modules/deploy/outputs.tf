@@ -20,6 +20,6 @@ output "service_account_email" {
 }
 
 output "service_account_name" {
-  description = "Service account email used to deploy RAM"
+  description = "Service account name used to deploy RAM"
   value       = google_service_account.deploy_sa.name
 }
