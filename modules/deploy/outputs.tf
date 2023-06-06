@@ -18,3 +18,8 @@ output "service_account_email" {
   description = "Service account email used to deploy RAM"
   value       = google_service_account.deploy_sa.email
 }
+
+output "service_account_name" {
+  description = "Service account name used to deploy RAM"
+  value       = google_service_account.deploy_sa.name
+}
