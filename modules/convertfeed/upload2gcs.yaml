@@ -14,5 +14,7 @@
 #
 pubSubAttibuteName: upload2gcs
 pubSubAttributeValue: true
+# The content type suffix RESOURCE can be ommited as it is added by defaut when no content type is specified
+# The content type suffix IAM_POLICY must be specified when need
 assetTypeAndContentList:
   - cloudresourcemanager.googleapis.com/Organization
