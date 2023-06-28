@@ -152,14 +152,9 @@ resource "google_pubsub_subscription" "subcription" {
   expiration_policy {
     ttl = ""
   }
-  filter                     = "hasPrefix(attributes.ce-type, \"com.gitlab.realtime-asset-monitor.asset_feed.cloudresourcemanager.googleapis.com/Organization\")"
+  filter                     = "attributes.upload2gcs=\"true\""
   message_retention_duration = var.sub_message_retention_duration
   retry_policy {
     minimum_backoff = var.sub_minimum_backoff
-  }
-  lifecycle {
-    ignore_changes = [
-      filter,
-    ]
   }
 }
