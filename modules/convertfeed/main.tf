@@ -63,6 +63,15 @@ resource "google_storage_bucket_object" "attributes_to_publish2fs_default" {
   }
 }
 
+resource "google_storage_bucket_object" "attributes_to_upload2gcs_default" {
+  name   = "upload2gcs.yaml"
+  source = "${path.module}/upload2gcs.yaml"
+  bucket = google_storage_bucket.attributes_repo.id
+  lifecycle {
+    ignore_changes = all
+  }
+}
+
 resource "google_pubsub_topic" "asset_feed" {
   project = var.project_id
   name    = var.asset_feed_topic_name
