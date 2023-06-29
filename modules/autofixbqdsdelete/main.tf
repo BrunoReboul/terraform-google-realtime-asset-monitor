@@ -136,7 +136,7 @@ resource "google_pubsub_subscription" "subcription" {
   expiration_policy {
     ttl = ""
   }
-  filter                     = "attributes.ce-type = \"com.gitlab.realtime-asset-monitor.violation_on_rule.${local.rule_name}.real-time\""
+  filter                     = "attributes.messageType=\"violation_on_rule.GCPBigQueryDatasetLocationConstraintV1\" AND attributes.origin=\"real-time\""
   message_retention_duration = var.sub_message_retention_duration
   retry_policy {
     minimum_backoff = var.sub_minimum_backoff
