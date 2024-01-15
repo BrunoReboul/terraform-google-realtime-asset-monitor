@@ -30,18 +30,18 @@ output "log_metric_count_memory_limit_errors_id" {
   value = google_logging_metric.count_memory_limit_errors.id
 }
 
-output "log_metric_count_status_id" {
-  value = google_logging_metric.count_status.id
+output "log_metric_ram_execution_count_id" {
+  value = google_logging_metric.ram_execution_count.id
 }
 
-output "log_metric_ram_latency_id" {
-  value = google_logging_metric.ram_latency.id
+output "log_metric_ram_execution_latency_id" {
+  value = google_logging_metric.ram_execution_latency.id
 }
 
-output "log_metric_ram_latency_e2e_id" {
-  value = google_logging_metric.ram_latency_e2e.id
+output "log_metric_ram_execution_latency_e2e_id" {
+  value = google_logging_metric.ram_execution_latency_e2e.id
 }
 
-output "log_metric_ram_latency_t2s_id" {
-  value = google_logging_metric.ram_latency_t2s.id
+output "log_metric_ram_execution_latency_t2s_id" {
+  value = google_logging_metric.ram_execution_latency_t2s.id
 }

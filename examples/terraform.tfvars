@@ -1,5 +1,5 @@
-qa_project_id  = "<yourQAProject>"
-prd_project_id = "<yourPrdProject>"
+test_project_id  = "<yourQAProject>"
+prod_project_id = "<yourPrdProject>"
 feed_iam_policy_orgs = {
   yourFirstOrgID = [
     "appengine.googleapis.com/Application",

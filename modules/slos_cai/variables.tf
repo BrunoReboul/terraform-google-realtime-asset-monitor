@@ -22,6 +22,9 @@ variable "notification_channels" {
   type = list(string)
 }
 
+variable "log_metric_ram_execution_latency_e2e_id" {
+}
+
 variable "cai_latency" {
   type = map(any)
 }

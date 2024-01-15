@@ -63,7 +63,7 @@ resource "google_monitoring_slo" "ram_e2e_latency" {
   rolling_period_days = each.value.rolling_period_days
   request_based_sli {
     distribution_cut {
-      distribution_filter = "metric.type=\"logging.googleapis.com/user/ram_latency_e2e\" metric.label.\"microservice_name\"=\"stream2bq\" metric.label.\"origin\"=\"${each.value.origin}\" resource.type=\"cloud_run_revision\" resource.label.\"project_id\"=\"${var.project_id}\" ${each.value.extra_filter}"
+      distribution_filter = "metric.type=\"logging.googleapis.com/user/${var.log_metric_ram_execution_latency_e2e_id}\" metric.label.\"microservice_name\"=\"stream2bq\" metric.label.\"origin\"=\"${each.value.origin}\" resource.type=\"cloud_run_revision\" resource.label.\"project_id\"=\"${var.project_id}\" ${each.value.extra_filter}"
       range {
         max = each.value.threshold_value
       }
@@ -337,7 +337,7 @@ resource "google_monitoring_dashboard" "ram_e2e_latency_dashboard" {
                                             "crossSeriesReducer": "REDUCE_SUM",
                                             "perSeriesAligner": "ALIGN_DELTA"
                                         },
-                                        "filter": "metric.type=\"logging.googleapis.com/user/ram_latency_e2e\" resource.type=\"cloud_run_revision\" metric.label.\"microservice_name\"=\"stream2bq\" metric.label.\"status\"=monitoring.regex.full_match(\"finish compliance status persisted|finish violation persisted\") metric.label.\"origin\"=\"${each.value.origin}\"",
+                                        "filter": "metric.type=\"logging.googleapis.com/user/${var.log_metric_ram_execution_latency_e2e_id}\" resource.type=\"cloud_run_revision\" metric.label.\"microservice_name\"=\"stream2bq\" metric.label.\"status\"=monitoring.regex.full_match(\"finish compliance status persisted|finish violation persisted\") metric.label.\"origin\"=\"${each.value.origin}\"",
                                         "secondaryAggregation": {
                                             "alignmentPeriod": "${tostring(each.value.rolling_period_days * 24 * 60 * 60)}s"
                                         }
@@ -364,7 +364,7 @@ resource "google_monitoring_dashboard" "ram_e2e_latency_dashboard" {
                             {
                                 "minAlignmentPeriod": "0s",
                                 "timeSeriesQuery": {
-                                    "timeSeriesQueryLanguage": "fetch cloud_run_revision\n| metric 'logging.googleapis.com/user/ram_latency_e2e'\n| filter\n    (metric.microservice_name == 'stream2bq' && metric.origin == '${each.value.origin}'\n     && metric.status =~ 'finish compliance status persisted|finish violation persisted')\n| align delta(${tostring(each.value.rolling_period_days)}d)\n| every ${tostring(each.value.rolling_period_days)}d\n| group_by [metric.asset_type, metric.rule_name],\n[value_ram_latency_e2e_percentile: percentile(value.ram_latency_e2e, 95)]"
+                                    "timeSeriesQueryLanguage": "fetch cloud_run_revision\n| metric 'logging.googleapis.com/user/${var.log_metric_ram_execution_latency_e2e_id}'\n| filter\n    (metric.microservice_name == 'stream2bq' && metric.origin == '${each.value.origin}'\n     && metric.status =~ 'finish compliance status persisted|finish violation persisted')\n| align delta(${tostring(each.value.rolling_period_days)}d)\n| every ${tostring(each.value.rolling_period_days)}d\n| group_by [metric.asset_type, metric.rule_name],\n[value_${var.log_metric_ram_execution_latency_e2e_id}_percentile: percentile(value.${var.log_metric_ram_execution_latency_e2e_id}, 95)]"
                                 }
                             }
                         ],
@@ -383,7 +383,7 @@ resource "google_monitoring_dashboard" "ram_e2e_latency_dashboard" {
                             {
                                 "minAlignmentPeriod": "0s",
                                 "timeSeriesQuery": {
-                                    "timeSeriesQueryLanguage": "fetch cloud_run_revision\n| metric 'logging.googleapis.com/user/ram_latency_t2s'\n| filter\n    (metric.microservice_name == 'convertfeed' && metric.origin == '${each.value.origin}'\n     && metric.status = 'finish enrichCAIFeedMsg')\n| align delta(${tostring(each.value.rolling_period_days)}d)\n| every ${tostring(each.value.rolling_period_days)}d\n| group_by [metric.asset_type],\n[value_ram_latency_t2s_percentile: percentile(value.ram_latency_t2s, 95)]"
+                                    "timeSeriesQueryLanguage": "fetch cloud_run_revision\n| metric 'logging.googleapis.com/user/ram_execution_latency_t2s'\n| filter\n    (metric.microservice_name == 'convertfeed' && metric.origin == '${each.value.origin}'\n     && metric.status = 'finish enrichCAIFeedMsg')\n| align delta(${tostring(each.value.rolling_period_days)}d)\n| every ${tostring(each.value.rolling_period_days)}d\n| group_by [metric.asset_type],\n[value_ram_execution_latency_t2s_percentile: percentile(value.ram_execution_latency_t2s, 95)]"
                                 }
                             }
                         ],
@@ -407,8 +407,8 @@ resource "google_monitoring_slo" "ram_availability" {
   rolling_period_days = var.ram_availability.rolling_period_days
   request_based_sli {
     good_total_ratio {
-      good_service_filter = "metric.type=\"logging.googleapis.com/user/count_status\" metric.label.\"microservice_name\"=\"${each.key}\" metric.label.\"status\":\"finish\" resource.type=\"cloud_run_revision\" resource.label.\"project_id\"=\"${var.project_id}\""
-      bad_service_filter  = "metric.type=\"logging.googleapis.com/user/count_status\" metric.label.\"microservice_name\"=\"${each.key}\" metric.label.\"status\"=\"noretry\" resource.type=\"cloud_run_revision\" resource.label.\"project_id\"=\"${var.project_id}\""
+      good_service_filter = "metric.type=\"logging.googleapis.com/user/${var.log_metric_ram_execution_count_id}\" metric.label.\"microservice_name\"=\"${each.key}\" metric.label.\"status\":\"finish\" resource.type=\"cloud_run_revision\" resource.label.\"project_id\"=\"${var.project_id}\""
+      bad_service_filter  = "metric.type=\"logging.googleapis.com/user/${var.log_metric_ram_execution_count_id}\" metric.label.\"microservice_name\"=\"${each.key}\" metric.label.\"status\"=\"noretry\" resource.type=\"cloud_run_revision\" resource.label.\"project_id\"=\"${var.project_id}\""
     }
   }
 }

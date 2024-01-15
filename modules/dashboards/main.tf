@@ -3653,7 +3653,7 @@ resource "google_monitoring_dashboard" "ram_core_microservices_latency" {
                       ],
                       "perSeriesAligner": "ALIGN_DELTA"
                     },
-                    "filter": "metric.type=\"logging.googleapis.com/user/ram_latency\" resource.type=\"cloud_run_revision\" metric.label.\"microservice_name\"=monitoring.regex.full_match(\"convertfeed|fetchrules|monitor|stream2bq\")",
+                    "filter": "metric.type=\"logging.googleapis.com/user/${var.log_metric_ram_execution_latency_id}\" resource.type=\"cloud_run_revision\" metric.label.\"microservice_name\"=monitoring.regex.full_match(\"convertfeed|fetchrules|monitor|stream2bq\")",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s"
                     }
@@ -3692,7 +3692,7 @@ resource "google_monitoring_dashboard" "ram_core_microservices_latency" {
                       ],
                       "perSeriesAligner": "ALIGN_DELTA"
                     },
-                    "filter": "metric.type=\"logging.googleapis.com/user/ram_latency\" resource.type=\"cloud_run_revision\" metric.label.\"microservice_name\"=monitoring.regex.full_match(\"convertfeed|fetchrules|monitor|stream2bq\")",
+                    "filter": "metric.type=\"logging.googleapis.com/user/${var.log_metric_ram_execution_latency_id}\" resource.type=\"cloud_run_revision\" metric.label.\"microservice_name\"=monitoring.regex.full_match(\"convertfeed|fetchrules|monitor|stream2bq\")",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s"
                     }
