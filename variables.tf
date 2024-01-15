@@ -360,3 +360,9 @@ variable "deploy_slos" {
   description = "Deploy the Service Level Objectives"
   default     = true
 }
+
+variable "bq_tables_deletion_protection" {
+  type        = bool
+  description = "BigQuery tables deletion protection"
+  default     = true
+}

@@ -52,7 +52,7 @@ resource "google_bigquery_table" "assets" {
   dataset_id          = google_bigquery_dataset.ram_dataset.dataset_id
   table_id            = "assets"
   description         = "Real-time Asset Monitor - assets"
-  deletion_protection = true
+  deletion_protection = var.bq_tables_deletion_protection
 
   time_partitioning {
     type          = "DAY"
@@ -129,7 +129,7 @@ resource "google_bigquery_table" "compliance_status" {
   dataset_id          = google_bigquery_dataset.ram_dataset.dataset_id
   table_id            = "complianceStatus"
   description         = "Real-time Asset Monitor - complianceStatus"
-  deletion_protection = true
+  deletion_protection = var.bq_tables_deletion_protection
 
   time_partitioning {
     type          = "DAY"
@@ -204,7 +204,7 @@ resource "google_bigquery_table" "violations" {
   dataset_id          = google_bigquery_dataset.ram_dataset.dataset_id
   table_id            = "violations"
   description         = "Real-time Asset Monitor - violations"
-  deletion_protection = true
+  deletion_protection = var.bq_tables_deletion_protection
 
   time_partitioning {
     type          = "DAY"
