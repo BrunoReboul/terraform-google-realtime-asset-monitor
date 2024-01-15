@@ -102,9 +102,9 @@ resource "google_logging_metric" "count_memory_limit_errors" {
   }
 }
 
-resource "google_logging_metric" "count_status" {
+resource "google_logging_metric" "ram_execution_count" {
   project = var.project_id
-  name    = "count_status"
+  name    = "ram_execution_count"
   filter  = "resource.type=\"cloud_run_revision\" log_name:\"logs/run.googleapis.com%2Fstderr\" severity=CRITICAL OR (severity=NOTICE AND jsonPayload.message:\"finish \")"
   metric_descriptor {
     metric_kind = "DELTA"
@@ -157,9 +157,9 @@ resource "google_logging_metric" "count_status" {
   }
 }
 
-resource "google_logging_metric" "ram_latency" {
+resource "google_logging_metric" "ram_execution_latency" {
   project = var.project_id
-  name    = "ram_latency"
+  name    = "ram_execution_latency"
   filter  = "resource.type=\"cloud_run_revision\" severity=\"NOTICE\" jsonPayload.message=~\"^finish\""
   metric_descriptor {
     metric_kind = "DELTA"
@@ -220,9 +220,9 @@ resource "google_logging_metric" "ram_latency" {
   }
 }
 
-resource "google_logging_metric" "ram_latency_e2e" {
+resource "google_logging_metric" "ram_execution_latency_e2e" {
   project = var.project_id
-  name    = "ram_latency_e2e"
+  name    = "ram_execution_latency_e2e"
   filter  = "resource.type=\"cloud_run_revision\" severity=\"NOTICE\" jsonPayload.message=~\"^finish\""
   metric_descriptor {
     metric_kind = "DELTA"
@@ -283,9 +283,9 @@ resource "google_logging_metric" "ram_latency_e2e" {
   }
 }
 
-resource "google_logging_metric" "ram_latency_t2s" {
+resource "google_logging_metric" "ram_execution_latency_t2s" {
   project = var.project_id
-  name    = "ram_latency_t2s"
+  name    = "ram_execution_latency_t2s"
   filter  = "resource.type=\"cloud_run_revision\" severity=\"NOTICE\" jsonPayload.message=~\"^finish\""
   metric_descriptor {
     metric_kind = "DELTA"

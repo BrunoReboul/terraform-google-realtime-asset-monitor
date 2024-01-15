@@ -169,33 +169,41 @@ module "metrics" {
 module "slos" {
   # Create SLOs once the log based metrics have been created
   depends_on             = [module.metrics]
+  count                      = var.deploy_slos == true ? 1 : 0
   source                 = "./modules/slos"
   project_id             = var.project_id
   pubsub_allowed_regions = var.pubsub_allowed_regions
   notification_channels  = var.notification_channels
   ram_e2e_latency        = var.ram_e2e_latency
+  log_metric_ram_execution_count_id = module.metrics.log_metric_ram_execution_count_id
+  log_metric_ram_execution_latency_e2e_id = module.metrics.log_metric_ram_execution_latency_e2e_id
 }
 
 module "slos_cai" {
+  count                      = var.deploy_slos == true ? 1 : 0
   source                = "./modules/slos_cai"
   project_id            = var.project_id
-  notification_channels = module.slos.ram_notification_channels
+  notification_channels = module.slos[0].ram_notification_channels
   cai_latency           = var.cai_latency
+  log_metric_ram_execution_latency_e2e_id = module.metrics.log_metric_ram_execution_latency_e2e_id
 }
 
 module "transparentslis" {
+  count                 = var.deploy_slos == true ? 1 : 0
   source                = "./modules/transparentslis"
   project_id            = var.project_id
-  notification_channels = module.slos.ram_notification_channels
+  notification_channels = module.slos[0].ram_notification_channels
   availability          = var.api_availability
   latency               = var.api_latency
 }
 
 module "dashboards" {
   # Create dashboards once the log based metrics have been created
+  count      = var.deploy_slos == true ? 1 : 0
   depends_on = [module.metrics]
   source     = "./modules/dashboards"
   project_id = var.project_id
+  log_metric_ram_execution_latency_id = module.metrics.log_metric_ram_execution_latency_id
 }
 
 module "autofixbqdsdelete" {

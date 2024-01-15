@@ -34,6 +34,12 @@ variable "ram_e2e_latency" {
   type = map(any)
 }
 
+variable "log_metric_ram_execution_count_id" {
+}
+
+variable "log_metric_ram_execution_latency_e2e_id" {
+}
+
 variable "ram_availability" {
   description = "Critical User Journeys CUJs map crtical microservices"
   default = {

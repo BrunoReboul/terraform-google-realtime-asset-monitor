@@ -30,7 +30,7 @@ resource "google_monitoring_slo" "cai_latency" {
   rolling_period_days = each.value.rolling_period_days
   request_based_sli {
     distribution_cut {
-      distribution_filter = "metric.type=\"logging.googleapis.com/user/ram_latency_e2e\" metric.label.\"microservice_name\"=\"${each.value.microservice_name}\" metric.label.\"origin\"=\"${each.value.origin}\" metric.label.\"status\"=monitoring.regex.full_match(\"${each.value.status}\") resource.type=\"cloud_run_revision\" resource.label.\"project_id\"=\"${var.project_id}\""
+      distribution_filter = "metric.type=\"logging.googleapis.com/user/${var.log_metric_ram_execution_latency_e2e_id}\" metric.label.\"microservice_name\"=\"${each.value.microservice_name}\" metric.label.\"origin\"=\"${each.value.origin}\" metric.label.\"status\"=monitoring.regex.full_match(\"${each.value.status}\") resource.type=\"cloud_run_revision\" resource.label.\"project_id\"=\"${var.project_id}\""
       range {
         max = each.value.threshold_value
       }
@@ -304,7 +304,7 @@ resource "google_monitoring_dashboard" "cai_latency_dashboard" {
                                             "crossSeriesReducer": "REDUCE_SUM",
                                             "perSeriesAligner": "ALIGN_DELTA"
                                         },
-                                        "filter": "metric.type=\"logging.googleapis.com/user/ram_latency_e2e\" metric.label.\"microservice_name\"=\"${each.value.microservice_name}\" metric.label.\"origin\"=\"${each.value.origin}\" metric.label.\"status\"=monitoring.regex.full_match(\"${each.value.status}\") resource.type=\"cloud_run_revision\" resource.label.\"project_id\"=\"${var.project_id}\"",
+                                        "filter": "metric.type=\"logging.googleapis.com/user/${var.log_metric_ram_execution_latency_e2e_id}\" metric.label.\"microservice_name\"=\"${each.value.microservice_name}\" metric.label.\"origin\"=\"${each.value.origin}\" metric.label.\"status\"=monitoring.regex.full_match(\"${each.value.status}\") resource.type=\"cloud_run_revision\" resource.label.\"project_id\"=\"${var.project_id}\"",
                                         "secondaryAggregation": {
                                             "alignmentPeriod": "${tostring(each.value.rolling_period_days * 24 * 60 * 60)}s"
                                         }

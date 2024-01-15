@@ -354,3 +354,9 @@ variable "static_public_bucket_name_suffix" {
   description = "suffix to the bucketname hosting public static content"
   default     = "-staticpublicweb"
 }
+
+variable "deploy_slos" {
+  type        = bool
+  description = "Deploy the Service Level Objectives"
+  default     = true
+}
