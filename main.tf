@@ -69,6 +69,7 @@ module "stream2bq" {
   asset_feed_topic_id        = module.convertfeed.asset_feed_topic_id
   compliance_status_topic_id = module.monitor.compliance_status_topic_id
   violation_topic_id         = module.monitor.violation_topic_id
+  bq_tables_deletion_protection = var.bq_tables_deletion_protection
 }
 
 module "launch" {

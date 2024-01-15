@@ -117,3 +117,9 @@ variable "sub_minimum_backoff" {
   description = "The minimum delay between consecutive deliveries of a given message"
   default     = "10s"
 }
+
+variable "bq_tables_deletion_protection" {
+  type        = bool
+  description = "BigQuery tables deletion protection"
+  default     = true
+}
