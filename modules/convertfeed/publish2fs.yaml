@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-pubSubAttibuteName: publish2fs
+pubSubAttributeName: publish2fs
 pubSubAttributeValue: true
-# The content type suffix RESOURCE can be ommited as it is added by defaut when no content type is specified
+# The content type suffix RESOURCE can be omitted as it is added by default when no content type is specified
 # The content type suffix IAM_POLICY must be specified when need
 assetTypeAndContentList:
   - cloudresourcemanager.googleapis.com/Folder
