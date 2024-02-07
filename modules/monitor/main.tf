@@ -31,6 +31,12 @@ resource "google_project_iam_member" "project_profiler_agent" {
   member  = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
 
+resource "google_project_iam_member" "cloud_datastore_viewer" {
+  project = var.project_id
+  role    = "roles/datastore.viewer"
+  member  = "serviceAccount:${google_service_account.microservice_sa.email}"
+}
+
 resource "google_pubsub_topic" "compliance_status" {
   project = var.project_id
   name    = var.compliance_status_topic_name
