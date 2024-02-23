@@ -77,6 +77,47 @@ resource "google_storage_bucket_iam_member" "rule_repo_reader" {
   member = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
 
+resource "google_storage_bucket" "common_rego" {
+  project                     = var.project_id
+  name                        = "${var.project_id}-commonrego"
+  location                    = var.gcs_location
+  force_destroy               = true
+  uniform_bucket_level_access = true
+  lifecycle_rule {
+    condition {
+      age = 36500
+    }
+    action {
+      type          = "SetStorageClass"
+      storage_class = "STANDARD"
+    }
+  }
+}
+
+resource "google_storage_bucket_iam_member" "common_rego_reader" {
+  bucket = google_storage_bucket.rules_repo.name
+  role   = "roles/storage.objectViewer"
+  member = "serviceAccount:${google_service_account.microservice_sa.email}"
+}
+
+resource "google_storage_bucket_object" "audit_rego" {
+  name   = "audit.rego"
+  source = "${path.module}/audit.rego"
+  bucket = google_storage_bucket.common_rego.id
+}
+
+resource "google_storage_bucket_object" "constraints_rego" {
+  name   = "constraints.rego"
+  source = "${path.module}/constraints.rego"
+  bucket = google_storage_bucket.common_rego.id
+}
+
+resource "google_storage_bucket_object" "util_rego" {
+  name   = "util.rego"
+  source = "${path.module}/util.rego"
+  bucket = google_storage_bucket.common_rego.id
+}
+
 resource "google_cloud_run_service" "crun_svc" {
   project  = var.project_id
   name     = local.service_name
