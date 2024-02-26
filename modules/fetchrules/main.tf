@@ -95,7 +95,7 @@ resource "google_storage_bucket" "common_rego" {
 }
 
 resource "google_storage_bucket_iam_member" "common_rego_reader" {
-  bucket = google_storage_bucket.rules_repo.name
+  bucket = google_storage_bucket.common_rego.name
   role   = "roles/storage.objectViewer"
   member = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
