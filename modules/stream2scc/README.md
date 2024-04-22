@@ -1,0 +1,1 @@
+# RAM stream2scc microservice infra pre requisites
