@@ -147,3 +147,14 @@ resource "google_pubsub_subscription" "subcription" {
     minimum_backoff = var.sub_minimum_backoff
   }
 }
+
+module "gcloud" {
+  source  = "terraform-google-modules/gcloud/google"
+  version = "~> 3.4"
+
+  platform = "linux"
+  additional_components = ["beta"]
+
+  create_cmd_entrypoint  = "gcloud"
+  create_cmd_body        = "firestore fields ttls update expireAt --collection-group=${var.asset_collection_id} --enable-ttl --project=${var.project_id}"
+}
