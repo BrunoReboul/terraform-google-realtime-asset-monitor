@@ -18,6 +18,10 @@ locals {
   service_name = "consolebff"
 }
 
+data "google_project" "project" {
+  project_id = var.project_id
+}
+
 resource "google_service_account" "microservice_sa" {
   project      = var.project_id
   account_id   = local.service_name
@@ -102,11 +106,11 @@ resource "google_cloud_run_service" "crun_svc" {
   }
 }
 
-data "google_iam_policy" "noauth" {
+data "google_iam_policy" "binding" {
   binding {
     role = "roles/run.invoker"
     members = [
-      "allUsers", # a secured by IAP
+      "serviceAccount:service-${data.google_project.project.number}@gcp-sa-iap.iam.gserviceaccount.com",
     ]
   }
 }
@@ -116,5 +120,5 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
   project  = google_cloud_run_service.crun_svc.project
   service  = google_cloud_run_service.crun_svc.name
 
-  policy_data = data.google_iam_policy.noauth.policy_data
+  policy_data = data.google_iam_policy.binding.policy_data
 }
