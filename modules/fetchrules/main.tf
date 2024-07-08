@@ -210,7 +210,6 @@ resource "google_pubsub_subscription" "subcription" {
     oidc_token {
       service_account_email = google_service_account.subscription_sa.email
     }
-    #Updated endpoint to deal with WARNING in logs: failed to extract Pub/Sub topic name from the URL request path: "/", configure your subscription's push endpoint to use the following path pattern: 'projects/PROJECT_NAME/topics/TOPIC_NAME
     push_endpoint = google_cloud_run_v2_service.crun_svc.uri
   }
   expiration_policy {

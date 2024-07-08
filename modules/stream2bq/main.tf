@@ -840,16 +840,21 @@ EOF
 }
 
 
-resource "google_cloud_run_service" "crun_svc" {
+resource "google_cloud_run_v2_service" "crun_svc" {
   project  = var.project_id
   name     = local.service_name
   location = var.crun_region
-
+  client = "terraform"
+  ingress = "INGRESS_TRAFFIC_INTERNAL_ONLY"
+  traffic {
+    type = "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
+    percent = 100
+  }
   template {
-    spec {
-      containers {
+    containers {
         image = "${var.ram_container_images_registry}/${local.service_name}:${var.ram_microservice_image_tag}"
         resources {
+          cpu_idle = true
           limits = {
             cpu    = "${var.crun_cpu}"
             memory = "${var.crun_memory}"
@@ -871,27 +876,13 @@ resource "google_cloud_run_service" "crun_svc" {
           name  = "${upper(local.service_name)}_START_PROFILER"
           value = var.start_profiler
         }
-      }
-      container_concurrency = var.crun_concurrency
-      timeout_seconds       = var.crun_timeout_seconds
-      service_account_name  = google_service_account.microservice_sa.email
     }
-    metadata {
-      annotations = {
-        "run.googleapis.com/client-name"   = "terraform"
-        "autoscaling.knative.dev/maxScale" = "${var.crun_max_instances}"
-      }
+    max_instance_request_concurrency = var.crun_concurrency
+    timeout = var.crun_timeout
+    service_account = google_service_account.microservice_sa.email
+    scaling {
+      max_instance_count = var.crun_max_instances
     }
-  }
-  metadata {
-    annotations = {
-      "run.googleapis.com/ingress" = "internal"
-    }
-  }
-  autogenerate_revision_name = true
-  traffic {
-    percent         = 100
-    latest_revision = true
   }
   lifecycle {
     ignore_changes = all
@@ -913,9 +904,9 @@ data "google_iam_policy" "binding" {
   }
 }
 resource "google_cloud_run_service_iam_policy" "trigger_invoker" {
-  location = google_cloud_run_service.crun_svc.location
-  project  = google_cloud_run_service.crun_svc.project
-  service  = google_cloud_run_service.crun_svc.name
+  location = google_cloud_run_v2_service.crun_svc.location
+  project  = google_cloud_run_v2_service.crun_svc.project
+  service  = google_cloud_run_v2_service.crun_svc.name
 
   policy_data = data.google_iam_policy.binding.policy_data
 }
@@ -929,8 +920,7 @@ resource "google_pubsub_subscription" "subcription_asset_feed" {
     oidc_token {
       service_account_email = google_service_account.subscription_sa.email
     }
-    #Updated endpoint to deal with WARNING in logs: failed to extract Pub/Sub topic name from the URL request path: "/", configure your subscription's push endpoint to use the following path pattern: 'projects/PROJECT_NAME/topics/TOPIC_NAME
-    push_endpoint = "${google_cloud_run_service.crun_svc.status[0].url}/${var.asset_feed_topic_id} "
+    push_endpoint = google_cloud_run_v2_service.crun_svc.uri
   }
   expiration_policy {
     ttl = ""
@@ -950,8 +940,7 @@ resource "google_pubsub_subscription" "subcription_compliance_status" {
     oidc_token {
       service_account_email = google_service_account.subscription_sa.email
     }
-    #Updated endpoint to deal with WARNING in logs: failed to extract Pub/Sub topic name from the URL request path: "/", configure your subscription's push endpoint to use the following path pattern: 'projects/PROJECT_NAME/topics/TOPIC_NAME
-    push_endpoint = "${google_cloud_run_service.crun_svc.status[0].url}/${var.compliance_status_topic_id} "
+    push_endpoint = google_cloud_run_v2_service.crun_svc.uri
   }
   expiration_policy {
     ttl = ""
@@ -971,8 +960,7 @@ resource "google_pubsub_subscription" "subcription_violation" {
     oidc_token {
       service_account_email = google_service_account.subscription_sa.email
     }
-    #Updated endpoint to deal with WARNING in logs: failed to extract Pub/Sub topic name from the URL request path: "/", configure your subscription's push endpoint to use the following path pattern: 'projects/PROJECT_NAME/topics/TOPIC_NAME
-    push_endpoint = "${google_cloud_run_service.crun_svc.status[0].url}/${var.violation_topic_id} "
+    push_endpoint = google_cloud_run_v2_service.crun_svc.uri
   }
   expiration_policy {
     ttl = ""
