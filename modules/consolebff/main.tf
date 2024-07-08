@@ -48,64 +48,6 @@ resource "google_bigquery_dataset_iam_member" "editor" {
   member     = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
 
-# resource "google_cloud_run_service" "crun_svc" {
-#   project  = var.project_id
-#   name     = local.service_name
-#   location = var.crun_region
-
-#   template {
-#     spec {
-#       containers {
-#         image = "${var.ram_container_images_registry}/${local.service_name}:${var.ram_microservice_image_tag}"
-#         resources {
-#           limits = {
-#             cpu    = "${var.crun_cpu}"
-#             memory = "${var.crun_memory}"
-#           }
-#         }
-#         env {
-#           name  = "${upper(local.service_name)}_ENVIRONMENT"
-#           value = var.environment
-#         }
-#         env {
-#           name  = "${upper(local.service_name)}_LOG_ONLY_SEVERITY_LEVELS"
-#           value = var.log_only_severity_levels
-#         }
-#         env {
-#           name  = "${upper(local.service_name)}_PROJECT_ID"
-#           value = var.project_id
-#         }
-#         env {
-#           name  = "${upper(local.service_name)}_START_PROFILER"
-#           value = var.start_profiler
-#         }
-#       }
-#       container_concurrency = var.crun_concurrency
-#       timeout_seconds       = var.crun_timeout_seconds
-#       service_account_name  = google_service_account.microservice_sa.email
-#     }
-#     metadata {
-#       annotations = {
-#         "run.googleapis.com/client-name"   = "terraform"
-#         "autoscaling.knative.dev/maxScale" = "${var.crun_max_instances}"
-#       }
-#     }
-#   }
-#   metadata {
-#     annotations = {
-#       "run.googleapis.com/ingress" = "internal-and-cloud-load-balancing"
-#     }
-#   }
-#   autogenerate_revision_name = true
-#   traffic {
-#     percent         = 100
-#     latest_revision = true
-#   }
-#   lifecycle {
-#     ignore_changes = all
-#   }
-# }
-
 resource "google_cloud_run_v2_service" "crun_svc" {
   project  = var.project_id
   name     = local.service_name
