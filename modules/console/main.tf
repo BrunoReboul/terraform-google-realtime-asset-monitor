@@ -84,7 +84,6 @@ resource "google_cloud_run_v2_service" "crun_svc" {
   }
 }
 
-
 data "google_iam_policy" "binding" {
   binding {
     role = "roles/run.invoker"
