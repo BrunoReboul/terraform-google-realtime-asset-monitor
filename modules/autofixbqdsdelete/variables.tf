@@ -29,7 +29,7 @@ variable "crun_region" {
 
 variable "crun_cpu" {
   description = "Number of cpu in k8s quantity 1000m means 1000 millicpu aka 1"
-  default     = "1000m"
+  default     = "1"
 }
 variable "crun_concurrency" {
   description = "Number of requests a container could received at the same time"
@@ -46,9 +46,9 @@ variable "crun_memory" {
   default     = "128Mi"
 }
 
-variable "crun_timeout_seconds" {
+variable "crun_timeout" {
   description = "Max duration for an instance for responding to a request"
-  default     = 180
+  default     = "180s"
 }
 
 variable "ram_container_images_registry" {

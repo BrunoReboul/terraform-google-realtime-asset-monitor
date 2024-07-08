@@ -21,9 +21,9 @@ output "service_account_email" {
 
 output "crun_service_id" {
   description = "cloud run service id"
-  value       = google_cloud_run_service.crun_svc.id
+  value       = google_cloud_run_v2_service.crun_svc.id
 }
 output "crun_service_url" {
   description = "cloud run service url"
-  value       = google_cloud_run_service.crun_svc.status[0].url
+  value       = google_cloud_run_v2_service.crun_svc.uri
 }

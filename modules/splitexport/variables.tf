@@ -79,12 +79,10 @@ variable "crun_memory" {
   default     = "1Gi"
 }
 
-
-variable "crun_timeout_seconds" {
+variable "crun_timeout" {
   description = "Max duration for an instance for responding to a request"
-  default     = 3600
+  default     = "3600s"
 }
-
 variable "ram_container_images_registry" {
   description = "artifact registry path"
   default     = "europe-docker.pkg.dev/brunore-ram-dev-100/realtime-asset-monitor"

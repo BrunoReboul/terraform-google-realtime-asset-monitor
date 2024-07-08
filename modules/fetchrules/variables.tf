@@ -60,9 +60,9 @@ variable "crun_memory" {
   default     = "256Mi"
 }
 
-variable "crun_timeout_seconds" {
+variable "crun_timeout" {
   description = "Max duration for an instance for responding to a request"
-  default     = 1800
+  default     = "1800s"
 }
 
 variable "ram_container_images_registry" {

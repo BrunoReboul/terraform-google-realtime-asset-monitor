@@ -42,16 +42,18 @@ output "asset_feed_topic_id" {
 
 output "crun_service_id" {
   description = "cloud run service id"
-  value       = google_cloud_run_service.crun_svc.id
+  value       = google_cloud_run_v2_service.crun_svc.id
 }
 output "crun_service_url" {
   description = "cloud run service url"
-  value       = google_cloud_run_service.crun_svc.status[0].url
+  value       = google_cloud_run_v2_service.crun_svc.uri
 }
+
 output "trigger_service_account_email" {
   description = "Service account email used to trigger this microservice"
   value       = google_service_account.eva_trigger_sa.email
 }
+
 output "trigger_id" {
   description = "Eventarc trigger id"
   value       = google_eventarc_trigger.eva_trigger.id
