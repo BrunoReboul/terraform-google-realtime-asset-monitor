@@ -174,7 +174,7 @@ resource "google_pubsub_subscription" "subcription" {
     oidc_token {
       service_account_email = google_service_account.subscription_sa.email
     }
-    push_endpoint = google_cloud_run_v2_service.crun_svc.uri
+    push_endpoint = "${google_cloud_run_v2_service.crun_svc.uri}/${google_pubsub_topic.gcs_notif_export_topic.id}"
   }
   expiration_policy {
     ttl = ""
