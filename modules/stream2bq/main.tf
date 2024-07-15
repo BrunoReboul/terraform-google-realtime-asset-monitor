@@ -920,7 +920,7 @@ resource "google_pubsub_subscription" "subcription_asset_feed" {
     oidc_token {
       service_account_email = google_service_account.subscription_sa.email
     }
-    push_endpoint = google_cloud_run_v2_service.crun_svc.uri
+    push_endpoint = "${google_cloud_run_v2_service.crun_svc.uri}/${var.asset_feed_topic_id}"
   }
   expiration_policy {
     ttl = ""
@@ -940,7 +940,7 @@ resource "google_pubsub_subscription" "subcription_compliance_status" {
     oidc_token {
       service_account_email = google_service_account.subscription_sa.email
     }
-    push_endpoint = google_cloud_run_v2_service.crun_svc.uri
+    push_endpoint = "${google_cloud_run_v2_service.crun_svc.uri}/${var.compliance_status_topic_id}"
   }
   expiration_policy {
     ttl = ""
@@ -960,7 +960,7 @@ resource "google_pubsub_subscription" "subcription_violation" {
     oidc_token {
       service_account_email = google_service_account.subscription_sa.email
     }
-    push_endpoint = google_cloud_run_v2_service.crun_svc.uri
+    push_endpoint = "${google_cloud_run_v2_service.crun_svc.uri}/${var.violation_topic_id}"
   }
   expiration_policy {
     ttl = ""
