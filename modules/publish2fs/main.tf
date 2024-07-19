@@ -138,6 +138,7 @@ resource "google_pubsub_subscription" "subcription" {
 }
 
 module "gcloud" {
+  count = var.deploy_fs_assets_retention_policy == true ? 1 : 0
   source  = "terraform-google-modules/gcloud/google"
   version = "~> 3.4"
 

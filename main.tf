@@ -129,6 +129,7 @@ module "publish2fs" {
   ram_microservice_image_tag = var.ram_microservice_image_tag
   log_only_severity_levels   = var.log_only_severity_levels
   triggering_topic_id        = module.convertfeed.asset_feed_topic_id
+  deploy_fs_assets_retention_policy = var.deploy_fs_assets_retention_policy
 }
 
 module "upload2gcs" {
