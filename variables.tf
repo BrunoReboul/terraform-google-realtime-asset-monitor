@@ -366,3 +366,9 @@ variable "bq_tables_deletion_protection" {
   description = "BigQuery tables deletion protection"
   default     = true
 }
+
+variable "deploy_fs_assets_retention_policy" {
+  type        = bool
+  description = "Deploy a retention policy on Firestore assets collection"
+  default     = true
+}

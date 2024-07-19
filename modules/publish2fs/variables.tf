@@ -96,3 +96,9 @@ variable "sub_minimum_backoff" {
   description = "The minimum delay between consecutive deliveries of a given message"
   default     = "65s"
 }
+
+variable "deploy_fs_assets_retention_policy" {
+  type        = bool
+  description = "Deploy a retention policy on Firestore assets collection"
+  default     = true
+}
