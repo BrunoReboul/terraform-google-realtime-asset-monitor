@@ -19,6 +19,15 @@ output "external_ip_address" {
   value       = google_compute_global_address.ram_ext_ip.address
 }
 
+output "audience_admin" {
+  value = "/projects/${data.google_project.project.number}/global/backendServices/${google_compute_backend_service.admin.generated_id}"
+}
+
+output "audience_results" {
+  value = "/projects/${data.google_project.project.number}/global/backendServices/${google_compute_backend_service.results.generated_id}"
+}
+
+
 output "admin_backend_name" {
   value = google_compute_backend_service.admin.name
 }

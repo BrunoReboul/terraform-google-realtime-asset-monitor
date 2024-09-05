@@ -72,3 +72,11 @@ variable "start_profiler" {
   description = "Continuous CPU and heap profiling in Cloud Profiler"
   default     = "false"
 }
+
+variable "audience_admin" {
+  description = "the back end id is used by IAP as the audience string enabling to validate claims"
+}
+
+variable "audience_results" {
+  description = "the back end id is used by IAP as the audience string enabling to validate claims"
+}

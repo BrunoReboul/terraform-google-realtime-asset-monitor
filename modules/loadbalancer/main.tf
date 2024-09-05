@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+data "google_project" "project" {
+  project_id = var.project_id
+}
+
 data "google_secret_manager_secret_version_access" "ram_iap_client_id" {
   project = var.project_id
   secret  = "ram-iap-client-id"
