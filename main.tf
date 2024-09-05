@@ -228,17 +228,6 @@ module "console" {
   dns_name                   = var.dns_name
 }
 
-module "consolebff" {
-  count                      = var.deploy_console == true ? 1 : 0
-  source                     = "./modules/consolebff"
-  project_id                 = var.project_id
-  bigquery_dataset_id        = module.stream2bq.ram_dataset_id
-  environment                = local.environment
-  crun_region                = var.crun_region
-  ram_microservice_image_tag = var.ram_microservice_image_tag
-  log_only_severity_levels   = var.log_only_severity_levels
-}
-
 module "loadbalancer" {
   count                            = var.deploy_loadbalancer == true ? 1 : 0
   source                           = "./modules/loadbalancer"
@@ -247,4 +236,18 @@ module "loadbalancer" {
   dns_name                         = var.dns_name
   support_email                    = var.support_email
   static_public_bucket_name_suffix = var.static_public_bucket_name_suffix
+}
+
+module "consolebff" {
+  count                      = var.deploy_console == true ? 1 : 0
+  depends_on                 = [module.loadbalancer]
+  source                     = "./modules/consolebff"
+  project_id                 = var.project_id
+  bigquery_dataset_id        = module.stream2bq.ram_dataset_id
+  environment                = local.environment
+  crun_region                = var.crun_region
+  ram_microservice_image_tag = var.ram_microservice_image_tag
+  log_only_severity_levels   = var.log_only_severity_levels
+  audience_admin           = module.loadbalancer[0].audience_admin
+  audience_results         = module.loadbalancer[0].audience_results
 }

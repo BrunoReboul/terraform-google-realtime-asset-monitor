@@ -84,6 +84,14 @@ resource "google_cloud_run_v2_service" "crun_svc" {
           name  = "${upper(local.service_name)}_START_PROFILER"
           value = var.start_profiler
         }
+        env {
+          name  = "${upper(local.service_name)}_AUDIENCE_ADMIN"
+          value = var.audience_admin
+        }
+        env {
+          name  = "${upper(local.service_name)}_AUDIENCE_RESULTS"
+          value = var.audience_results
+        }
     }
     max_instance_request_concurrency = var.crun_concurrency
     timeout = var.crun_timeout
