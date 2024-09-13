@@ -168,7 +168,7 @@ resource "google_compute_managed_ssl_certificate" "ram_ssl_certif" {
   project = var.project_id
   name    = "ram-ssl-certif"
   managed {
-    domains = ["${var.dns_name}"]
+    domains = [var.dns_name]
   }
 }
 

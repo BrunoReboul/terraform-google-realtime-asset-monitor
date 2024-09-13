@@ -16,4 +16,5 @@
 
 variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
+  type        = string
 }

@@ -16,6 +16,7 @@
 
 variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
+  type        = string
 }
 
 variable "notification_channels" {
@@ -24,7 +25,7 @@ variable "notification_channels" {
 
 variable "availability" {
   type        = map(any)
-  description = "Critical User Journeys CUJs map crtical microservices"
+  description = "Critical User Journeys CUJs map critical microservices"
 }
 
 variable "latency" {

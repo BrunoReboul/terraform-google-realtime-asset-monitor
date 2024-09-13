@@ -58,8 +58,8 @@ resource "google_cloud_run_v2_service" "crun_svc" {
         resources {
           cpu_idle = true
           limits = {
-            cpu    = "${var.crun_cpu}"
-            memory = "${var.crun_memory}"
+            cpu    = var.crun_cpu
+            memory = var.crun_memory
           }
         }
         env {
@@ -117,7 +117,7 @@ resource "google_cloud_run_service_iam_policy" "trigger_invoker" {
   policy_data = data.google_iam_policy.binding.policy_data
 }
 
-resource "google_pubsub_subscription" "subcription" {
+resource "google_pubsub_subscription" "subscription" {
   project              = var.project_id
   name                 = "${local.service_name}-${local.action_kind}"
   topic                = var.triggering_topic_id

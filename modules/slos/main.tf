@@ -431,7 +431,7 @@ resource "google_monitoring_alert_policy" "ram_availability_fast_burn" {
     }
   }
   notification_channels = [
-    "${google_monitoring_notification_channel.alerting2pubsub.name}"
+    google_monitoring_notification_channel.alerting2pubsub.name
   ]
 }
 
@@ -453,7 +453,7 @@ resource "google_monitoring_alert_policy" "ram_availability_slow_burn" {
     }
   }
   notification_channels = [
-    "${google_monitoring_notification_channel.alerting2pubsub.name}"
+    google_monitoring_notification_channel.alerting2pubsub.name
   ]
 }
 

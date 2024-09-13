@@ -58,17 +58,17 @@ module "monitor" {
 }
 
 module "stream2bq" {
-  source                     = "./modules/stream2bq"
-  project_id                 = var.project_id
-  environment                = local.environment
-  views_interval_days        = var.views_interval_days
-  bq_partition_expiration_ms = var.bq_partition_expiration_ms
-  crun_region                = var.crun_region
-  ram_microservice_image_tag = var.ram_microservice_image_tag
-  log_only_severity_levels   = var.log_only_severity_levels
-  asset_feed_topic_id        = module.convertfeed.asset_feed_topic_id
-  compliance_status_topic_id = module.monitor.compliance_status_topic_id
-  violation_topic_id         = module.monitor.violation_topic_id
+  source                        = "./modules/stream2bq"
+  project_id                    = var.project_id
+  environment                   = local.environment
+  views_interval_days           = var.views_interval_days
+  bq_partition_expiration_ms    = var.bq_partition_expiration_ms
+  crun_region                   = var.crun_region
+  ram_microservice_image_tag    = var.ram_microservice_image_tag
+  log_only_severity_levels      = var.log_only_severity_levels
+  asset_feed_topic_id           = module.convertfeed.asset_feed_topic_id
+  compliance_status_topic_id    = module.monitor.compliance_status_topic_id
+  violation_topic_id            = module.monitor.violation_topic_id
   bq_tables_deletion_protection = var.bq_tables_deletion_protection
 }
 
@@ -122,13 +122,13 @@ module "splitexport" {
 }
 
 module "publish2fs" {
-  source                     = "./modules/publish2fs"
-  project_id                 = var.project_id
-  environment                = local.environment
-  crun_region                = var.crun_region
-  ram_microservice_image_tag = var.ram_microservice_image_tag
-  log_only_severity_levels   = var.log_only_severity_levels
-  triggering_topic_id        = module.convertfeed.asset_feed_topic_id
+  source                            = "./modules/publish2fs"
+  project_id                        = var.project_id
+  environment                       = local.environment
+  crun_region                       = var.crun_region
+  ram_microservice_image_tag        = var.ram_microservice_image_tag
+  log_only_severity_levels          = var.log_only_severity_levels
+  triggering_topic_id               = module.convertfeed.asset_feed_topic_id
   deploy_fs_assets_retention_policy = var.deploy_fs_assets_retention_policy
 }
 
@@ -170,23 +170,23 @@ module "metrics" {
 
 module "slos" {
   # Create SLOs once the log based metrics have been created
-  depends_on             = [module.metrics]
-  count                      = var.deploy_slos == true ? 1 : 0
-  source                 = "./modules/slos"
-  project_id             = var.project_id
-  pubsub_allowed_regions = var.pubsub_allowed_regions
-  notification_channels  = var.notification_channels
-  ram_e2e_latency        = var.ram_e2e_latency
-  log_metric_ram_execution_count_id = module.metrics.log_metric_ram_execution_count_id
+  depends_on                              = [module.metrics]
+  count                                   = var.deploy_slos == true ? 1 : 0
+  source                                  = "./modules/slos"
+  project_id                              = var.project_id
+  pubsub_allowed_regions                  = var.pubsub_allowed_regions
+  notification_channels                   = var.notification_channels
+  ram_e2e_latency                         = var.ram_e2e_latency
+  log_metric_ram_execution_count_id       = module.metrics.log_metric_ram_execution_count_id
   log_metric_ram_execution_latency_e2e_id = module.metrics.log_metric_ram_execution_latency_e2e_id
 }
 
 module "slos_cai" {
-  count                      = var.deploy_slos == true ? 1 : 0
-  source                = "./modules/slos_cai"
-  project_id            = var.project_id
-  notification_channels = module.slos[0].ram_notification_channels
-  cai_latency           = var.cai_latency
+  count                                   = var.deploy_slos == true ? 1 : 0
+  source                                  = "./modules/slos_cai"
+  project_id                              = var.project_id
+  notification_channels                   = module.slos[0].ram_notification_channels
+  cai_latency                             = var.cai_latency
   log_metric_ram_execution_latency_e2e_id = module.metrics.log_metric_ram_execution_latency_e2e_id
 }
 
@@ -201,10 +201,10 @@ module "transparentslis" {
 
 module "dashboards" {
   # Create dashboards once the log based metrics have been created
-  count      = var.deploy_slos == true ? 1 : 0
-  depends_on = [module.metrics]
-  source     = "./modules/dashboards"
-  project_id = var.project_id
+  count                               = var.deploy_slos == true ? 1 : 0
+  depends_on                          = [module.metrics]
+  source                              = "./modules/dashboards"
+  project_id                          = var.project_id
   log_metric_ram_execution_latency_id = module.metrics.log_metric_ram_execution_latency_id
 }
 
@@ -249,6 +249,6 @@ module "consolebff" {
   crun_region                = var.crun_region
   ram_microservice_image_tag = var.ram_microservice_image_tag
   log_only_severity_levels   = var.log_only_severity_levels
-  audience_admin           = module.loadbalancer[0].audience_admin
-  audience_results         = module.loadbalancer[0].audience_results
+  audience_admin             = module.loadbalancer[0].audience_admin
+  audience_results           = module.loadbalancer[0].audience_results
 }
