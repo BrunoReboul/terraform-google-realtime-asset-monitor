@@ -80,3 +80,8 @@ variable "audience_admin" {
 variable "audience_results" {
   description = "the back end id is used by IAP as the audience string enabling to validate claims"
 }
+
+variable "gcs_location" {
+  description = "Cloud Storage location"
+  default     = "europe-west1"
+}
