@@ -245,6 +245,7 @@ module "consolebff" {
   project_id                 = var.project_id
   bigquery_dataset_id        = module.stream2bq.ram_dataset_id
   environment                = local.environment
+  gcs_location               = var.gcs_location
   crun_region                = var.crun_region
   ram_microservice_image_tag = var.ram_microservice_image_tag
   log_only_severity_levels   = var.log_only_severity_levels

@@ -48,6 +48,30 @@ resource "google_bigquery_dataset_iam_member" "editor" {
   member     = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
 
+resource "google_storage_bucket" "usersrole_repo" {
+  project                     = var.project_id
+  name                        = "${var.project_id}-usersrolerepo"
+  location                    = var.gcs_location
+  force_destroy               = true
+  uniform_bucket_level_access = true
+  lifecycle_rule {
+    condition {
+      age = 36500
+    }
+    action {
+      type          = "SetStorageClass"
+      storage_class = "STANDARD"
+    }
+  }
+}
+
+resource "google_storage_bucket_iam_member" "usersrole_repo_reader" {
+  bucket = google_storage_bucket.usersrole_repo.name
+  role   = "roles/storage.objectViewer"
+  member = "serviceAccount:${google_service_account.microservice_sa.email}"
+}
+
+
 resource "google_cloud_run_v2_service" "crun_svc" {
   project  = var.project_id
   name     = local.service_name
