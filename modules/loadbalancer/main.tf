@@ -108,6 +108,7 @@ resource "google_compute_backend_service" "results" {
     group = google_compute_region_network_endpoint_group.results_neg.id
   }
   iap {
+    enabled              = true
     oauth2_client_id     = data.google_secret_manager_secret_version_access.ram_iap_client_id.secret_data
     oauth2_client_secret = data.google_secret_manager_secret_version_access.ram_iap_client_secret.secret_data
   }
@@ -135,6 +136,7 @@ resource "google_compute_backend_service" "admin" {
     group = google_compute_region_network_endpoint_group.admin_neg.id
   }
   iap {
+    enabled              = true
     oauth2_client_id     = data.google_secret_manager_secret_version_access.ram_iap_client_id.secret_data
     oauth2_client_secret = data.google_secret_manager_secret_version_access.ram_iap_client_secret.secret_data
   }
