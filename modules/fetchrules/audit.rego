@@ -28,10 +28,10 @@ audit[result] {
 	# assign the constrains in a variable
 	constraints := input.constraints
 	# WARNING - FOR LOCAL TESTING use constraints := data.constraints
-	
+
 	# iterate over each constraint
 	constraint := constraints[_]
-	trace(sprintf("constraint kind: %v", [constraint.kind]))    
+	trace(sprintf("constraint kind: %v", [constraint.kind]))
 
 	# use a custom function to retrieve constraint.spec, if not defined returns a default value that is an empty object
 	spec := _get_default(constraint, "spec", {})

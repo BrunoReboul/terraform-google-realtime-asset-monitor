@@ -133,7 +133,7 @@ resource "google_logging_metric" "ram_execution_count" {
     labels {
       key         = "origin"
       value_type  = "STRING"
-      description = "real-time, sheduled ..."
+      description = "real-time, scheduled ..."
     }
     labels {
       key         = "rule_name"
@@ -188,7 +188,7 @@ resource "google_logging_metric" "ram_execution_latency" {
     labels {
       key         = "origin"
       value_type  = "STRING"
-      description = "real-time, sheduled ..."
+      description = "real-time, scheduled ..."
     }
     labels {
       key         = "rule_name"
@@ -251,7 +251,7 @@ resource "google_logging_metric" "ram_execution_latency_e2e" {
     labels {
       key         = "origin"
       value_type  = "STRING"
-      description = "real-time, sheduled ..."
+      description = "real-time, scheduled ..."
     }
     labels {
       key         = "rule_name"
@@ -314,7 +314,7 @@ resource "google_logging_metric" "ram_execution_latency_t2s" {
     labels {
       key         = "origin"
       value_type  = "STRING"
-      description = "real-time, sheduled ..."
+      description = "real-time, scheduled ..."
     }
     labels {
       key         = "rule_name"

@@ -16,56 +16,68 @@
 
 variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
+  type        = string
 }
 
 variable "crun_region" {
   description = "cloud run region"
   default     = "europe-west1"
+  type        = string
 }
 
 variable "crun_cpu" {
   description = "Number of cpu in k8s quantity 1000m means 1000 millicpu aka 1"
   default     = "1000m"
+  type        = string
 }
 variable "crun_concurrency" {
   description = "Number of requests a container could received at the same time"
   default     = 80
+  type        = number
 }
 
 variable "crun_max_instances" {
   description = "Max number of instances"
   default     = 10
+  type        = number
 }
 
 variable "crun_memory" {
   description = "Memory allocation in k8s quantity "
   default     = "128Mi"
+  type        = string
 }
 
 variable "crun_timeout" {
   description = "Max duration for an instance for responding to a request"
   default     = "60s"
+  type        = string
 }
 
 variable "ram_container_images_registry" {
   description = "artifact registry path"
   default     = "europe-docker.pkg.dev/brunore-ram-dev-100/realtime-asset-monitor"
+  type        = string
 }
 variable "ram_microservice_image_tag" {
   description = "The container image tag for this microservice"
   default     = "latest"
+  type        = string
 }
 
 variable "dns_name" {
   description = "The DNS name used to expose RAM e.g. ram.example.com"
+  type        = string
 }
 
 variable "bff_connect_timeout_ms" {
   description = "Connection timeout to back for front in milliseconds"
   default     = 60000
+  type        = number
 }
 
 variable "bff_receive_timeout_ms" {
-  description = "Reveive timeout from back for front in milliseconds"
+  description = "Receive timeout from back for front in milliseconds"
   default     = 60000
+  type        = number
 }

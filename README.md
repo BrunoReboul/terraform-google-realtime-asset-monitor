@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-To use theses terraform modules, you will need a GCP project with:  
+To use theses terraform modules, you will need a GCP project with:
 
 - APIs enabled
   - Artifact Registry API `artifactregistry.googleapis.com`
@@ -54,7 +54,7 @@ To use theses terraform modules, you will need a GCP project with:
       - resourcemanager.organizations.getIamPolicy
       - resourcemanager.organizations.setIamPolicy
   - on batch monitored assets parent folders
-    - a custome role with
+    - a custom role with
       - resourcemanager.folders.get
       - resourcemanager.folders.getIamPolicy
       - resourcemanager.folders.setIamPolicy
@@ -66,7 +66,7 @@ To use theses terraform modules, you will need a GCP project with:
 
 - FireStore: [select native mode](https://cloud.google.com/datastore/docs/firestore-or-datastore)
 - Provision a GCS bucket to manage Terraform state.
-- Install Terraform and google provider consistent with version specifyied in `versions.tf`
+- Install Terraform and google provider consistent with version specified in `versions.tf`
 
 ## Example
 

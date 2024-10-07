@@ -17,10 +17,12 @@
 
 variable "test_project_id" {
   description = "RAM GCP project id for quality analysis environment"
+  type        = string
 }
 
 variable "prod_project_id" {
   description = "RAM GCP project id for production environment"
+  type        = string
 }
 
 variable "export_org_ids" {
@@ -60,6 +62,7 @@ variable "feed_resource_folders" {
 variable "log_only_severity_levels" {
   description = "Which type of log entry should be logged"
   default     = "WARNING NOTICE CRITICAL"
+  type        = string
 }
 
 variable "pubsub_allowed_regions" {
@@ -70,26 +73,31 @@ variable "pubsub_allowed_regions" {
 variable "gcs_location" {
   description = "Cloud Storage location"
   default     = "europe-west1"
+  type        = string
 }
 
 variable "crun_region" {
   description = "cloud run region"
   default     = "europe-west1"
+  type        = string
 }
 
 variable "dataset_location" {
   description = "Bigquery dataset location"
   default     = "EU"
+  type        = string
 }
 
 variable "scheduler_region" {
   description = "Cloud Scheduler region"
   default     = "europe-west1"
+  type        = string
 }
 
 variable "views_interval_days" {
   description = "The sliding windows in days the view uses to get data. Should not be less than the batch cadence to export assets"
   default     = 28
+  type        = number
 }
 
 variable "schedulers" {

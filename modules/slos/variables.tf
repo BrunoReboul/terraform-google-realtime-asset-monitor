@@ -16,6 +16,7 @@
 
 variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
+  type        = string
 }
 
 variable "notification_channels" {
@@ -24,6 +25,7 @@ variable "notification_channels" {
 
 variable "alerting_topic_name" {
   default = "alerting"
+  type    = string
 }
 
 variable "pubsub_allowed_regions" {
@@ -35,13 +37,24 @@ variable "ram_e2e_latency" {
 }
 
 variable "log_metric_ram_execution_count_id" {
+  type = string
 }
 
 variable "log_metric_ram_execution_latency_e2e_id" {
+  type = string
 }
 
 variable "ram_availability" {
-  description = "Critical User Journeys CUJs map crtical microservices"
+  type = object({
+    microservice_list                  = list(string)
+    goal                               = number
+    rolling_period_days                = number
+    alerting_fast_burn_loopback_period = string
+    alerting_fast_burn_threshold       = number
+    alerting_slow_burn_loopback_period = string
+    alerting_slow_burn_threshold       = number
+  })
+  description = "Critical User Journeys CUJs map critical microservices"
   default = {
     microservice_list = [
       "launch",

@@ -16,6 +16,7 @@
 
 variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
+  type        = string
 }
 
 variable "notification_channels" {
@@ -23,6 +24,7 @@ variable "notification_channels" {
 }
 
 variable "log_metric_ram_execution_latency_e2e_id" {
+  type = string
 }
 
 variable "cai_latency" {

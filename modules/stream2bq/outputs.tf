@@ -33,15 +33,15 @@ output "subscription_sa_email" {
 }
 output "subscription_id_asset_feed" {
   description = "PubSub subscription id for asset feed"
-  value       = google_pubsub_subscription.subcription_asset_feed.id
+  value       = google_pubsub_subscription.subscription_asset_feed.id
 }
 output "subscription_id_compliance_status" {
   description = "PubSub subscription id for compliance status"
-  value       = google_pubsub_subscription.subcription_compliance_status.id
+  value       = google_pubsub_subscription.subscription_compliance_status.id
 }
 output "subscription_id_violation" {
   description = "PubSub subscription id for violation"
-  value       = google_pubsub_subscription.subcription_violation.id
+  value       = google_pubsub_subscription.subscription_violation.id
 }
 
 output "ram_dataset_id" {

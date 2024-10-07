@@ -16,10 +16,12 @@
 
 variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
+  type        = string
 }
 
 variable "cai_feed_topic_id" {
   description = "google cloud asset inventory feed messages"
+  type        = string
 }
 
 variable "feed_iam_policy_orgs" {

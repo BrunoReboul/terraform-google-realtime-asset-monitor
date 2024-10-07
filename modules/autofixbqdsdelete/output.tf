@@ -33,5 +33,5 @@ output "subscription_sa_email" {
 }
 output "subscription_id" {
   description = "PubSub subscription id to trigger this type of action"
-  value       = google_pubsub_subscription.subcription.id
+  value       = google_pubsub_subscription.subscription.id
 }

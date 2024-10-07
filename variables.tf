@@ -17,21 +17,25 @@
 
 variable "project_id" {
   description = "GCP project id where to deploy RAM for a given environment, like test or production"
+  type        = string
 }
 
 variable "environment" {
   description = "environment name, by default terraform.workspace is used"
   default     = ""
+  type        = string
 }
 
 variable "ram_microservice_image_tag" {
   description = "The container image tag for this microservice"
   default     = "latest"
+  type        = string
 }
 
 variable "log_only_severity_levels" {
   description = "Which type of log entry should be logged"
   default     = "WARNING NOTICE CRITICAL"
+  type        = string
 }
 
 variable "pubsub_allowed_regions" {
@@ -42,41 +46,49 @@ variable "pubsub_allowed_regions" {
 variable "gcs_location" {
   description = "Cloud Storage location"
   default     = "europe-west1"
+  type        = string
 }
 
 variable "gcs_export_bucket_object_max_age_days" {
   description = "A lifecycle rule deletes objects older than this duration"
   default     = 1
+  type        = number
 }
 
 variable "gcs_assetjson_bucket_object_max_age_days" {
   description = "A lifecycle rule deletes objects older than this duration"
   default     = 1
+  type        = number
 }
 
 variable "crun_region" {
   description = "cloud run region"
   default     = "europe-west1"
+  type        = string
 }
 
 variable "dataset_location" {
   description = "Bigquery dataset location"
   default     = "EU"
+  type        = string
 }
 
 variable "scheduler_region" {
   description = "Cloud Scheduler region"
   default     = "europe-west1"
+  type        = string
 }
 
 variable "views_interval_days" {
   description = "The sliding windows in days the view uses to get data. Should not be less than the batch cadence to export assets"
   default     = 7
+  type        = number
 }
 
 variable "bq_partition_expiration_ms" {
   description = "Bigquery table number of milliseconds for which to keep the storage for a partition"
   default     = 3024000000
+  type        = number
 }
 
 variable "schedulers" {
@@ -142,21 +154,25 @@ variable "feed_resource_folders" {
 variable "asset_feed_topic_name" {
   description = "the data on which to assess compliance"
   default     = "assetFeed"
+  type        = string
 }
 
 variable "asset_rule_topic_name" {
   description = "each message combines the data of one asset and the code of one complicance rule's"
   default     = "assetRule"
+  type        = string
 }
 
 variable "compliance_status_topic_name" {
   description = "compliance status may be true for compliant or false for not compliant for a given asset version and configuration rule version"
   default     = "ram-complianceStatus"
+  type        = string
 }
 
 variable "violation_topic_name" {
   description = "violations detail why an asset is not compliant to a configuration rule"
   default     = "ram-violation"
+  type        = string
 }
 
 variable "notification_channels" {
@@ -245,7 +261,7 @@ variable "cai_latency" {
 
 variable "api_availability" {
   type        = map(any)
-  description = "Critical User Journeys CUJs map crtical microservices"
+  description = "Critical User Journeys CUJs map critical microservices"
   default = {
     pubsub_publish = {
       rolling_period_days                = 28
@@ -343,16 +359,19 @@ variable "deploy_loadbalancer" {
 variable "dns_name" {
   description = "The DNS name used to expose RAM"
   default     = "ram.example.com"
+  type        = string
 }
 
 variable "support_email" {
   description = "iap brand support email"
   default     = "support@example.com"
+  type        = string
 }
 
 variable "static_public_bucket_name_suffix" {
   description = "suffix to the bucketname hosting public static content"
   default     = "-staticpublicweb"
+  type        = string
 }
 
 variable "deploy_slos" {

@@ -261,7 +261,7 @@ resource "google_bigquery_table" "violations" {
         "type": "RECORD"
     },
     {
-        "description": "The settings of the constraint used in conjonction with the rego template to assess the rule",
+        "description": "The settings of the constraint used in conjunction with the rego template to assess the rule",
         "fields": [
             {
                 "name": "kind",
@@ -844,42 +844,42 @@ resource "google_cloud_run_v2_service" "crun_svc" {
   project  = var.project_id
   name     = local.service_name
   location = var.crun_region
-  client = "terraform"
-  ingress = "INGRESS_TRAFFIC_INTERNAL_ONLY"
+  client   = "terraform"
+  ingress  = "INGRESS_TRAFFIC_INTERNAL_ONLY"
   traffic {
-    type = "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
+    type    = "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
     percent = 100
   }
   template {
     containers {
-        image = "${var.ram_container_images_registry}/${local.service_name}:${var.ram_microservice_image_tag}"
-        resources {
-          cpu_idle = true
-          limits = {
-            cpu    = "${var.crun_cpu}"
-            memory = "${var.crun_memory}"
-          }
+      image = "${var.ram_container_images_registry}/${local.service_name}:${var.ram_microservice_image_tag}"
+      resources {
+        cpu_idle = true
+        limits = {
+          cpu    = var.crun_cpu
+          memory = var.crun_memory
         }
-        env {
-          name  = "${upper(local.service_name)}_ENVIRONMENT"
-          value = var.environment
-        }
-        env {
-          name  = "${upper(local.service_name)}_LOG_ONLY_SEVERITY_LEVELS"
-          value = var.log_only_severity_levels
-        }
-        env {
-          name  = "${upper(local.service_name)}_PROJECT_ID"
-          value = var.project_id
-        }
-        env {
-          name  = "${upper(local.service_name)}_START_PROFILER"
-          value = var.start_profiler
-        }
+      }
+      env {
+        name  = "${upper(local.service_name)}_ENVIRONMENT"
+        value = var.environment
+      }
+      env {
+        name  = "${upper(local.service_name)}_LOG_ONLY_SEVERITY_LEVELS"
+        value = var.log_only_severity_levels
+      }
+      env {
+        name  = "${upper(local.service_name)}_PROJECT_ID"
+        value = var.project_id
+      }
+      env {
+        name  = "${upper(local.service_name)}_START_PROFILER"
+        value = var.start_profiler
+      }
     }
     max_instance_request_concurrency = var.crun_concurrency
-    timeout = var.crun_timeout
-    service_account = google_service_account.microservice_sa.email
+    timeout                          = var.crun_timeout
+    service_account                  = google_service_account.microservice_sa.email
     scaling {
       max_instance_count = var.crun_max_instances
     }
@@ -911,7 +911,7 @@ resource "google_cloud_run_service_iam_policy" "trigger_invoker" {
   policy_data = data.google_iam_policy.binding.policy_data
 }
 
-resource "google_pubsub_subscription" "subcription_asset_feed" {
+resource "google_pubsub_subscription" "subscription_asset_feed" {
   project              = var.project_id
   name                 = "${local.service_name}-asset-feed"
   topic                = var.asset_feed_topic_id
@@ -931,7 +931,7 @@ resource "google_pubsub_subscription" "subcription_asset_feed" {
   }
 }
 
-resource "google_pubsub_subscription" "subcription_compliance_status" {
+resource "google_pubsub_subscription" "subscription_compliance_status" {
   project              = var.project_id
   name                 = "${local.service_name}-compliance-status"
   topic                = var.compliance_status_topic_id
@@ -951,7 +951,7 @@ resource "google_pubsub_subscription" "subcription_compliance_status" {
   }
 }
 
-resource "google_pubsub_subscription" "subcription_violation" {
+resource "google_pubsub_subscription" "subscription_violation" {
   project              = var.project_id
   name                 = "${local.service_name}-violation"
   topic                = var.violation_topic_id

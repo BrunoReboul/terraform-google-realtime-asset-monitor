@@ -16,20 +16,24 @@
 
 variable "project_id" {
   description = "RAM GCP project id for a given environment, like dev or production"
+  type        = string
 }
 
 variable "environment" {
   description = "environment name"
+  type        = string
 }
 
 variable "cai_feed_topic_name" {
   description = "google cloud asset inventory feed messages"
   default     = "caiFeed"
+  type        = string
 }
 
 variable "asset_feed_topic_name" {
   description = "the data on which to assess compliance"
   default     = "assetFeed"
+  type        = string
 }
 
 variable "pubsub_allowed_regions" {
@@ -39,66 +43,81 @@ variable "pubsub_allowed_regions" {
 variable "gcs_location" {
   description = "Cloud Storage location"
   default     = "europe-west1"
+  type        = string
 }
 
 variable "crun_region" {
   description = "cloud run region"
   default     = "europe-west1"
+  type        = string
 }
 
 variable "crun_cpu" {
   description = "Number of cpu in k8s quantity 1000m means 1000 millicpu aka 1"
   default     = "2000m"
+  type        = string
 }
 variable "crun_concurrency" {
   description = "Number of requests a container could received at the same time"
   default     = 200
+  type        = number
 }
 
 variable "crun_max_instances" {
   description = "Max number of instances"
   default     = 1000
+  type        = number
 }
 
 variable "crun_memory" {
   description = "Memory allocation in k8s quantity "
   default     = "128Mi"
+  type        = string
 }
 
 variable "crun_timeout" {
   description = "Max duration for an instance for responding to a request"
   default     = "180s"
+  type        = string
 }
 
 variable "ram_container_images_registry" {
   description = "artifact registry path"
   default     = "europe-docker.pkg.dev/brunore-ram-dev-100/realtime-asset-monitor"
+  type        = string
 }
 variable "ram_microservice_image_tag" {
   description = "The container image tag for this microservice"
   default     = "latest"
+  type        = string
 }
 variable "asset_collection_id" {
   description = "firestore assets collection id"
   default     = "assets"
+  type        = string
 }
 variable "cache_max_age_minutes" {
   description = "Duration in minutes after which the asset cache should be reloaded"
   default     = "60"
+  type        = string
 }
 variable "log_only_severity_levels" {
   description = "Which type of log entry should be logged"
   default     = "WARNING NOTICE CRITICAL"
+  type        = string
 }
 variable "owner_label_Key_name" {
   description = "violation owner label tag name"
   default     = "owner"
+  type        = string
 }
 variable "start_profiler" {
   description = "Continuous CPU and heap profiling in Cloud Profiler"
   default     = "false"
+  type        = string
 }
 variable "violation_resolver_label_key_name" {
   description = "violation resolver label tag name"
   default     = "resolver"
+  type        = string
 }
