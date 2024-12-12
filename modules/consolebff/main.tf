@@ -35,6 +35,12 @@ resource "google_project_iam_member" "project_profiler_agent" {
   member  = "serviceAccount:${google_service_account.microservice_sa.email}"
 }
 
+resource "google_project_iam_member" "project_aiplatform_user" {
+  project = var.project_id
+  role    = "roles/aiplatform.user"
+  member  = "serviceAccount:${google_service_account.microservice_sa.email}"
+}
+
 resource "google_project_iam_member" "project_bigquery_jobuser" {
   project = var.project_id
   role    = "roles/bigquery.jobUser"
