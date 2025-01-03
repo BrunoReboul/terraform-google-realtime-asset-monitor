@@ -144,3 +144,61 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
 
   policy_data = data.google_iam_policy.binding.policy_data
 }
+
+resource "google_logging_metric" "ram_consolebff_response_count" {
+  project = var.project_id
+  name    = "ram_consolebff_response_count"
+  filter  = "resource.type=\"cloud_run_revision\" resource.labels.service_name=\"consolebff\" log_name=~\"projects/.*/logs/run.googleapis.com%2Frequests\" httpRequest.requestUrl=~\"^https:.*consolebff.*v.*\""
+  metric_descriptor {
+    metric_kind = "DELTA"
+    value_type  = "INT64"
+    unit        = "1"
+    labels {
+      key         = "status"
+      value_type  = "STRING"
+      description = "HTTP response status code"
+    }
+    labels {
+      key         = "resource_name"
+      value_type  = "STRING"
+      description = "Extracted from the request URL"
+    }
+  }
+  label_extractors = {
+    "resource_name" = "REGEXP_EXTRACT(httpRequest.requestUrl, \"^https:\\\\/\\\\/.*\\\\/consolebff\\\\/v\\\\d+\\\\/([a-z]+)\")"
+    "status"        = "EXTRACT(httpRequest.status)"
+  }
+}
+
+resource "google_logging_metric" "ram_consolebff_response_latency" {
+  project = var.project_id
+  name    = "ram_consolebff_response_latency"
+  filter  = "resource.type=\"cloud_run_revision\" resource.labels.service_name=\"consolebff\" log_name=~\"projects/.*/logs/run.googleapis.com%2Frequests\" httpRequest.requestUrl=~\"^https:.*consolebff.*v.*\""
+  metric_descriptor {
+    metric_kind = "DELTA"
+    value_type  = "DISTRIBUTION"
+    unit        = "s"
+    labels {
+      key         = "status"
+      value_type  = "STRING"
+      description = "HTTP response status code"
+    }
+    labels {
+      key         = "resource_name"
+      value_type  = "STRING"
+      description = "Extracted from the request URL"
+    }
+  }
+  value_extractor = "REGEXP_EXTRACT(httpRequest.latency, \"(\\\\d+\\\\.?\\\\d*)s\")"
+  label_extractors = {
+    "resource_name" = "REGEXP_EXTRACT(httpRequest.requestUrl, \"^https:\\\\/\\\\/.*\\\\/consolebff\\\\/v\\\\d+\\\\/([a-z]+)\")"
+    "status"        = "EXTRACT(httpRequest.status)"
+  }
+  bucket_options {
+    exponential_buckets {
+      num_finite_buckets = 80
+      growth_factor      = 1.15478198468946
+      scale              = 0.001
+    }
+  }
+}
