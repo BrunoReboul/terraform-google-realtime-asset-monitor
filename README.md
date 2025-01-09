@@ -70,4 +70,4 @@ To use theses terraform modules, you will need a GCP project with:
 
 ## Example
 
-See the [examples folder](./examples/README.md)
+See the [examples folder](./examples/README.md).
